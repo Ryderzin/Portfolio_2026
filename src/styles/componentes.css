@@ -54,66 +54,6 @@
   border-bottom-color: var(--header-text);
 }
 
-/* Botão de tema: só aparece com JavaScript. */
-.botao-tema {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: var(--touch);
-  padding: 0 14px;
-  border: var(--border) solid var(--header-muted);
-  background: transparent;
-  color: var(--header-text);
-  font-family: var(--fonte-rotulo);
-  font-stretch: 75%;
-  font-weight: 700;
-  font-size: var(--fs-rotulo);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.botao-tema[hidden] {
-  display: none;
-}
-
-.botao-tema[aria-pressed="true"] {
-  border-color: var(--header-text);
-  background: var(--header-text);
-  color: var(--header-bg);
-}
-
-.botao-tema__icone {
-  font-size: 18px;
-  line-height: 1;
-}
-
-/* No celular o botão mostra só o ícone; o texto continua sendo o nome acessível. */
-@media (max-width: 768px) {
-  .cabecalho__interno {
-    gap: 4px;
-  }
-
-  .nav-principal a {
-    padding: 14px 10px;
-  }
-
-  .botao-tema {
-    justify-content: center;
-    min-width: var(--touch);
-    padding: 0;
-  }
-
-  .botao-tema__texto {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-}
-
 .cabecalho :focus-visible {
   outline-color: var(--header-text);
   outline-offset: -6px;
@@ -441,9 +381,49 @@ main.container {
   font-size: var(--fs-rotulo);
 }
 
+/* Ações do rodapé: links e botão de tema. */
+.rodape__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+}
+
+/* Botão de tema: só aparece com JavaScript. */
+.botao-tema {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--touch);
+  padding: 0 14px;
+  border: var(--border) solid var(--ink);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: var(--fs-rotulo);
+  cursor: pointer;
+}
+
+.botao-tema[hidden] {
+  display: none;
+}
+
+.botao-tema[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+.botao-tema__icone {
+  font-size: 18px;
+  line-height: 1;
+}
+
 /* ---------- Mobile ---------- */
 
 @media (max-width: 768px) {
+  .nav-principal a {
+    padding: 14px 10px;
+  }
+
   .titulo-pagina {
     margin-bottom: 24px;
     --marca-x: 10px;

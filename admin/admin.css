@@ -87,6 +87,11 @@ body {
   color: var(--header-bg);
 }
 
+.botao-topo[aria-pressed="true"] {
+  background: var(--header-text);
+  color: var(--header-bg);
+}
+
 .botao-topo:disabled {
   opacity: 0.6;
   cursor: not-allowed;

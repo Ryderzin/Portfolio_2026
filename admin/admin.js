@@ -292,12 +292,14 @@ async function enviar(arquivo, aceita) {
 
 // ---------- Editor ----------
 
+// Resumo acima do formulário: só aparece quando há erro, aviso ou marcador.
 function resumoValidacao(problemas, semCampo) {
   const erros = problemas.filter((p) => p.nivel === 'erro');
   const marcadores = problemas.filter((p) => p.marcador).length;
   const avisos = problemas.filter((p) => p.nivel === 'aviso' && !p.marcador);
+  if (!erros.length && !marcadores && !avisos.length) return null;
   const partes = [];
-  partes.push(erros.length ? `${erros.length} ${erros.length === 1 ? 'erro' : 'erros'}` : 'Sem erros');
+  if (erros.length) partes.push(`${erros.length} ${erros.length === 1 ? 'erro' : 'erros'}`);
   if (marcadores) partes.push(`${marcadores} ${marcadores === 1 ? 'marcador […] a preencher' : 'marcadores […] a preencher'}`);
   if (avisos.length) partes.push(`${avisos.length} ${avisos.length === 1 ? 'aviso' : 'avisos'}`);
 
@@ -310,7 +312,8 @@ function resumoValidacao(problemas, semCampo) {
 function revalidar() {
   const problemas = validar(estado.atual);
   const semCampo = mostrarProblemas(estado.formulario, problemas);
-  $('#resumo').replaceChildren(resumoValidacao(problemas, semCampo));
+  const resumo = resumoValidacao(problemas, semCampo);
+  $('#resumo').replaceChildren(...(resumo ? [resumo] : []));
 }
 
 function aoMudar() {
@@ -603,6 +606,29 @@ $('#publicacao-recarregar').addEventListener('click', async () => {
   $('#publicacao').close();
   await iniciar(estado.fonte);
 });
+
+// ---------- Tema ----------
+
+// O mesmo tema do site (chave "tema" no localStorage); o <head> já aplica a escolha salva.
+function prepararTema() {
+  const botao = $('#tema');
+  const raiz = document.documentElement;
+  const atualizar = () => botao.setAttribute('aria-pressed', String(raiz.dataset.tema === 'escuro'));
+  atualizar();
+  botao.addEventListener('click', () => {
+    const escuro = raiz.dataset.tema !== 'escuro';
+    if (escuro) raiz.dataset.tema = 'escuro';
+    else delete raiz.dataset.tema;
+    try {
+      localStorage.setItem('tema', escuro ? 'escuro' : 'claro');
+    } catch {
+      // Sem armazenamento: o tema vale só nesta página.
+    }
+    atualizar();
+  });
+}
+
+prepararTema();
 
 // ---------- Início ----------
 

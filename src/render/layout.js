@@ -22,9 +22,6 @@ function cabecalho(site, ativo) {
           ${itens}
         </ul>
       </nav>
-      <button type="button" class="botao-tema" aria-pressed="false" hidden>
-        <span class="botao-tema__icone" aria-hidden="true">◐</span><span class="botao-tema__texto">${esc(site.rotulos.geral.temaEscuro)}</span>
-      </button>
     </div>
   </header>`;
 }
@@ -39,6 +36,11 @@ function linksRodape(site, classe) {
   return itens ? `<ul class="${classe}">${itens}</ul>` : '';
 }
 
+// Botão de tema: oculto sem JavaScript; o src/js/site.js mostra e controla.
+function botaoTema(site) {
+  return `<button type="button" class="botao-tema rotulo" aria-pressed="false" hidden><span class="botao-tema__icone" aria-hidden="true">◐</span> ${esc(site.rotulos.geral.temaEscuro)}</button>`;
+}
+
 function rodape(site, chamada) {
   if (chamada) {
     return `<footer class="rodape rodape--home container">
@@ -47,13 +49,19 @@ function rodape(site, chamada) {
         <p class="rodape__chamada titulo">${esc(chamada)}</p>
         <p class="rodape__texto">${esc(site.rodape.texto)}</p>
       </div>
-      ${linksRodape(site, 'rodape__links rotulo')}
+      <div class="rodape__acoes">
+        ${linksRodape(site, 'rodape__links rotulo')}
+        ${botaoTema(site)}
+      </div>
     </div>
   </footer>`;
   }
   return `<footer class="rodape rodape--simples container">
     <p class="rodape__texto rotulo"><span class="marca">${esc(site.rodape.texto)}</span></p>
-    ${linksRodape(site, 'rodape__links rodape__links--marca rotulo')}
+    <div class="rodape__acoes">
+      ${linksRodape(site, 'rodape__links rodape__links--marca rotulo')}
+      ${botaoTema(site)}
+    </div>
   </footer>`;
 }
 
