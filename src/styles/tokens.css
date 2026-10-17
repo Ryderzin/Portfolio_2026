@@ -1,7 +1,7 @@
 /*
  * Tokens de design: única fonte de cores, fontes e medidas do site e do painel.
  * Nenhum outro arquivo define cores em hexadecimal.
- * O modo escuro redefine os mesmos nomes; o mobile (≤ 768 px) redefine as medidas.
+ * O modo escuro redefine os mesmos nomes em :root[data-tema="escuro"]; o mobile (≤ 768 px) redefine as medidas.
  */
 
 :root {
@@ -66,32 +66,31 @@
   --espaco-nome: 80px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
+/* Modo escuro: escolhido pelo botão do cabeçalho (o padrão é o claro). */
+:root[data-tema="escuro"] {
+  color-scheme: dark;
 
-    --bg: #0B1030;
-    --grid-line: #222C66;
-    --ink: #D5DBFA;
-    --ink-soft: #B7BFEB;
-    --ink-muted: #A9B1E0;
-    --highlight: #0B1030;
-    --surface: #121A48;
-    --veil: rgba(30, 42, 120, 0.28);
-    --cover-grid: #283377;
-    --band: #E8901A;
-    --on-band: #1B1B2A;
-    --media: #05060F;
-    --media-text: #8C93BD;
-    --header-bg: #1E2A78;
-    --header-text: #FFFFFF;
-    --header-muted: #C3CAF0;
-    --header-borda: var(--border-strong) solid var(--ink);
-    --on-ink: #0B1030;
-    --field-bg: #121A48;
-    --row-active: #1E2A78;
-    --line-soft: #283377;
-  }
+  --bg: #0B1030;
+  --grid-line: #222C66;
+  --ink: #D5DBFA;
+  --ink-soft: #B7BFEB;
+  --ink-muted: #A9B1E0;
+  --highlight: #0B1030;
+  --surface: #121A48;
+  --veil: rgba(30, 42, 120, 0.28);
+  --cover-grid: #283377;
+  --band: #E8901A;
+  --on-band: #1B1B2A;
+  --media: #05060F;
+  --media-text: #8C93BD;
+  --header-bg: #1E2A78;
+  --header-text: #FFFFFF;
+  --header-muted: #C3CAF0;
+  --header-borda: var(--border-strong) solid var(--ink);
+  --on-ink: #0B1030;
+  --field-bg: #121A48;
+  --row-active: #1E2A78;
+  --line-soft: #283377;
 }
 
 @media (max-width: 768px) {

@@ -9,6 +9,9 @@ export function urlAbsoluta(site, caminho) {
   return site.url.replace(/\/+$/, '') + caminho;
 }
 
+// Aplica o tema salvo antes da primeira pintura (sem piscar). Sem JS ou sem escolha: claro.
+export const SCRIPT_TEMA = '<script>try{if(localStorage.getItem("tema")==="escuro")document.documentElement.dataset.tema="escuro"}catch(e){}</script>';
+
 function cabecalho(site, ativo) {
   const itens = site.navegacao.map(({ rotulo, caminho }) =>
     `<li><a${attrs({ href: caminho, 'aria-current': caminho === ativo ? 'page' : null })}>${esc(rotulo)}</a></li>`).join('\n          ');
@@ -19,6 +22,9 @@ function cabecalho(site, ativo) {
           ${itens}
         </ul>
       </nav>
+      <button type="button" class="botao-tema" aria-pressed="false" hidden>
+        <span class="botao-tema__icone" aria-hidden="true">◐</span><span class="botao-tema__texto">${esc(site.rotulos.geral.temaEscuro)}</span>
+      </button>
     </div>
   </header>`;
 }
@@ -82,7 +88,8 @@ export function pagina({ site, caminho, titulo, descricao, imagem, tipo = 'websi
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light dark">
+  <meta name="color-scheme" content="light">
+  ${SCRIPT_TEMA}
   <title>${esc(tituloCompleto)}</title>
   ${meta.join('\n  ')}
   <link rel="preload" href="${FONTE_PRELOAD}" as="font" type="font/woff2" crossorigin>

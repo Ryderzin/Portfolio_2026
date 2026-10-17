@@ -2,7 +2,7 @@
 // Cada campo aponta para um caminho dentro do documento JSON (ex.: ['capa', 'alt']).
 // Os valores são gravados no próprio objeto do documento a cada digitação.
 
-import { CATEGORIAS, LAYOUTS_GALERIA } from './validacao.js';
+import { LAYOUTS_GALERIA } from './validacao.js';
 import { ACEITA } from './midia.js';
 
 // ---------- DOM ----------
@@ -88,6 +88,7 @@ const ROTULOS_INTERFACE = {
     navegacaoPrincipal: 'Nome do menu principal (lido por leitores de tela)',
     paginaInicial: 'Botão "Página inicial" (404)',
     verProjetos: 'Botão "Ver projetos"',
+    temaEscuro: 'Botão de modo escuro',
   },
   projeto: {
     _titulo: 'Página de projeto',
@@ -212,11 +213,12 @@ export const DESCRITORES = {
     { t: 'secao', r: 'Página 404', campos: [texto('codigo', 'Número'), texto('titulo', 'Título'), area('texto', 'Texto')] },
   ],
 
-  projeto: (slug) => [
+  projeto: (slug, { categorias = [] } = {}) => [
     { t: 'secao', r: '1 · Informações', campos: [
       texto('titulo', 'Título'),
       texto('subtitulo', 'Subtítulo'),
-      { t: 'escolha', k: 'categoria', r: 'Categoria (faixa amarela)', opcoes: CATEGORIAS.map((c) => [c, c]) },
+      texto('categoria', 'Categoria (texto da faixa amarela)', { sugestoes: categorias, ajuda: 'Livre. Até 16 caracteres cabem bem na faixa.' }),
+      { t: 'booleano', k: 'ocultarFaixa', r: 'Esconder a faixa amarela', opc: true },
       texto('ano', 'Ano', { ajuda: 'Quatro dígitos.', inputmode: 'numeric' }),
       texto('stack', 'Stack', { ajuda: 'Aparece na lombada, ex.: "C# · ASP.NET Core".' }),
       { t: 'numero', k: 'ordem', r: 'Ordem na home', ajuda: 'Menor aparece primeiro.' },
@@ -329,6 +331,8 @@ function entrada(d, ctx, caminho) {
     });
   controle.setAttribute('aria-describedby', descritoPor);
   controle.dataset.campo = formatarCaminho(caminho);
+  const sugestoes = d.sugestoes?.length ? h('datalist', { id: `${id}-sugestoes` }, d.sugestoes.map((s) => h('option', { value: s }))) : null;
+  if (sugestoes) controle.setAttribute('list', sugestoes.id);
 
   controle.addEventListener('input', () => {
     let novo = controle.value;
@@ -342,6 +346,7 @@ function entrada(d, ctx, caminho) {
     h('label', { for: id, class: 'campo__rotulo' }, d.r, d.opc ? h('span', { class: 'campo__opcional' }, ' (opcional)') : null),
     ajuda,
     controle,
+    sugestoes,
     mensagem);
 }
 
@@ -351,7 +356,7 @@ function caixaMarcar(d, ctx, caminho) {
   const controle = h('input', { id, type: 'checkbox', checked: ler(ctx.doc, caminho) === true, 'aria-describedby': mensagem.id });
   controle.dataset.campo = formatarCaminho(caminho);
   controle.addEventListener('change', () => {
-    escrever(ctx.doc, caminho, controle.checked);
+    escrever(ctx.doc, caminho, d.opc && !controle.checked ? undefined : controle.checked, { opcional: d.opc });
     ctx.aoMudar();
   });
   return h('div', { class: 'campo campo--marcar' }, h('label', { for: id }, controle, ' ', d.r), mensagem);

@@ -1,5 +1,6 @@
-// Vídeos sob demanda. Melhoria progressiva: sem JavaScript, o site funciona igual,
-// só sem a prévia das capas e sem o autoplay dos blocos.
+// Melhorias progressivas: sem JavaScript, o site funciona igual, no tema claro,
+// sem a prévia das capas e sem o autoplay dos blocos.
+// - Tema: o botão do cabeçalho alterna claro/escuro e guarda a escolha (o <head> já a aplica).
 // - Capas: o <video> da prévia só é criado quando a capa entra na tela.
 // - Blocos: vídeos com data-autoplay tocam só quando visíveis; todos pausam ao sair da tela.
 
@@ -52,6 +53,28 @@ function observarVideosDeBloco() {
   }, { threshold: 0.25 });
   videos.forEach((video) => observador.observe(video));
 }
+
+function botaoTema() {
+  const botao = document.querySelector('.botao-tema');
+  if (!botao) return;
+  const raiz = document.documentElement;
+  const atualizar = () => botao.setAttribute('aria-pressed', String(raiz.dataset.tema === 'escuro'));
+  botao.hidden = false;
+  atualizar();
+  botao.addEventListener('click', () => {
+    const escuro = raiz.dataset.tema !== 'escuro';
+    if (escuro) raiz.dataset.tema = 'escuro';
+    else delete raiz.dataset.tema;
+    try {
+      localStorage.setItem('tema', escuro ? 'escuro' : 'claro');
+    } catch {
+      // Sem armazenamento (navegação privada etc.): o tema vale só nesta página.
+    }
+    atualizar();
+  });
+}
+
+botaoTema();
 
 if ('IntersectionObserver' in window) {
   observarCapas();

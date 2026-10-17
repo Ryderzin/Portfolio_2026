@@ -5,7 +5,7 @@
 import { ErroConflito, ErroFonte, criarFonteGitHub, criarFonteLocal } from './github.js';
 import { DESCRITORES, formatarCaminho, h, montarFormulario, mostrarProblemas } from './formularios.js';
 import { ErroEnvio, nomeLivre, nomeSeguro, processarImagem, processarPdf, processarVideo } from './midia.js';
-import { CATEGORIAS, PAGINAS, SLUG, formatarProblema, validarPagina, validarProjeto } from './validacao.js';
+import { PAGINAS, SLUG, formatarProblema, validarPagina, validarProjeto } from './validacao.js';
 import { ordenarProjetos } from './render/util.js';
 import { renderHome } from './render/home.js';
 import { renderProjeto } from './render/projeto.js';
@@ -72,6 +72,10 @@ function validar(doc) {
 
 function projetos() {
   return [...estado.docs.values()].filter((d) => d.tipo === 'projeto').map(({ slug, dados }) => ({ slug, dados }));
+}
+
+function categoriasUsadas() {
+  return [...new Set(projetos().map((p) => p.dados.categoria).filter(Boolean))].sort();
 }
 
 function doc(caminho) {
@@ -364,7 +368,7 @@ function botoesDoTopo(d) {
 function abrir(d, { foco } = {}) {
   const rolagem = estado.atual === d ? window.scrollY : 0;
   estado.atual = d;
-  const descritores = d.tipo === 'projeto' ? DESCRITORES.projeto(d.slug) : DESCRITORES[d.chave];
+  const descritores = d.tipo === 'projeto' ? DESCRITORES.projeto(d.slug, { categorias: categoriasUsadas() }) : DESCRITORES[d.chave];
   const titulo = d.tipo === 'projeto' ? `Editar projeto: ${d.dados.titulo || d.slug}` : `Editar: ${NOMES_PAGINAS[d.chave]}`;
 
   estado.formulario = montarFormulario(descritores, {
@@ -400,21 +404,20 @@ function slugPara(titulo) {
 $('#novo-projeto').addEventListener('click', () => {
   $('#novo-erro').hidden = true;
   $('#form-novo').reset();
+  $('#novo-categorias').replaceChildren(...categoriasUsadas().map((c) => h('option', { value: c })));
   $('#dialogo-novo').showModal();
 });
 
 $('#novo-cancelar').addEventListener('click', () => $('#dialogo-novo').close());
 
-$('#novo-categoria').replaceChildren(...CATEGORIAS.map((c) => h('option', { value: c }, c)));
-
 $('#form-novo').addEventListener('submit', (evento) => {
   evento.preventDefault();
   const titulo = $('#novo-titulo').value.trim();
-  const categoria = $('#novo-categoria').value;
-  if (!titulo) {
-    $('#novo-erro').textContent = 'Dê um título ao projeto.';
+  const categoria = $('#novo-categoria').value.trim();
+  if (!titulo || !categoria) {
+    $('#novo-erro').textContent = titulo ? 'Escreva uma categoria.' : 'Dê um título ao projeto.';
     $('#novo-erro').hidden = false;
-    $('#novo-titulo').focus();
+    (titulo ? $('#novo-categoria') : $('#novo-titulo')).focus();
     return;
   }
   const slug = slugPara(titulo);

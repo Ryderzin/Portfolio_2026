@@ -82,7 +82,7 @@ export function renderProjeto({ site, projeto, proximo }) {
 
   <main class="container">
     <article class="card-projeto">
-      <span class="faixa faixa--card rotulo">${esc(dados.categoria)}</span>
+      ${dados.ocultarFaixa ? '' : `<span class="faixa faixa--card rotulo">${esc(dados.categoria)}</span>`}
       <div class="card-projeto__conteudo">
         <p class="card-projeto__stack rotulo"><span class="marca">${stackAno}</span></p>
         ${galeriaTopo(dados.galeriaTopo, slug)}

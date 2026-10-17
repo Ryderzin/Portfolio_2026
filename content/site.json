@@ -43,7 +43,8 @@
     "geral": {
       "navegacaoPrincipal": "Principal",
       "paginaInicial": "Página inicial",
-      "verProjetos": "Ver projetos"
+      "verProjetos": "Ver projetos",
+      "temaEscuro": "Modo escuro"
     },
     "projeto": {
       "voltarProjetos": "Voltar aos projetos",

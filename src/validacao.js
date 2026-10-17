@@ -3,7 +3,6 @@
 // Quem chama informa quais arquivos existem por meio de existeArquivo(caminho),
 // com o caminho relativo a content/ (ex.: "projetos/exemplo-web/capa.png").
 
-export const CATEGORIAS = ['Web', 'Jogos', 'Ferramentas'];
 export const LAYOUTS_GALERIA = ['duas', 'grande', 'carrossel'];
 export const ORIGENS_VIDEO = ['arquivo', 'link'];
 export const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
@@ -137,6 +136,15 @@ function carrosselComUmaImagem(bloco, campo, ctx) {
   }
 }
 
+// A faixa tem largura fixa: textos longos ficam cortados.
+const LIMITE_FAIXA = 16;
+
+function categoriaCabeNaFaixa(projeto, campo, ctx) {
+  if (projeto.ocultarFaixa !== true && typeof projeto.categoria === 'string' && projeto.categoria.trim().length > LIMITE_FAIXA) {
+    reportar(ctx, 'aviso', juntar(campo, 'categoria'), `com mais de ${LIMITE_FAIXA} caracteres, o texto pode ficar cortado na faixa`);
+  }
+}
+
 function jogarExigeOnde(jogar, campo, ctx) {
   const temUrl = typeof jogar.url === 'string' && jogar.url.trim() !== '';
   const temOnde = typeof jogar.onde === 'string' && jogar.onde.trim() !== '';
@@ -193,7 +201,7 @@ const ESQUEMA_SITE = objeto({
   navegacao: lista(objeto({ rotulo: texto(), caminho: texto({ formato: formatoCaminhoInterno }) }), { min: 1 }),
   rodape: objeto({ texto: texto(), links: lista(link) }),
   rotulos: objeto({
-    geral: objeto({ navegacaoPrincipal: texto(), paginaInicial: texto(), verProjetos: texto() }),
+    geral: objeto({ navegacaoPrincipal: texto(), paginaInicial: texto(), verProjetos: texto(), temaEscuro: texto() }),
     projeto: objeto({
       voltarProjetos: texto(),
       fichaTecnica: texto(),
@@ -248,7 +256,8 @@ const ESQUEMA_PROJETO = objeto({
   ordem: inteiro(),
   titulo: texto(),
   subtitulo: texto(),
-  categoria: umDe(CATEGORIAS),
+  categoria: texto(),
+  ocultarFaixa: opcional(booleano()),
   ano: texto({ formato: formatoAno }),
   stack: texto(),
   capa: objeto({
@@ -265,7 +274,7 @@ const ESQUEMA_PROJETO = objeto({
   }),
   jogar: opcional(objeto({ url: opcional(urlCompleta()), onde: opcional(texto()) }, { verificar: jogarExigeOnde })),
   links: lista(link),
-});
+}, { verificar: categoriaCabeNaFaixa });
 
 // Páginas fixas: chave usada no código → arquivo em content/ e esquema.
 export const PAGINAS = {

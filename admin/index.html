@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light dark">
+  <meta name="color-scheme" content="light">
+  <script>try{if(localStorage.getItem("tema")==="escuro")document.documentElement.dataset.tema="escuro"}catch(e){}</script>
   <meta name="robots" content="noindex, nofollow">
   <meta name="referrer" content="no-referrer">
   <title>Painel</title>
@@ -92,7 +93,8 @@
       </div>
       <div class="campo">
         <label class="campo__rotulo" for="novo-categoria">Categoria</label>
-        <select id="novo-categoria"></select>
+        <input id="novo-categoria" type="text" list="novo-categorias" autocomplete="off" aria-describedby="novo-erro">
+        <datalist id="novo-categorias"></datalist>
       </div>
       <div class="dialogo__acoes">
         <button type="button" class="botao-painel botao-painel--secundario" id="novo-cancelar">Cancelar</button>
