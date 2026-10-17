@@ -42,8 +42,9 @@ export function urlMidia(src, slug) {
   return slug ? `/projetos/${slug}/${src}` : `/${src}`;
 }
 
-// <img> com width/height; lazy por padrão, eager + fetchpriority alta na primeira dobra.
-export function imagem({ src, alt, largura, altura }, { slug, prioridade = false, classe } = {}) {
+// <img> com width/height; lazy por padrão, eager na primeira dobra.
+// fetchpriority="high" só com destaque (a primeira capa da home).
+export function imagem({ src, alt, largura, altura }, { slug, prioridade = false, destaque = false, classe } = {}) {
   return `<img${attrs({
     class: classe,
     src: urlMidia(src, slug),
@@ -51,7 +52,7 @@ export function imagem({ src, alt, largura, altura }, { slug, prioridade = false
     width: largura,
     height: altura,
     loading: prioridade ? 'eager' : 'lazy',
-    fetchpriority: prioridade ? 'high' : null,
+    fetchpriority: destaque ? 'high' : null,
     decoding: 'async',
   })}>`;
 }

@@ -3,6 +3,7 @@
 // Os valores são gravados no próprio objeto do documento a cada digitação.
 
 import { CATEGORIAS, LAYOUTS_GALERIA } from './validacao.js';
+import { ACEITA } from './midia.js';
 
 // ---------- DOM ----------
 
@@ -72,8 +73,13 @@ const leitura = (k, r, extra = {}) => ({ t: 'leitura', k, r, ...extra });
 const AJUDA_MARKDOWN = 'Markdown: **negrito**, *itálico*, `código`, [texto](https://…), "### " para título, "- " ou "1. " para listas. Linha em branco separa parágrafos.';
 const AJUDA_ALT = 'Descreva a imagem para quem usa leitor de tela.';
 
-const imagemAlt = (k, r) => ({
-  t: 'grupo', k, r, campos: [leitura('src', 'Arquivo'), texto('alt', 'Texto alternativo', { ajuda: AJUDA_ALT })],
+// Campo de arquivo. formato 'objeto' grava { src, largura, altura } no caminho; 'caminho' grava só o texto.
+const midia = (k, r, aceita, extra = {}) => ({ t: 'midia', k, r, aceita, formato: 'objeto', ...extra });
+
+const IMAGEM_DE_LISTA = [midia([], 'Arquivo', 'imagem'), texto('alt', 'Texto alternativo', { ajuda: AJUDA_ALT })];
+
+const listaImagens = (k, r, extra = {}) => ({
+  t: 'lista', k, r, rotuloItem: (_, i) => `Imagem ${i + 1}`, adicionarArquivos: 'imagem', item: IMAGEM_DE_LISTA, ...extra,
 });
 
 const ROTULOS_INTERFACE = {
@@ -169,9 +175,9 @@ export const DESCRITORES = {
       area('destaque', 'Destaque (frase grande)'),
       md('texto', 'Texto', { linhas: 10, ajuda: AJUDA_MARKDOWN }),
     ] },
-    { t: 'secao', r: 'Foto', seExiste: 'foto', campos: [
+    { t: 'secao', r: 'Foto', campos: [
+      midia('foto', 'Arquivo da foto', 'imagem', { removivel: true }),
       { t: 'grupo', k: 'foto', campos: [
-        leitura('src', 'Arquivo'),
         texto('alt', 'Texto alternativo', { ajuda: AJUDA_ALT }),
         texto('legenda', 'Legenda', { opc: true }),
       ] },
@@ -187,7 +193,7 @@ export const DESCRITORES = {
         texto('periodo', 'Período'), texto('cargo', 'Cargo'), texto('empresa', 'Empresa'), area('resumo', 'Resumo', { linhas: 2 }),
       ] },
     ] },
-    { t: 'secao', r: 'Currículo', seExiste: 'curriculo', campos: [leitura('curriculo', 'Arquivo PDF')] },
+    { t: 'secao', r: 'Currículo', campos: [midia('curriculo', 'Arquivo PDF', 'pdf', { formato: 'caminho', removivel: true })] },
   ],
 
   contato: [
@@ -219,15 +225,13 @@ export const DESCRITORES = {
     ] },
     { t: 'secao', r: '2 · Capa na home', campos: [
       { t: 'grupo', k: 'capa', campos: [
-        leitura('src', 'Arquivo'),
+        midia([], 'Imagem da capa', 'imagem', { ajuda: 'JPG, PNG, WebP ou AVIF: convertida para WebP com até 2000 px. GIF é mantido.' }),
         texto('alt', 'Texto alternativo', { ajuda: AJUDA_ALT }),
-        leitura(['previa', 'src'], 'Prévia em movimento'),
+        midia('previa', 'Prévia em movimento', 'previa', { removivel: true, ajuda: 'Opcional. MP4 ou WebM curto, sem som, até 5 MB.' }),
       ] },
     ] },
-    { t: 'secao', r: 'Galeria do topo', seExiste: 'galeriaTopo', campos: [
-      { t: 'lista', k: 'galeriaTopo', fixa: true, rotuloItem: (_, i) => `Imagem ${i + 1}`, item: [leitura('src', 'Arquivo'), texto('alt', 'Texto alternativo', { ajuda: AJUDA_ALT })] },
-    ] },
-    { t: 'secao', r: '3 · Conteúdo da página', ajuda: 'Adicionar, reordenar e remover blocos chega na próxima etapa.', campos: [{ t: 'blocos', k: 'blocos' }] },
+    { t: 'secao', r: 'Galeria do topo', ajuda: 'Opcional. Imagens acima do título.', campos: [listaImagens('galeriaTopo', null, { opc: true })] },
+    { t: 'secao', r: '3 · Conteúdo da página', ajuda: 'Reordene com ↑ e ↓ ou arrastando pela alça ⋮⋮.', campos: [{ t: 'blocos', k: 'blocos' }] },
     { t: 'secao', r: '4 · Ficha técnica e links', campos: [
       { t: 'grupo', k: 'ficha', r: 'Ficha técnica', campos: [
         texto('tecnologia', 'Tecnologia', { opc: true }),
@@ -255,14 +259,14 @@ function camposDoBloco(bloco) {
     case 'galeria':
       return [
         { t: 'escolha', k: 'layout', r: 'Layout', opcoes: LAYOUTS_GALERIA.map((l) => [l, { duas: 'Duas por linha', grande: 'Uma grande', carrossel: 'Carrossel' }[l]]) },
-        { t: 'lista', k: 'imagens', fixa: true, rotuloItem: (_, i) => `Imagem ${i + 1}`, item: [leitura('src', 'Arquivo'), texto('alt', 'Texto alternativo', { ajuda: AJUDA_ALT })] },
+        listaImagens('imagens', 'Imagens'),
         texto('legenda', 'Legenda', { opc: true }),
       ];
     case 'video':
       return bloco.origem === 'link'
         ? [texto('url', 'Link do YouTube ou Vimeo', { tipoInput: 'url' }), texto('legenda', 'Legenda', { opc: true })]
         : [
-          leitura('src', 'Arquivo'),
+          midia([], 'Arquivo de vídeo', 'video', { ajuda: 'MP4 ou WebM, até 25 MB. Maior que isso, use um bloco de vídeo por link.' }),
           { t: 'booleano', k: 'loop', r: 'Repetir em loop' },
           { t: 'booleano', k: 'mudo', r: 'Começar sem som' },
           { t: 'booleano', k: 'autoplay', r: 'Tocar sozinho (exige sem som)' },
@@ -286,8 +290,17 @@ function idPara(caminho) {
   return `campo-${formatarCaminho(caminho).replace(/[^\w-]/g, '_') || 'raiz'}-${contadorIds}`;
 }
 
-function mensagemCampo(campo) {
-  return h('p', { class: 'campo__mensagem', id: idPara(['msg']), 'data-mensagem': campo, hidden: true });
+// Lugar da mensagem de validação. "apelidos" recebe mensagens de outros caminhos;
+// com "unico", só a primeira mensagem aparece.
+function mensagemCampo(campo, { apelidos = [], unico = false } = {}) {
+  return h('p', {
+    class: 'campo__mensagem',
+    id: idPara(['msg']),
+    'data-mensagem': campo,
+    'data-apelidos': apelidos.length ? apelidos.join(' ') : null,
+    'data-unico': unico ? 'sim' : null,
+    hidden: true,
+  });
 }
 
 function entrada(d, ctx, caminho) {
@@ -373,35 +386,113 @@ function botaoIcone(rotulo, simbolo, aoClicar, desativado = false) {
   return h('button', { type: 'button', class: 'botao-icone', 'aria-label': rotulo, title: rotulo, disabled: desativado, onclick: aoClicar }, h('span', { 'aria-hidden': 'true' }, simbolo));
 }
 
+// Botão de envio: um <input type="file"> visível como botão, acessível pelo teclado.
+function botaoArquivo(rotulo, aceita, multiplo, aoEscolher, extra = {}) {
+  const id = idPara(['arquivo']);
+  const entradaArquivo = h('input', {
+    id,
+    type: 'file',
+    class: 'arquivo__entrada',
+    accept: ACEITA[aceita],
+    multiple: multiplo,
+    onchange: async (evento) => {
+      const arquivos = [...evento.target.files];
+      evento.target.value = '';
+      if (arquivos.length) await aoEscolher(arquivos);
+    },
+  });
+  return h('span', { class: 'arquivo', ...extra }, entradaArquivo, h('label', { for: id, class: 'botao-painel botao-painel--secundario arquivo__botao' }, rotulo));
+}
+
+const NOMES_ACEITA = { imagem: 'imagem', video: 'vídeo', previa: 'vídeo', pdf: 'PDF' };
+
+function campoMidia(d, ctx, caminho) {
+  const nome = formatarCaminho(caminho);
+  const atual = ler(ctx.doc, caminho);
+  const src = d.formato === 'caminho' ? atual : atual?.src;
+  const apelidos = d.formato === 'caminho' ? [] : ['src', 'largura', 'altura'].map((k) => (nome ? `${nome}.${k}` : k));
+  const mensagem = mensagemCampo(nome, { apelidos, unico: true });
+
+  const enviar = async ([arquivo]) => {
+    const resultado = await ctx.enviar(arquivo, d.aceita);
+    if (!resultado) return;
+    if (d.formato === 'caminho') {
+      escrever(ctx.doc, caminho, resultado.src);
+    } else {
+      for (const k of ['src', 'largura', 'altura']) escrever(ctx.doc, [...caminho, k], resultado[k]);
+    }
+    ctx.aoEstrutura({ foco: `${nome}:arquivo` });
+  };
+
+  const remover = d.removivel && src ? h('button', {
+    type: 'button',
+    class: 'botao-painel botao-painel--secundario',
+    onclick: () => {
+      if (!confirm('Remover este arquivo da página? (O arquivo continua no repositório.)')) return;
+      escrever(ctx.doc, caminho, undefined, { opcional: true });
+      ctx.aoEstrutura({ foco: `${nome}:arquivo` });
+    },
+  }, 'Remover') : null;
+
+  return h('div', { class: 'campo campo--midia' },
+    h('span', { class: 'campo__rotulo' }, d.r, d.removivel ? h('span', { class: 'campo__opcional' }, ' (opcional)') : null),
+    d.ajuda ? h('p', { class: 'campo__ajuda' }, d.ajuda) : null,
+    h('code', { class: 'campo__valor' }, src || 'Nenhum arquivo'),
+    h('span', { class: 'campo__acoes' },
+      botaoArquivo(src ? `Trocar ${NOMES_ACEITA[d.aceita]}` : `Enviar ${NOMES_ACEITA[d.aceita]}`, d.aceita, false, enviar, { 'data-acao': `${nome}:arquivo` }),
+      remover),
+    mensagem);
+}
+
 function lista(d, ctx, caminho) {
   const itens = ler(ctx.doc, caminho);
   const nomeCampo = formatarCaminho(caminho);
+  const removerItem = (i) => {
+    itens.splice(i, 1);
+    if (d.opc && itens.length === 0) escrever(ctx.doc, caminho, [], { opcional: true });
+    ctx.aoEstrutura({ foco: `${nomeCampo}:adicionar` });
+  };
   const elementos = (Array.isArray(itens) ? itens : []).map((item, i) => {
     const rotulo = d.rotuloItem ? d.rotuloItem(item, i) : `Item ${i + 1}`;
     const acoes = d.fixa ? null : h('span', { class: 'item__acoes' },
       botaoIcone(`Mover "${rotulo}" para cima`, '↑', () => { mover(itens, i, i - 1); ctx.aoEstrutura({ foco: `${nomeCampo}[${i - 1}]` }); }, i === 0),
       botaoIcone(`Mover "${rotulo}" para baixo`, '↓', () => { mover(itens, i, i + 1); ctx.aoEstrutura({ foco: `${nomeCampo}[${i + 1}]` }); }, i === itens.length - 1),
-      botaoIcone(`Remover "${rotulo}"`, '✕', () => {
-        if (!confirm(`Remover "${rotulo}"?`)) return;
-        itens.splice(i, 1);
-        ctx.aoEstrutura({ foco: `${nomeCampo}:adicionar` });
-      }));
+      botaoIcone(`Remover "${rotulo}"`, '✕', () => { if (confirm(`Remover "${rotulo}"?`)) removerItem(i); }));
     return h('div', { class: 'item', 'data-item': `${nomeCampo}[${i}]` },
       h('div', { class: 'item__topo' }, h('span', { class: 'item__nome' }, rotulo), acoes),
       h('div', { class: 'item__campos' }, montarCampos(d.item, ctx, [...caminho, i])));
   });
 
-  const adicionar = d.fixa || !d.novo ? null : h('button', {
-    type: 'button',
-    class: 'botao-painel botao-painel--secundario',
-    'data-acao': `${nomeCampo}:adicionar`,
-    onclick: () => {
-      const atual = ler(ctx.doc, caminho);
-      if (Array.isArray(atual)) atual.push(d.novo());
-      else escrever(ctx.doc, caminho, [d.novo()]);
-      ctx.aoEstrutura({ foco: `${nomeCampo}[${ler(ctx.doc, caminho).length - 1}]` });
-    },
-  }, `+ Adicionar${d.r ? ` em ${d.r.toLowerCase()}` : ''}`);
+  const garantirLista = () => {
+    if (!Array.isArray(ler(ctx.doc, caminho))) escrever(ctx.doc, caminho, []);
+    return ler(ctx.doc, caminho);
+  };
+
+  let adicionar = null;
+  if (d.adicionarArquivos) {
+    adicionar = botaoArquivo('+ Adicionar imagens', d.adicionarArquivos, true, async (arquivos) => {
+      let ultimo = null;
+      for (const arquivo of arquivos) {
+        const resultado = await ctx.enviar(arquivo, d.adicionarArquivos);
+        if (!resultado) continue;
+        const destino = garantirLista();
+        destino.push({ src: resultado.src, alt: '', largura: resultado.largura, altura: resultado.altura });
+        ultimo = destino.length - 1;
+      }
+      if (ultimo !== null) ctx.aoEstrutura({ foco: `${nomeCampo}[${ultimo}]` });
+    }, { 'data-acao': `${nomeCampo}:adicionar` });
+  } else if (!d.fixa && d.novo) {
+    adicionar = h('button', {
+      type: 'button',
+      class: 'botao-painel botao-painel--secundario',
+      'data-acao': `${nomeCampo}:adicionar`,
+      onclick: () => {
+        const destino = garantirLista();
+        destino.push(d.novo());
+        ctx.aoEstrutura({ foco: `${nomeCampo}[${destino.length - 1}]` });
+      },
+    }, `+ Adicionar${d.r ? ` em ${d.r.toLowerCase()}` : ''}`);
+  }
 
   return h('fieldset', { class: 'lista' },
     d.r ? h('legend', { class: 'lista__titulo' }, d.r) : null,
@@ -411,18 +502,84 @@ function lista(d, ctx, caminho) {
     adicionar);
 }
 
+const MODELOS_BLOCO = [
+  ['Texto', () => ({ tipo: 'texto', markdown: '' })],
+  ['Imagem ou galeria', () => ({ tipo: 'galeria', layout: 'duas', imagens: [] })],
+  ['Vídeo (arquivo)', () => ({ tipo: 'video', origem: 'arquivo', src: '', loop: true, mudo: true, autoplay: false })],
+  ['Vídeo (YouTube ou Vimeo)', () => ({ tipo: 'video', origem: 'link', url: '' })],
+  ['Código', () => ({ tipo: 'codigo', linguagem: 'csharp', codigo: '' })],
+  ['Citação', () => ({ tipo: 'citacao', texto: '' })],
+];
+
 function blocosEditor(d, ctx, caminho) {
   const blocos = ler(ctx.doc, caminho) ?? [];
-  return h('div', { class: 'blocos-editor' },
-    blocos.map((bloco, i) => {
-      const nome = NOMES_BLOCO[bloco.tipo] ?? bloco.tipo;
-      const detalhe = bloco.tipo === 'video' ? (bloco.origem === 'link' ? ' · link' : ' · arquivo') : '';
-      return h('div', { class: 'item item--bloco', 'data-item': formatarCaminho([...caminho, i]) },
-        h('div', { class: 'item__topo' }, h('span', { class: 'item__nome' }, `${i + 1} · ${nome}${detalhe}`)),
-        h('div', { class: 'item__campos' }, montarCampos(camposDoBloco(bloco), ctx, [...caminho, i])),
-        mensagemCampo(formatarCaminho([...caminho, i])));
-    }),
-    mensagemCampo(formatarCaminho(caminho)));
+  const nomeCampo = formatarCaminho(caminho);
+  let arrastado = null;
+
+  const itens = blocos.map((bloco, i) => {
+    const nome = `${NOMES_BLOCO[bloco.tipo] ?? bloco.tipo}${bloco.tipo === 'video' ? (bloco.origem === 'link' ? ' · link' : ' · arquivo') : ''}`;
+    const rotulo = `bloco ${i + 1} (${nome})`;
+    const alca = h('span', {
+      class: 'item__alca',
+      draggable: 'true',
+      title: 'Arraste para reordenar',
+      'aria-hidden': 'true',
+      ondragstart: (e) => {
+        arrastado = i;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', String(i));
+        e.target.closest('.item').classList.add('item--arrastando');
+      },
+      ondragend: (e) => {
+        arrastado = null;
+        e.target.closest('.item')?.classList.remove('item--arrastando');
+      },
+    }, '⋮⋮');
+    return h('div', {
+      class: 'item item--bloco',
+      'data-item': `${nomeCampo}[${i}]`,
+      ondragover: (e) => {
+        if (arrastado === null) return;
+        e.preventDefault();
+        e.currentTarget.classList.add('item--alvo');
+      },
+      ondragleave: (e) => e.currentTarget.classList.remove('item--alvo'),
+      ondrop: (e) => {
+        e.preventDefault();
+        e.currentTarget.classList.remove('item--alvo');
+        if (arrastado === null || arrastado === i) return;
+        mover(blocos, arrastado, i);
+        ctx.aoEstrutura({ foco: `${nomeCampo}[${i}]` });
+      },
+    },
+    h('div', { class: 'item__topo' },
+      h('span', { class: 'item__nome' }, alca, ` ${i + 1} · ${nome}`),
+      h('span', { class: 'item__acoes' },
+        botaoIcone(`Mover ${rotulo} para cima`, '↑', () => { mover(blocos, i, i - 1); ctx.aoEstrutura({ foco: `${nomeCampo}[${i - 1}]` }); }, i === 0),
+        botaoIcone(`Mover ${rotulo} para baixo`, '↓', () => { mover(blocos, i, i + 1); ctx.aoEstrutura({ foco: `${nomeCampo}[${i + 1}]` }); }, i === blocos.length - 1),
+        botaoIcone(`Remover ${rotulo}`, '✕', () => {
+          if (!confirm(`Remover o ${rotulo}? O conteúdo dele será perdido.`)) return;
+          blocos.splice(i, 1);
+          ctx.aoEstrutura({ foco: `${nomeCampo}:adicionar` });
+        }))),
+    h('div', { class: 'item__campos' }, montarCampos(camposDoBloco(bloco), ctx, [...caminho, i])),
+    mensagemCampo(formatarCaminho([...caminho, i])));
+  });
+
+  const adicionar = h('div', { class: 'blocos-editor__adicionar', 'data-acao': `${nomeCampo}:adicionar`, tabindex: '-1' },
+    h('p', { class: 'lista__titulo' }, '+ Adicionar bloco'),
+    h('div', { class: 'blocos-editor__opcoes' }, MODELOS_BLOCO.map(([rotulo, criar]) => h('button', {
+      type: 'button',
+      class: 'botao-painel botao-painel--secundario',
+      onclick: () => {
+        if (!Array.isArray(ler(ctx.doc, caminho))) escrever(ctx.doc, caminho, []);
+        const destino = ler(ctx.doc, caminho);
+        destino.push(criar());
+        ctx.aoEstrutura({ foco: `${nomeCampo}[${destino.length - 1}]` });
+      },
+    }, rotulo))));
+
+  return h('div', { class: 'blocos-editor' }, itens, mensagemCampo(nomeCampo), adicionar);
 }
 
 function montarCampo(d, ctx, base) {
@@ -445,6 +602,7 @@ function montarCampo(d, ctx, base) {
     }
     case 'lista': return lista(d, ctx, caminho);
     case 'blocos': return blocosEditor(d, ctx, caminho);
+    case 'midia': return campoMidia(d, ctx, caminho);
     case 'booleano': return caixaMarcar(d, ctx, caminho);
     case 'escolha': return escolha(d, ctx, caminho);
     case 'leitura': return campoLeitura(d, ctx, caminho);
@@ -456,14 +614,15 @@ function montarCampos(descritores, ctx, base) {
   return descritores.map((d) => montarCampo(d, ctx, base)).filter(Boolean);
 }
 
-// ctx: { doc, aoMudar(), aoEstrutura({ foco }) }
+// ctx: { doc, aoMudar(), aoEstrutura({ foco }), enviar(arquivo, aceita) → { src, largura, altura } | null }
 export function montarFormulario(descritores, ctx) {
   return h('form', { class: 'formulario', novalidate: true, onsubmit: (e) => e.preventDefault() }, montarCampos(descritores, ctx, []));
 }
 
 // Mostra erros e avisos de validação junto aos campos. Devolve os problemas que não têm campo visível.
 export function mostrarProblemas(formulario, problemas) {
-  for (const el of formulario.querySelectorAll('[data-mensagem]')) {
+  const lugares = [...formulario.querySelectorAll('[data-mensagem]')];
+  for (const el of lugares) {
     el.hidden = true;
     el.textContent = '';
     el.classList.remove('campo__mensagem--erro', 'campo__mensagem--aviso');
@@ -472,11 +631,13 @@ export function mostrarProblemas(formulario, problemas) {
 
   const semCampo = [];
   for (const p of problemas) {
-    const alvo = [...formulario.querySelectorAll('[data-mensagem]')].find((el) => el.dataset.mensagem === p.campo);
+    const alvo = lugares.find((el) => el.dataset.mensagem === p.campo)
+      ?? lugares.find((el) => (el.dataset.apelidos ?? '').split(' ').includes(p.campo));
     if (!alvo) {
       semCampo.push(p);
       continue;
     }
+    if (alvo.dataset.unico && alvo.textContent) continue;
     const texto = p.marcador ? 'Marcador […] a preencher antes de publicar.' : p.mensagem;
     alvo.textContent = alvo.textContent ? `${alvo.textContent} · ${texto}` : texto;
     alvo.hidden = false;

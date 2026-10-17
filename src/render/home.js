@@ -12,7 +12,7 @@ export function capa({ slug, dados }, { prioridade = false } = {}) {
     <span class="faixa faixa--capa rotulo">${esc(dados.categoria)}</span>
     <span class="capa__titulo titulo"><span class="marca">${esc(dados.titulo)}</span></span>
     <span class="capa__subtitulo titulo"><span class="marca">${esc(dados.subtitulo)}</span></span>
-    <span class="capa__janela"${previa}>${imagem(dados.capa, { slug, prioridade, classe: 'capa__imagem' })}</span>
+    <span class="capa__janela"${previa}>${imagem(dados.capa, { slug, prioridade, destaque: prioridade, classe: 'capa__imagem' })}</span>
   </a>
 </li>`;
 }

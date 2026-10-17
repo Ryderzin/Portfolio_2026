@@ -603,3 +603,160 @@ body {
     padding: 20px 16px;
   }
 }
+
+/* ---------- Avisos ---------- */
+
+.selo--ensaio {
+  border-color: var(--header-text);
+  background: var(--header-text);
+  color: var(--header-bg);
+}
+
+.aviso {
+  max-width: 1240px;
+  margin: 16px auto 0;
+  padding: 10px 16px;
+  border: var(--border) solid var(--ink);
+  background: var(--surface);
+  font-weight: 700;
+}
+
+.aviso--erro {
+  border-width: var(--border-strong);
+}
+
+.aviso--erro::before {
+  content: "Erro: ";
+}
+
+.aviso--aviso::before {
+  content: "Atenção: ";
+}
+
+.aviso--sucesso {
+  border-width: var(--border-strong);
+}
+
+/* ---------- Navegação: novo projeto ---------- */
+
+.nav-painel__cabeca {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-right: 12px;
+}
+
+.nav-painel__cabeca .botao-painel {
+  min-height: 40px;
+}
+
+.editor__botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ---------- Envio de arquivos ---------- */
+
+.campo--midia {
+  grid-column: 1 / -1;
+}
+
+.campo__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* O input fica invisível, mas continua no teclado; o rótulo faz o papel de botão. */
+.arquivo {
+  position: relative;
+  display: inline-flex;
+}
+
+.arquivo__entrada {
+  position: absolute;
+  inset: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.arquivo__botao {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.arquivo__entrada:focus-visible + .arquivo__botao {
+  outline: var(--border-strong) solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* ---------- Blocos ---------- */
+
+.item__alca {
+  display: inline-block;
+  padding: 0 6px;
+  cursor: grab;
+  user-select: none;
+}
+
+.item--arrastando {
+  opacity: 0.5;
+}
+
+.item--alvo {
+  outline: var(--border-strong) dashed var(--ink);
+  outline-offset: 4px;
+}
+
+.blocos-editor__adicionar {
+  padding: 14px;
+  border: var(--border) dashed var(--ink);
+  background: var(--field-bg);
+}
+
+.blocos-editor__opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* ---------- Diálogos ---------- */
+
+.dialogo {
+  width: min(560px, 94vw);
+  padding: 24px;
+  border: var(--border-strong) solid var(--ink);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.dialogo::backdrop {
+  background: var(--veil);
+}
+
+.dialogo__titulo {
+  margin-bottom: 12px;
+  font-family: var(--fonte-titulo);
+  font-size: 28px;
+}
+
+.dialogo__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.publicacao__corpo ul {
+  max-height: 40vh;
+  margin: 10px 0 0;
+  padding-left: 1.2em;
+  overflow: auto;
+  font-size: 14px;
+}

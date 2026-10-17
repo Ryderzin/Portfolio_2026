@@ -42,7 +42,7 @@ function blocoVideoArquivo(bloco, { slug }) {
     playsinline: true,
     loop: bloco.loop,
     muted: bloco.mudo,
-    autoplay: bloco.autoplay,
+    'data-autoplay': bloco.autoplay ? 'sim' : null,
   })}></video>`;
   return `<figure class="bloco bloco-video">
 ${video}
@@ -67,7 +67,6 @@ function blocoVideoLink(bloco, { rotulos }) {
     title: preenchido(bloco.legenda) ? bloco.legenda : rotulos.projeto.video,
     loading: 'lazy',
     allow: 'fullscreen; picture-in-picture',
-    allowfullscreen: true,
     referrerpolicy: 'strict-origin-when-cross-origin',
   })}></iframe>`;
   return `<figure class="bloco bloco-video">

@@ -87,6 +87,7 @@ export function pagina({ site, caminho, titulo, descricao, imagem, tipo = 'websi
   ${meta.join('\n  ')}
   <link rel="preload" href="${FONTE_PRELOAD}" as="font" type="font/woff2" crossorigin>
   ${estilos}
+  <script type="module" src="/js/site.js"></script>
 </head>
 <body>
   ${cabecalho(site, ativo)}

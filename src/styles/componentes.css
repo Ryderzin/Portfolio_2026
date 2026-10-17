@@ -259,6 +259,18 @@ main.container {
   object-fit: cover;
 }
 
+/* Prévia em vídeo, criada pelo script quando a capa entra na tela.
+   Fica invisível sobre a imagem até começar a tocar. */
+.capa__previa {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .capa:hover .capa__titulo .marca {
   text-decoration: underline;
   text-decoration-thickness: var(--border);

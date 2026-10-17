@@ -18,14 +18,17 @@
       <div class="topo__marca">
         <span class="topo__titulo">Painel</span>
         <span class="selo" id="status" role="status">Sem alterações</span>
+        <span class="selo selo--ensaio" id="selo-ensaio" hidden>Ensaio · nada é gravado</span>
       </div>
       <div class="topo__acoes">
         <button type="button" class="botao-topo" id="previsualizar">Pré-visualizar</button>
-        <button type="button" class="botao-topo botao-topo--cheio" disabled title="A publicação chega na próxima etapa do painel">Publicar</button>
+        <button type="button" class="botao-topo botao-topo--cheio" id="publicar" disabled>Publicar</button>
         <button type="button" class="botao-topo" id="sair" hidden>Sair</button>
       </div>
     </div>
   </header>
+
+  <p class="aviso" id="aviso" role="status" hidden></p>
 
   <main class="entrada" id="entrada" hidden>
     <div class="entrada__caixa">
@@ -55,7 +58,10 @@
   <div class="painel" id="painel" hidden>
     <nav class="nav-painel" aria-label="Conteúdo">
       <p class="nav-painel__fonte" id="fonte"></p>
-      <h2 class="nav-painel__grupo">Projetos</h2>
+      <div class="nav-painel__cabeca">
+        <h2 class="nav-painel__grupo">Projetos</h2>
+        <button type="button" class="botao-painel" id="novo-projeto">+ Novo</button>
+      </div>
       <ul class="nav-painel__lista" id="nav-projetos"></ul>
       <h2 class="nav-painel__grupo">Páginas</h2>
       <ul class="nav-painel__lista" id="nav-paginas"></ul>
@@ -74,6 +80,34 @@
     </div>
     <p class="campo__mensagem campo__mensagem--erro" id="previa-erro" role="alert" hidden></p>
     <iframe class="previa__quadro" id="previa-quadro" title="Pré-visualização da página" sandbox="allow-same-origin"></iframe>
+  </dialog>
+  <dialog class="dialogo" id="dialogo-novo" aria-labelledby="novo-titulo-dialogo">
+    <form id="form-novo" class="formulario" novalidate>
+      <h2 class="dialogo__titulo" id="novo-titulo-dialogo">Novo projeto</h2>
+      <p class="campo__ajuda">Ele nasce como rascunho (não aparece no site) até você marcar "Publicado".</p>
+      <div class="campo">
+        <label class="campo__rotulo" for="novo-titulo">Título</label>
+        <input id="novo-titulo" type="text" autocomplete="off" aria-describedby="novo-erro">
+        <p class="campo__mensagem campo__mensagem--erro" id="novo-erro" role="alert" hidden></p>
+      </div>
+      <div class="campo">
+        <label class="campo__rotulo" for="novo-categoria">Categoria</label>
+        <select id="novo-categoria"></select>
+      </div>
+      <div class="dialogo__acoes">
+        <button type="button" class="botao-painel botao-painel--secundario" id="novo-cancelar">Cancelar</button>
+        <button type="submit" class="botao-painel">Criar rascunho</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="dialogo" id="publicacao" aria-labelledby="publicacao-titulo">
+    <h2 class="dialogo__titulo" id="publicacao-titulo">Publicação</h2>
+    <div class="publicacao__corpo" id="publicacao-corpo" role="status" aria-live="polite"></div>
+    <div class="dialogo__acoes">
+      <button type="button" class="botao-painel botao-painel--secundario" id="publicacao-recarregar" hidden>Recarregar conteúdo</button>
+      <button type="button" class="botao-painel" id="publicacao-fechar">Fechar</button>
+    </div>
   </dialog>
 </body>
 </html>
