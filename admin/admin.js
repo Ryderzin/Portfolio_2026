@@ -539,7 +539,10 @@ function mostrarPublicacao({ titulo, texto, tipo = 'info', lista = [], recarrega
   $('#publicacao-titulo').textContent = titulo;
   const corpo = $('#publicacao-corpo');
   corpo.className = `publicacao__corpo aviso--${tipo}`;
-  corpo.replaceChildren(h('p', {}, texto), lista.length ? h('ul', {}, lista.map((l) => h('li', {}, l))) : null);
+  // replaceChildren transforma null em texto, então a lista só entra quando existe.
+  const filhos = [h('p', {}, texto)];
+  if (lista.length) filhos.push(h('ul', {}, lista.map((l) => h('li', {}, l))));
+  corpo.replaceChildren(...filhos);
   $('#publicacao-recarregar').hidden = !recarregar;
   $('#publicacao-fechar').disabled = false;
   if (!$('#publicacao').open) $('#publicacao').showModal();

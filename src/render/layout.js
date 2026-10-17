@@ -2,15 +2,21 @@
 
 import { attrs, attrsLink, esc } from './util.js';
 
-export const ESTILOS = ['tokens.css', 'base.css', 'componentes.css', 'paginas.css'];
+export const ESTILOS = ['tokens.css', 'base.css', 'componentes.css', 'paginas.css', 'movimento.css'];
 export const FONTE_PRELOAD = '/fonts/dm-serif-display/dm-serif-display-latin-400-normal.woff2';
 
 export function urlAbsoluta(site, caminho) {
   return site.url.replace(/\/+$/, '') + caminho;
 }
 
-// Aplica o tema salvo antes da primeira pintura (sem piscar). Sem JS ou sem escolha: claro.
-export const SCRIPT_TEMA = '<script>try{if(localStorage.getItem("tema")==="escuro")document.documentElement.dataset.tema="escuro"}catch(e){}</script>';
+// Roda antes da primeira pintura (sem piscar):
+// - aplica o tema salvo (sem JS ou sem escolha: claro);
+// - na home, marca a entrada animada uma vez por sessão, se o movimento não estiver reduzido.
+export const SCRIPT_INICIAL = '<script>(function(d){'
+  + 'try{if(localStorage.getItem("tema")==="escuro")d.dataset.tema="escuro"}catch(e){}'
+  + 'try{if((location.pathname==="/"||location.pathname==="/index.html")&&!sessionStorage.getItem("entrada")'
+  + '&&!matchMedia("(prefers-reduced-motion: reduce)").matches){d.classList.add("entrada");sessionStorage.setItem("entrada","1")}}catch(e){}'
+  + '})(document.documentElement)</script>';
 
 function cabecalho(site, ativo) {
   const itens = site.navegacao.map(({ rotulo, caminho }) =>
@@ -97,7 +103,7 @@ export function pagina({ site, caminho, titulo, descricao, imagem, tipo = 'websi
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  ${SCRIPT_TEMA}
+  ${SCRIPT_INICIAL}
   <title>${esc(tituloCompleto)}</title>
   ${meta.join('\n  ')}
   <link rel="preload" href="${FONTE_PRELOAD}" as="font" type="font/woff2" crossorigin>

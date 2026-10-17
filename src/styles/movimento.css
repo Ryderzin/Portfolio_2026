@@ -1,0 +1,103 @@
+/*
+ * Movimento: só os quatro efeitos do design, todos desligados com prefers-reduced-motion.
+ * Nada aqui esconde conteúdo por padrão: as classes que ocultam (.entrada, .revelar)
+ * só existem quando um script as aplica.
+ */
+
+/* Prévia das capas: aparece por cima da imagem quando o vídeo começa a tocar. */
+.capa__previa--tocando {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* ---------- 1. Capas saem da prateleira (hover e foco, desktop) ---------- */
+  @media (hover: hover) and (min-width: 769px) {
+    .capa {
+      transition: transform 180ms ease-out, box-shadow 180ms ease-out;
+    }
+
+    .capa .faixa {
+      transition: transform 180ms ease-out;
+    }
+
+    .capa:hover,
+    .capa:focus-visible {
+      transform: translateY(-6px);
+      box-shadow: 6px 6px 0 var(--ink);
+    }
+
+    .capa:hover .faixa,
+    .capa:focus-visible .faixa {
+      transform: rotate(45deg) translateX(4px);
+    }
+  }
+
+  /* ---------- 2. Prévia em movimento: troca suave da imagem para o vídeo ---------- */
+  .capa__previa {
+    transition: opacity 200ms ease-out;
+  }
+
+  /* ---------- 3. Entrada da home (uma vez por sessão) ---------- */
+  /* Uma camada da cor do fundo cobre a grade e se recolhe da esquerda para a direita,
+     traçando as linhas; em seguida o nome aparece. */
+  .entrada body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: var(--bg);
+    pointer-events: none;
+    animation: tracar-grade 700ms ease-in-out forwards;
+  }
+
+  .entrada .abertura__nome {
+    animation: surgir-nome 350ms ease-out 650ms both;
+  }
+
+  @keyframes tracar-grade {
+    from {
+      clip-path: inset(0 0 0 0);
+    }
+
+    to {
+      clip-path: inset(0 0 0 100%);
+    }
+  }
+
+  @keyframes surgir-nome {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* ---------- 4. Revelação ao rolar (só até 768 px) ---------- */
+  @media (max-width: 768px) {
+    .revelar {
+      opacity: 0;
+      transform: translateY(16px);
+      clip-path: inset(0 100% 100% 0);
+      transition: opacity 300ms ease-out, transform 300ms ease-out, clip-path 450ms ease-out;
+    }
+
+    .revelar.revelado {
+      opacity: 1;
+      transform: none;
+      clip-path: inset(0 0 0 0);
+    }
+  }
+}
+
+/* Na impressão, nada fica escondido à espera da rolagem. */
+@media print {
+  .revelar {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+  }
+}
