@@ -5,14 +5,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
   <title>Painel</title>
   <link rel="stylesheet" href="/css/tokens.css">
   <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="./admin.css">
+  <script type="module" src="./admin.js"></script>
 </head>
 <body>
-  <main class="container" style="padding-block: 48px">
-    <h1><span class="marca">Painel</span></h1>
-    <p style="margin-top: 24px"><span class="marca">Em construção.</span></p>
+  <header class="topo">
+    <div class="topo__interno">
+      <div class="topo__marca">
+        <span class="topo__titulo">Painel</span>
+        <span class="selo" id="status" role="status">Sem alterações</span>
+      </div>
+      <div class="topo__acoes">
+        <button type="button" class="botao-topo" id="previsualizar">Pré-visualizar</button>
+        <button type="button" class="botao-topo botao-topo--cheio" disabled title="A publicação chega na próxima etapa do painel">Publicar</button>
+        <button type="button" class="botao-topo" id="sair" hidden>Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="entrada" id="entrada" hidden>
+    <div class="entrada__caixa">
+      <h1 class="entrada__titulo"><span class="marca">Entrar no painel</span></h1>
+      <form id="form-entrada" class="formulario" novalidate>
+        <div class="campo">
+          <label class="campo__rotulo" for="token">Token do GitHub</label>
+          <p class="campo__ajuda" id="token-ajuda">Fica só nesta aba do navegador e é apagado ao sair ou fechar a aba.</p>
+          <input id="token" type="password" autocomplete="off" spellcheck="false" aria-describedby="token-ajuda entrada-erro">
+          <p class="campo__mensagem campo__mensagem--erro" id="entrada-erro" role="alert" hidden></p>
+        </div>
+        <button type="submit" class="botao-painel" id="entrar">Entrar</button>
+      </form>
+      <details class="entrada__ajuda">
+        <summary>Como criar o token</summary>
+        <ol>
+          <li>No GitHub, abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Settings › Developer settings › Fine-grained personal access tokens › Generate new token</a>.</li>
+          <li>Em <strong>Repository access</strong>, escolha só o repositório do portfolio.</li>
+          <li>Em <strong>Permissions</strong>, dê a <strong>Contents</strong> o acesso <strong>Read and write</strong>. Nada além disso.</li>
+          <li>Defina uma validade (ex.: 90 dias) e renove quando expirar.</li>
+          <li>Copie o token e cole aqui. Se suspeitar de vazamento, revogue-o no GitHub: o painel para de funcionar na hora.</li>
+        </ol>
+      </details>
+    </div>
   </main>
+
+  <div class="painel" id="painel" hidden>
+    <nav class="nav-painel" aria-label="Conteúdo">
+      <p class="nav-painel__fonte" id="fonte"></p>
+      <h2 class="nav-painel__grupo">Projetos</h2>
+      <ul class="nav-painel__lista" id="nav-projetos"></ul>
+      <h2 class="nav-painel__grupo">Páginas</h2>
+      <ul class="nav-painel__lista" id="nav-paginas"></ul>
+    </nav>
+    <main class="editor" id="editor"></main>
+  </div>
+
+  <dialog class="previa" id="previa" aria-labelledby="previa-titulo">
+    <div class="previa__topo">
+      <h2 class="previa__titulo" id="previa-titulo">Pré-visualização</h2>
+      <div class="previa__acoes">
+        <button type="button" class="botao-painel botao-painel--secundario" data-largura="100%" aria-pressed="true">Computador</button>
+        <button type="button" class="botao-painel botao-painel--secundario" data-largura="390px" aria-pressed="false">Celular</button>
+        <button type="button" class="botao-painel" id="previa-fechar">Fechar</button>
+      </div>
+    </div>
+    <p class="campo__mensagem campo__mensagem--erro" id="previa-erro" role="alert" hidden></p>
+    <iframe class="previa__quadro" id="previa-quadro" title="Pré-visualização da página" sandbox="allow-same-origin"></iframe>
+  </dialog>
 </body>
 </html>

@@ -138,6 +138,9 @@ async function build() {
   const { site, home, sobre, contato, erro404 } = conteudo;
   const projetos = ordenarProjetos(conteudo.projetos);
 
+  // O painel lê daqui em qual repositório e branch buscar o conteúdo.
+  await gravar('admin/config.json', `${JSON.stringify(site.repositorio, null, 2)}\n`);
+
   await gravar('index.html', renderHome({ site, home, projetos }));
 
   for (const [i, projeto] of projetos.entries()) {

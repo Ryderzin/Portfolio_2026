@@ -1,14 +1,17 @@
 // Servidor local de dist/ (inclui /admin/), só para desenvolvimento.
+// Também serve content/ em /content/ e a lista dos arquivos em /__local/arquivos.json,
+// usados pelo painel no modo ?local=1. Nada disso existe no site publicado.
 // Uso: node scripts/serve.mjs   (porta 8080; outra porta: variável PORT)
 
 import { createServer } from 'node:http';
 import { createReadStream, existsSync } from 'node:fs';
-import { stat } from 'node:fs/promises';
+import { readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = path.join(RAIZ, 'dist');
+const CONTENT = path.join(RAIZ, 'content');
 const HOST = '127.0.0.1';
 const PORTA = Number(process.env.PORT) || 8080;
 
@@ -45,6 +48,19 @@ async function infoDe(caminho) {
   } catch {
     return null;
   }
+}
+
+// Lista os arquivos de content/ (caminhos relativos, com "/"), ignorando ocultos.
+async function listarConteudo(pasta, prefixo = '') {
+  const saida = [];
+  if (!existsSync(pasta)) return saida;
+  for (const item of await readdir(pasta, { withFileTypes: true })) {
+    if (item.name.startsWith('.')) continue;
+    const relativo = prefixo ? `${prefixo}/${item.name}` : item.name;
+    if (item.isDirectory()) saida.push(...await listarConteudo(path.join(pasta, item.name), relativo));
+    else if (item.isFile()) saida.push(relativo);
+  }
+  return saida;
 }
 
 function responderTexto(res, status, texto) {
@@ -105,9 +121,18 @@ async function atender(req, res) {
   }
   if (caminho.includes('\0')) return responderTexto(res, 400, 'Endereço inválido');
 
-  // Impede sair de dist/ com "..", barras invertidas ou caminhos absolutos.
-  const alvo = path.join(DIST, caminho);
-  if (alvo !== DIST && !alvo.startsWith(DIST + path.sep)) {
+  // Só no servidor local: o painel em ?local=1 lê content/ direto do disco.
+  if (caminho === '/__local/arquivos.json') {
+    const arquivos = await listarConteudo(CONTENT);
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+    return res.end(JSON.stringify(arquivos));
+  }
+  const base = caminho.startsWith('/content/') ? CONTENT : DIST;
+  const relativo = base === CONTENT ? caminho.slice('/content'.length) : caminho;
+
+  // Impede sair da pasta servida com "..", barras invertidas ou caminhos absolutos.
+  const alvo = path.join(base, relativo);
+  if (alvo !== base && !alvo.startsWith(base + path.sep)) {
     return responderTexto(res, 403, 'Acesso negado');
   }
 
