@@ -1,0 +1,60 @@
+{
+  "publicado": true,
+  "ordem": 3,
+  "titulo": "Exemplo Ferramenta",
+  "subtitulo": "Extensão de editor para Unity (projeto fictício)",
+  "categoria": "Ferramentas",
+  "ano": "2024",
+  "stack": "C# · Unity Editor",
+  "capa": {
+    "src": "capa.png",
+    "alt": "Imagem de marcação da capa do Exemplo Ferramenta",
+    "largura": 1200,
+    "altura": 900
+  },
+  "blocos": [
+    {
+      "tipo": "texto",
+      "markdown": "Ferramenta **fictícia** que renomeia objetos em lote dentro do editor da Unity. Serve de exemplo para projetos sem galeria no topo e sem botão de jogar."
+    },
+    {
+      "tipo": "galeria",
+      "layout": "grande",
+      "imagens": [
+        {
+          "src": "tela-1.webp",
+          "alt": "Imagem de marcação: janela da ferramenta no editor",
+          "largura": 1600,
+          "altura": 1000
+        }
+      ],
+      "legenda": "A janela da ferramenta, aberta ao lado do Inspector."
+    },
+    {
+      "tipo": "codigo",
+      "linguagem": "csharp",
+      "codigo": "public class RenomearEmLote : EditorWindow\n{\n    [MenuItem(\"Ferramentas/Renomear em lote\")]\n    private static void Abrir() => GetWindow<RenomearEmLote>(\"Renomear\");\n}"
+    },
+    {
+      "tipo": "video",
+      "origem": "link",
+      "url": "https://vimeo.com/1084537",
+      "legenda": "Exemplo de vídeo do Vimeo (Big Buck Bunny, Blender Foundation)."
+    },
+    {
+      "tipo": "texto",
+      "markdown": "### Como usar\n\n1. Selecione os objetos na hierarquia\n2. Abra *Ferramentas › Renomear em lote*\n3. Defina o padrão e confirme"
+    }
+  ],
+  "ficha": {
+    "tecnologia": "Unity Editor (IMGUI)",
+    "linguagem": "C#",
+    "papel": "Autor"
+  },
+  "links": [
+    {
+      "rotulo": "Código no GitHub",
+      "url": "https://example.com/exemplo-ferramenta/codigo"
+    }
+  ]
+}

@@ -34,6 +34,7 @@
   --fonte-titulo: "DM Serif Display", Georgia, "Times New Roman", serif;
   --fonte-texto: "Libre Caslon Text", Georgia, "Times New Roman", serif;
   --fonte-rotulo: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --fonte-codigo: ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
 
   /* Grade e bordas */
   --grid-size: 48px;

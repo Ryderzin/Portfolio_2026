@@ -1,0 +1,95 @@
+{
+  "publicado": true,
+  "ordem": 2,
+  "titulo": "Exemplo Jogo",
+  "subtitulo": "Plataforma 2D (projeto fictício)",
+  "categoria": "Jogos",
+  "ano": "2025",
+  "stack": "Unity · C#",
+  "capa": {
+    "src": "capa.gif",
+    "alt": "Imagem animada de marcação da capa do Exemplo Jogo",
+    "largura": 480,
+    "altura": 360
+  },
+  "galeriaTopo": [
+    {
+      "src": "tela-1.webp",
+      "alt": "Imagem de marcação: fase 1 do Exemplo Jogo",
+      "largura": 1600,
+      "altura": 900
+    }
+  ],
+  "blocos": [
+    {
+      "tipo": "texto",
+      "markdown": "Jogo de plataforma **fictício**, usado como exemplo de página de jogo.\n\n### Mecânicas\n\n- Pulo duplo com tempo de tolerância na borda\n- Pontos de controle a cada sala\n- Inimigos com padrões fixos, fáceis de ler"
+    },
+    {
+      "tipo": "video",
+      "origem": "arquivo",
+      "src": "demo.mp4",
+      "largura": 1280,
+      "altura": 720,
+      "loop": true,
+      "mudo": true,
+      "autoplay": false,
+      "legenda": "Trecho da fase 1 (vídeo de teste gerado localmente)."
+    },
+    {
+      "tipo": "galeria",
+      "layout": "carrossel",
+      "imagens": [
+        {
+          "src": "tela-2.webp",
+          "alt": "Imagem de marcação: fase 2 do Exemplo Jogo",
+          "largura": 1600,
+          "altura": 900
+        },
+        {
+          "src": "tela-3.webp",
+          "alt": "Imagem de marcação: fase 3 do Exemplo Jogo",
+          "largura": 1600,
+          "altura": 900
+        },
+        {
+          "src": "tela-4.webp",
+          "alt": "Imagem de marcação: chefe final do Exemplo Jogo",
+          "largura": 1600,
+          "altura": 900
+        }
+      ],
+      "legenda": "Três momentos do jogo."
+    },
+    {
+      "tipo": "video",
+      "origem": "link",
+      "url": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+      "legenda": "Exemplo de vídeo do YouTube (Big Buck Bunny, Blender Foundation)."
+    },
+    {
+      "tipo": "citacao",
+      "texto": "Cada fase ensina uma mecânica antes de cobrar por ela."
+    }
+  ],
+  "ficha": {
+    "tecnologia": "Unity 6",
+    "linguagem": "C#",
+    "plataformas": "Windows · Web (WebGL)",
+    "papel": "Programação e design de fases"
+  },
+  "jogar": {
+    "url": "https://example.com/exemplo-jogo/jogar",
+    "onde": "itch.io"
+  },
+  "links": [
+    {
+      "rotulo": "Código no GitHub",
+      "url": "https://example.com/exemplo-jogo/codigo"
+    },
+    {
+      "rotulo": "Devlog",
+      "url": "https://example.com/exemplo-jogo/devlog"
+    }
+  ]
+}

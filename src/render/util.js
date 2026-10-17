@@ -1,0 +1,81 @@
+// Utilitários dos renderizadores. Funções puras: sem DOM, rede ou disco.
+
+import { urlPermitida } from '../validacao.js';
+
+const ENTIDADES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+
+// Escapa texto para HTML (conteúdo e atributos).
+export function esc(valor) {
+  return String(valor ?? '').replace(/[&<>"']/g, (c) => ENTIDADES[c]);
+}
+
+// Devolve a URL se for permitida (https, http, mailto, tel ou relativa); senão null.
+export function urlSegura(valor) {
+  return urlPermitida(valor) ? String(valor).trim() : null;
+}
+
+export function ehExterna(url) {
+  return /^https?:\/\//i.test(url);
+}
+
+// Monta atributos: { href: '/x', hidden: true, alt: '' } → ' href="/x" hidden alt=""'.
+// Valores null, undefined e false são omitidos.
+export function attrs(objeto) {
+  let saida = '';
+  for (const [nome, valor] of Object.entries(objeto)) {
+    if (valor === null || valor === undefined || valor === false) continue;
+    saida += valor === true ? ` ${nome}` : ` ${nome}="${esc(valor)}"`;
+  }
+  return saida;
+}
+
+// Atributos de link: URL segura e, para links externos, nova aba com rel="noopener".
+export function attrsLink(url) {
+  const segura = urlSegura(url);
+  if (!segura) return null;
+  return ehExterna(segura) ? attrs({ href: segura, target: '_blank', rel: 'noopener' }) : attrs({ href: segura });
+}
+
+// Caminho público de uma mídia: "/midia/…" fica como está; o resto é relativo à pasta do projeto.
+export function urlMidia(src, slug) {
+  if (src.startsWith('/')) return src;
+  return slug ? `/projetos/${slug}/${src}` : `/${src}`;
+}
+
+// <img> com width/height; lazy por padrão, eager + fetchpriority alta na primeira dobra.
+export function imagem({ src, alt, largura, altura }, { slug, prioridade = false, classe } = {}) {
+  return `<img${attrs({
+    class: classe,
+    src: urlMidia(src, slug),
+    alt,
+    width: largura,
+    height: altura,
+    loading: prioridade ? 'eager' : 'lazy',
+    fetchpriority: prioridade ? 'high' : null,
+    decoding: 'async',
+  })}>`;
+}
+
+// Troca {chave} por valores já escapados.
+export function preencher(modelo, valores) {
+  return esc(modelo).replace(/\{(\w+)\}/g, (inteiro, chave) => (chave in valores ? esc(valores[chave]) : inteiro));
+}
+
+export const seta = (caractere) => `<span class="seta" aria-hidden="true">${caractere}</span>`;
+
+// Junta pedaços de HTML ignorando vazios.
+export function juntar(...partes) {
+  return partes.flat().filter(Boolean).join('\n');
+}
+
+// Projetos publicados, na ordem da home: ordem crescente, empate por ano decrescente.
+export function ordenarProjetos(projetos) {
+  return projetos
+    .filter(({ dados }) => dados.publicado === true)
+    .sort((a, b) => a.dados.ordem - b.dados.ordem || b.dados.ano.localeCompare(a.dados.ano) || a.slug.localeCompare(b.slug));
+}
+
+// Texto opcional preenchido?
+export function preenchido(valor) {
+  return typeof valor === 'string' ? valor.trim() !== '' : valor !== undefined && valor !== null;
+}

@@ -5,11 +5,19 @@ import { copyFile, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promi
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { imprimirRelatorio, validarDoDisco } from './conteudo.mjs';
+import { urlAbsoluta } from '../src/render/layout.js';
+import { ordenarProjetos } from '../src/render/util.js';
+import { renderHome } from '../src/render/home.js';
+import { renderProjeto } from '../src/render/projeto.js';
+import { renderSobre } from '../src/render/sobre.js';
+import { renderContato } from '../src/render/contato.js';
+import { renderErro404 } from '../src/render/erro404.js';
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = path.join(RAIZ, 'dist');
 
-// Pastas copiadas como estão: [origem, destino dentro de dist/].
+// Copiados como estão: [origem, destino dentro de dist/].
 const COPIAS = [
   ['src/styles', 'css'],
   ['src/fonts', 'fonts'],
@@ -17,13 +25,8 @@ const COPIAS = [
   ['content/midia', 'midia'],
   ['admin', 'admin'],
   ['src/render', 'admin/render'],
+  ['src/validacao.js', 'admin/validacao.js'],
 ];
-
-// Folhas de estilo do site, na ordem em que entram no <head>.
-const ESTILOS = ['tokens.css', 'base.css', 'componentes.css'];
-
-// Fonte pré-carregada (só a DM Serif Display, usada no nome).
-const FONTE_PRELOAD = '/fonts/dm-serif-display/dm-serif-display-latin-400-normal.woff2';
 
 async function limparDist() {
   // Salvaguarda: só apaga a pasta dist/ na raiz do projeto.
@@ -34,17 +37,17 @@ async function limparDist() {
   await mkdir(DIST, { recursive: true });
 }
 
-// Copia uma pasta recursivamente, ignorando arquivos ocultos (.gitkeep etc.).
-// Devolve quantos arquivos foram copiados.
-async function copiarPasta(origem, destino) {
+// Copia uma pasta recursivamente, ignorando arquivos ocultos (.gitkeep etc.)
+// e os nomes em `ignorar`. Devolve quantos arquivos foram copiados.
+async function copiarPasta(origem, destino, ignorar = []) {
   let total = 0;
   const itens = await readdir(origem, { withFileTypes: true });
   for (const item of itens) {
-    if (item.name.startsWith('.')) continue;
+    if (item.name.startsWith('.') || ignorar.includes(item.name)) continue;
     const de = path.join(origem, item.name);
     const para = path.join(destino, item.name);
     if (item.isDirectory()) {
-      total += await copiarPasta(de, para);
+      total += await copiarPasta(de, para, ignorar);
     } else if (item.isFile()) {
       await mkdir(destino, { recursive: true });
       await copyFile(de, para);
@@ -52,6 +55,29 @@ async function copiarPasta(origem, destino) {
     }
   }
   return total;
+}
+
+async function copiar(origem, destino) {
+  const de = path.join(RAIZ, origem);
+  if (!existsSync(de)) {
+    console.log(`  ignorado: ${origem} não existe`);
+    return;
+  }
+  const para = path.join(DIST, destino);
+  if (origem.endsWith('.js')) {
+    await mkdir(path.dirname(para), { recursive: true });
+    await copyFile(de, para);
+    console.log(`  ${origem} → dist/${destino}`);
+    return;
+  }
+  const total = await copiarPasta(de, para);
+  console.log(`  ${origem}/ → dist/${destino}/ (${total} ${total === 1 ? 'arquivo' : 'arquivos'})`);
+}
+
+async function gravar(relativo, conteudo) {
+  const destino = path.join(DIST, ...relativo.split('/'));
+  await mkdir(path.dirname(destino), { recursive: true });
+  await writeFile(destino, conteudo, 'utf8');
 }
 
 async function listarArquivos(pasta, extensao) {
@@ -77,78 +103,60 @@ async function urlsAusentesNoCss() {
   return [...ausentes].sort();
 }
 
-// Página provisória para conferir tokens, grade e fontes.
-// Será trocada pelas páginas geradas a partir de content/.
-function paginaDeTeste() {
-  const estilos = ESTILOS.map((nome) => `  <link rel="stylesheet" href="/css/${nome}">`).join('\n');
-  return `<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light dark">
-  <meta name="robots" content="noindex">
-  <title>Página de teste</title>
-  <link rel="preload" href="${FONTE_PRELOAD}" as="font" type="font/woff2" crossorigin>
-${estilos}
-</head>
-<body>
-  <header class="cabecalho">
-    <div class="container cabecalho__interno">
-      <nav class="nav-principal" aria-label="Principal">
-        <ul>
-          <li><a href="/" aria-current="page">Projetos</a></li>
-          <li><a href="/sobre/">Sobre</a></li>
-          <li><a href="/contato/">Contato</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+function sitemap(site, caminhos) {
+  const urls = caminhos
+    .map((caminho) => `  <url><loc>${urlAbsoluta(site, caminho).replace(/&/g, '&amp;')}</loc></url>`)
+    .join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>
+`;
+}
 
-  <main>
-    <section class="abertura container" aria-labelledby="nome">
-      <div class="abertura__caixa">
-        <h1 class="abertura__nome" id="nome"><span class="marca">Ryan Leite</span></h1>
-        <p class="abertura__especialidades"><span class="marca">C# · Dados · Web · Unity</span></p>
-        <p class="abertura__apresentacao"><strong>Desenvolvedor full-stack.</strong> Back-end em C# e .NET com Entity Framework, bancos SQL e NoSQL, front-end em HTML, CSS e JavaScript, e projetos em Unity.</p>
-      </div>
-    </section>
-  </main>
+function robots(site) {
+  return `User-agent: *
+Disallow: /admin/
 
-  <footer class="rodape container">
-    <div class="rodape__caixa">
-      <div>
-        <p class="rodape__chamada titulo">Vamos conversar.</p>
-        <p class="rodape__texto">© 2026 · Feito à mão em HTML, CSS e JS · Hospedado no Render</p>
-      </div>
-      <ul class="rodape__links rotulo">
-        <li><a href="#">E-mail</a></li>
-        <li><a href="#">GitHub</a></li>
-        <li><a href="#">LinkedIn</a></li>
-      </ul>
-    </div>
-  </footer>
-</body>
-</html>
+Sitemap: ${urlAbsoluta(site, '/sitemap.xml')}
 `;
 }
 
 async function build() {
   const inicio = Date.now();
-  await limparDist();
 
-  for (const [origem, destino] of COPIAS) {
-    const de = path.join(RAIZ, origem);
-    if (!existsSync(de)) {
-      console.log(`  ignorado: ${origem}/ não existe`);
-      continue;
-    }
-    const total = await copiarPasta(de, path.join(DIST, destino));
-    console.log(`  ${origem}/ → dist/${destino}/ (${total} ${total === 1 ? 'arquivo' : 'arquivos'})`);
+  // Valida antes de apagar dist/: com erro, nada é gerado e o site anterior fica intacto.
+  const { conteudo, problemas } = await validarDoDisco();
+  if (!imprimirRelatorio(conteudo, problemas)) {
+    throw new Error('o conteúdo tem erros (listados acima). Nada foi gerado em dist/.');
+  }
+  console.log('');
+
+  await limparDist();
+  for (const [origem, destino] of COPIAS) await copiar(origem, destino);
+
+  const { site, home, sobre, contato, erro404 } = conteudo;
+  const projetos = ordenarProjetos(conteudo.projetos);
+
+  await gravar('index.html', renderHome({ site, home, projetos }));
+
+  for (const [i, projeto] of projetos.entries()) {
+    const proximo = projetos.length > 1 ? projetos[(i + 1) % projetos.length] : null;
+    await gravar(`projetos/${projeto.slug}/index.html`, renderProjeto({ site, projeto, proximo }));
+    await copiarPasta(path.join(RAIZ, 'content', 'projetos', projeto.slug), path.join(DIST, 'projetos', projeto.slug), ['projeto.json']);
   }
 
-  await writeFile(path.join(DIST, 'index.html'), paginaDeTeste(), 'utf8');
-  console.log('  index.html gerado');
+  await gravar('sobre/index.html', renderSobre({ site, sobre }));
+  await gravar('contato/index.html', renderContato({ site, contato }));
+  await gravar('404.html', renderErro404({ site, erro404 }));
+
+  const caminhos = ['/', ...projetos.map(({ slug }) => `/projetos/${slug}/`), '/sobre/', '/contato/'];
+  await gravar('sitemap.xml', sitemap(site, caminhos));
+  await gravar('robots.txt', robots(site));
+
+  const ocultos = conteudo.projetos.length - projetos.length;
+  console.log(`  páginas: home, ${projetos.length} ${projetos.length === 1 ? 'projeto' : 'projetos'}${ocultos ? ` (${ocultos} rascunho(s) ignorado(s))` : ''}, sobre, contato, 404`);
+  console.log('  sitemap.xml e robots.txt gerados');
 
   const ausentes = await urlsAusentesNoCss();
   if (ausentes.length > 0) {

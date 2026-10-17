@@ -1,0 +1,75 @@
+{
+  "titulo": "Ryan Leite",
+  "descricao": "Portfolio de Ryan Leite — desenvolvedor full-stack.",
+  "url": "https://[seu-dominio]",
+  "idioma": "pt-BR",
+  "repositorio": {
+    "dono": "Ryderzin",
+    "nome": "Portfolio_2026",
+    "branch": "main"
+  },
+  "navegacao": [
+    {
+      "rotulo": "Projetos",
+      "caminho": "/"
+    },
+    {
+      "rotulo": "Sobre",
+      "caminho": "/sobre/"
+    },
+    {
+      "rotulo": "Contato",
+      "caminho": "/contato/"
+    }
+  ],
+  "rodape": {
+    "texto": "© 2026 · Feito à mão em HTML, CSS e JS · Hospedado no Render",
+    "links": [
+      {
+        "rotulo": "E-mail",
+        "url": "mailto:[seu@email.com]"
+      },
+      {
+        "rotulo": "GitHub",
+        "url": "https://github.com/Ryderzin"
+      },
+      {
+        "rotulo": "LinkedIn",
+        "url": "https://www.linkedin.com/in/[perfil]"
+      }
+    ]
+  },
+  "rotulos": {
+    "geral": {
+      "navegacaoPrincipal": "Principal",
+      "paginaInicial": "Página inicial",
+      "verProjetos": "Ver projetos"
+    },
+    "projeto": {
+      "voltarProjetos": "Voltar aos projetos",
+      "fichaTecnica": "Ficha técnica",
+      "tecnologia": "Tecnologia",
+      "linguagem": "Linguagem",
+      "plataformas": "Plataforma",
+      "ano": "Ano",
+      "papel": "Papel",
+      "links": "Links",
+      "video": "Vídeo",
+      "jogarOnline": "Jogar online",
+      "abreEm": "Abre em {onde}",
+      "proximoProjeto": "Próximo projeto"
+    },
+    "sobre": {
+      "tecnologias": "Tecnologias",
+      "experiencia": "Experiência",
+      "baixarCurriculo": "Baixar currículo (PDF)"
+    },
+    "contato": {
+      "escreverEmail": "Escrever um e-mail",
+      "email": "E-mail",
+      "telefone": "Telefone",
+      "linkedin": "LinkedIn",
+      "github": "GitHub"
+    }
+  }
+}

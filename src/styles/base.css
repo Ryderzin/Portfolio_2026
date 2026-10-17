@@ -159,7 +159,7 @@ b {
 /* Marca-texto: fundo só do tamanho do texto que fica direto sobre a grade. */
 .marca {
   display: inline;
-  background: var(--highlight);
+  background: var(--marca-bg, var(--highlight));
   padding: var(--marca-y, 2px) var(--marca-x, 12px);
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;

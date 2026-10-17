@@ -1,0 +1,61 @@
+{
+  "titulo": "Sobre",
+  "foto": {
+    "src": "/midia/foto.webp",
+    "alt": "[DESCRIÇÃO DA FOTO — quem aparece e onde]",
+    "largura": 680,
+    "altura": 850,
+    "legenda": "[LEGENDA OPCIONAL]"
+  },
+  "destaque": "Desenvolvedor full-stack. Back-end em C# e .NET com Entity Framework, bancos SQL e NoSQL, front-end em HTML, CSS e JavaScript, e projetos em Unity.",
+  "texto": "[TRAJETÓRIA — como você chegou à programação, onde trabalhou e que tipo de problema gosta de resolver.]\n\n[COMO VOCÊ TRABALHA — o que valoriza num projeto: modelagem de dados, código legível, performance, ferramentas que poupam tempo do time.]\n\n[O QUE VOCÊ PROCURA — tipo de oportunidade, colaboração ou projeto em que quer se envolver.]",
+  "tecnologias": [
+    {
+      "grupo": "Back-end",
+      "itens": [
+        "C#",
+        ".NET",
+        "ASP.NET Core",
+        "Entity Framework"
+      ]
+    },
+    {
+      "grupo": "Dados",
+      "itens": [
+        "SQL",
+        "NoSQL",
+        "[BANCOS QUE VOCÊ USA]"
+      ]
+    },
+    {
+      "grupo": "Front-end",
+      "itens": [
+        "HTML",
+        "CSS",
+        "JavaScript"
+      ]
+    },
+    {
+      "grupo": "Unity",
+      "itens": [
+        "C#",
+        "Ferramentas de editor",
+        "[OUTROS]"
+      ]
+    }
+  ],
+  "experiencia": [
+    {
+      "periodo": "[PERÍODO]",
+      "cargo": "[CARGO]",
+      "empresa": "[EMPRESA]",
+      "resumo": "[UMA LINHA SOBRE O QUE VOCÊ FAZ OU FEZ]"
+    },
+    {
+      "periodo": "[PERÍODO]",
+      "cargo": "[CARGO]",
+      "empresa": "[EMPRESA]",
+      "resumo": "[UMA LINHA SOBRE O QUE VOCÊ FAZ OU FEZ]"
+    }
+  ]
+}
