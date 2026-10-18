@@ -2,15 +2,20 @@
   "publicado": true,
   "ordem": 1,
   "titulo": "Inbuilt",
-  "subtitulo": "Solução de ",
+  "subtitulo": "Solução de Realidade Aumentada",
   "categoria": "Ferramenta",
-  "ano": "2026",
+  "ano": "2022",
   "stack": "Unity e C#",
   "capa": {
-    "src": "aaaaa-eu-quero-salario.webp",
+    "src": "4c1c863c-b264-4233-a0c5-ce107aba4b5e-2.webp",
     "alt": "Alt Text",
-    "largura": 374,
-    "altura": 202
+    "largura": 896,
+    "altura": 1152,
+    "previa": {
+      "src": "untitledproject-1.mp4",
+      "largura": 1920,
+      "altura": 1080
+    }
   },
   "galeriaTopo": [
     {
