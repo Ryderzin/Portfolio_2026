@@ -1,21 +1,16 @@
 {
   "publicado": true,
   "ordem": 1,
-  "titulo": "Exemplo Web",
-  "subtitulo": "Painel de pedidos (projeto fictício)",
-  "categoria": "Web",
+  "titulo": "Inbuilt",
+  "subtitulo": "Solução de ",
+  "categoria": "Ferramenta",
   "ano": "2026",
-  "stack": "C# · ASP.NET Core · SQL",
+  "stack": "Unity e C#",
   "capa": {
-    "src": "capa.png",
-    "alt": "Imagem de marcação da capa do Exemplo Web",
-    "largura": 1200,
-    "altura": 900,
-    "previa": {
-      "src": "previa.mp4",
-      "largura": 800,
-      "altura": 600
-    }
+    "src": "aaaaa-eu-quero-salario.webp",
+    "alt": "Alt Text",
+    "largura": 374,
+    "altura": 202
   },
   "galeriaTopo": [
     {
@@ -25,40 +20,35 @@
       "altura": 1621
     },
     {
-      "src": "tela-2.webp",
+      "src": "gbz-g8zwyaa6gyk.webp",
       "alt": "Imagem de marcação: tela 2 do Exemplo Web",
-      "largura": 1600,
-      "altura": 1200
+      "largura": 1189,
+      "altura": 882
     }
   ],
   "blocos": [
     {
       "tipo": "texto",
-      "markdown": "Projeto **fictício**, criado só para testar o layout das páginas de projeto. Ele mostra como fica cada tipo de bloco.\n\n### O problema\n\nUma loja pequena precisava acompanhar pedidos sem planilhas. O painel lista os pedidos do dia, filtra por status e avisa quando um pedido *atrasa*.\n\n### O que foi feito\n\n- API em ASP.NET Core com Entity Framework\n- Banco SQL com migrações versionadas\n- Front-end em HTML, CSS e JavaScript, sem framework\n\nO cálculo de atraso fica no `PedidoService`. Mais detalhes no [repositório de exemplo](https://example.com/exemplo-web)."
+      "markdown": "Manutenção na Inbuilt da Silva"
     },
     {
       "tipo": "galeria",
       "layout": "duas",
       "imagens": [
         {
-          "src": "tela-3.webp",
-          "alt": "Imagem de marcação: lista de pedidos",
-          "largura": 1600,
-          "altura": 1200
+          "src": "003-jp-jojo-bizarre-adventure-steel-ball-run-0177.webp",
+          "alt": "Gyro",
+          "largura": 367,
+          "altura": 600
         },
         {
-          "src": "tela-4.webp",
-          "alt": "Imagem de marcação: detalhe de um pedido",
-          "largura": 1600,
-          "altura": 1200
+          "src": "002-jp-jojo-bizarre-adventure-steel-ball-run-0141.webp",
+          "alt": "Diego",
+          "largura": 388,
+          "altura": 600
         }
       ],
       "legenda": "Lista de pedidos e detalhe de um pedido."
-    },
-    {
-      "tipo": "codigo",
-      "linguagem": "csharp",
-      "codigo": "public async Task<IReadOnlyList<Pedido>> AtrasadosAsync(DateTime agora)\n{\n    return await _db.Pedidos\n        .Where(p => p.Status != StatusPedido.Entregue && p.Prazo < agora)\n        .OrderBy(p => p.Prazo)\n        .ToListAsync();\n}"
     },
     {
       "tipo": "citacao",
@@ -66,8 +56,9 @@
       "autor": "Cliente fictício"
     },
     {
-      "tipo": "texto",
-      "markdown": "### Próximos passos\n\n1. Notificações por e-mail\n2. Relatório semanal em PDF\n3. Testes de carga na API"
+      "tipo": "video",
+      "origem": "link",
+      "url": "https://www.youtube.com/watch?v=3EF5h6WJAq4"
     }
   ],
   "ficha": {
@@ -85,5 +76,6 @@
       "rotulo": "Demonstração",
       "url": "https://example.com/exemplo-web"
     }
-  ]
+  ],
+  "ocultarFaixa": true
 }
