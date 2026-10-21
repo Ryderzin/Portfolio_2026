@@ -25,6 +25,7 @@ const estado = {
   versao: null, // commit da branch quando o conteúdo foi carregado
   arquivos: new Set(), // arquivos que já existem no repositório (relativos a content/)
   uploads: new Map(), // caminho → { bytes, url } enviados nesta sessão, ainda não publicados
+  miniaturas: new Map(), // caminho → Promise<url | null> das imagens já publicadas, lidas da fonte
   docs: new Map(), // caminho → { caminho, tipo: 'pagina'|'projeto', chave, slug, original, dados, novo }
   atual: null,
   formulario: null,
@@ -163,6 +164,8 @@ async function carregar(fonte) {
   estado.arquivos = new Set(arquivos);
   for (const { url } of estado.uploads.values()) URL.revokeObjectURL(url);
   estado.uploads.clear();
+  for (const promessa of estado.miniaturas.values()) promessa.then((url) => url && URL.revokeObjectURL(url));
+  estado.miniaturas.clear();
   estado.docs.clear();
 
   const alvos = [
@@ -290,6 +293,24 @@ async function enviar(arquivo, aceita) {
   }
 }
 
+const TIPOS_IMAGEM = { webp: 'image/webp', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', svg: 'image/svg+xml', avif: 'image/avif' };
+
+// Endereço para mostrar uma imagem do documento atual no painel: a enviada nesta sessão
+// ou a do repositório (lida uma vez pela fonte). null se não der para ler.
+function urlImagem(src) {
+  const d = estado.atual;
+  const caminho = src.startsWith('/') ? src.slice(1) : d.tipo === 'projeto' ? `projetos/${d.slug}/${src}` : src;
+  const enviada = estado.uploads.get(caminho);
+  if (enviada) return Promise.resolve(enviada.url);
+  if (!estado.miniaturas.has(caminho)) {
+    const tipo = TIPOS_IMAGEM[caminho.split('.').pop().toLowerCase()] ?? '';
+    estado.miniaturas.set(caminho, estado.fonte.lerBytes(caminho)
+      .then((bytes) => URL.createObjectURL(new Blob([bytes], { type: tipo })))
+      .catch(() => null));
+  }
+  return estado.miniaturas.get(caminho);
+}
+
 // ---------- Editor ----------
 
 // Resumo acima do formulário: só aparece quando há erro, aviso ou marcador.
@@ -379,6 +400,7 @@ function abrir(d, { foco } = {}) {
     aoMudar,
     aoEstrutura: ({ foco: novoFoco } = {}) => abrir(d, { foco: novoFoco }),
     enviar,
+    urlImagem,
   });
 
   $('#editor').replaceChildren(

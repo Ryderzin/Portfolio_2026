@@ -4,8 +4,13 @@
 // com o caminho relativo a content/ (ex.: "projetos/exemplo-web/capa.png").
 
 export const LAYOUTS_GALERIA = ['duas', 'grande', 'carrossel'];
-// Tamanho opcional de cada imagem de galeria; sem ele, a imagem usa o tamanho padrão do layout.
-export const TAMANHOS_IMAGEM = ['pequena', 'media', 'grande', 'inteira'];
+// Enquadramento opcional de cada imagem de galeria (todos os campos podem faltar):
+// escala: largura em % do espaço da imagem; alinhamento: onde ela encosta quando é menor que o espaço;
+// recorte: proporção fixa, com a imagem cortada; foco: ponto (x, y em %) que o recorte mantém visível.
+export const ESCALA_MIN = 20;
+export const ESCALA_MAX = 100;
+export const ALINHAMENTOS = ['esquerda', 'centro', 'direita'];
+export const RECORTES = ['1:1', '4:3', '3:2', '16:9', '3:4'];
 export const ORIGENS_VIDEO = ['arquivo', 'link'];
 export const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
@@ -135,7 +140,21 @@ const camposImagem = {
   altura: inteiro({ min: 1 }),
 };
 
-const imagem = objeto({ ...camposImagem, tamanho: opcional(umDe(TAMANHOS_IMAGEM)) });
+function focoExigeRecorte(img, campo, ctx) {
+  if (img.foco !== undefined && img.recorte === undefined) {
+    reportar(ctx, 'aviso', juntar(campo, 'foco'), 'o ponto de foco só tem efeito com um recorte escolhido');
+  }
+}
+
+const porcentagem = () => inteiro({ min: 0, max: 100 });
+
+const imagem = objeto({
+  ...camposImagem,
+  escala: opcional(inteiro({ min: ESCALA_MIN, max: ESCALA_MAX })),
+  alinhamento: opcional(umDe(ALINHAMENTOS)),
+  recorte: opcional(umDe(RECORTES)),
+  foco: opcional(objeto({ x: porcentagem(), y: porcentagem() })),
+}, { verificar: focoExigeRecorte });
 const link = objeto({ rotulo: texto(), url: urlLink() });
 
 function autoplayExigeMudo(bloco, campo, ctx) {
@@ -352,6 +371,7 @@ function validarValor(regra, valor, campo, ctx) {
     case 'inteiro':
       if (!Number.isInteger(valor)) return reportar(ctx, 'erro', campo, `deveria ser um número inteiro, mas é ${descrever(valor)}`);
       if (regra.min !== undefined && valor < regra.min) reportar(ctx, 'erro', campo, `deveria ser no mínimo ${regra.min}`);
+      if (regra.max !== undefined && valor > regra.max) reportar(ctx, 'erro', campo, `deveria ser no máximo ${regra.max}`);
       return;
     case 'booleano':
       if (typeof valor !== 'boolean') reportar(ctx, 'erro', campo, `deveria ser true ou false, mas é ${descrever(valor)}`);

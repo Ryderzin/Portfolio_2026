@@ -1,6 +1,6 @@
 // Utilitários dos renderizadores. Funções puras: sem DOM, rede ou disco.
 
-import { anoFinal, urlPermitida } from '../validacao.js';
+import { ALINHAMENTOS, ESCALA_MAX, ESCALA_MIN, RECORTES, anoFinal, urlPermitida } from '../validacao.js';
 
 const ENTIDADES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 
@@ -62,20 +62,40 @@ export function preencher(modelo, valores) {
   return esc(modelo).replace(/\{(\w+)\}/g, (inteiro, chave) => (chave in valores ? esc(valores[chave]) : inteiro));
 }
 
+const limitar = (n, min, max) => Math.min(max, Math.max(min, n));
+
+// <li> de galeria com o enquadramento da imagem em variáveis CSS:
+// --escala (largura), --proporcao e --foco (recorte) e uma classe de alinhamento.
+export function itemDeGaleria(classe, img, html) {
+  const estilo = [];
+  if (Number.isInteger(img.escala)) estilo.push(`--escala: ${limitar(img.escala, ESCALA_MIN, ESCALA_MAX)}%`);
+  const recorte = RECORTES.includes(img.recorte) ? img.recorte : null;
+  if (recorte) {
+    estilo.push(`--proporcao: ${recorte.replace(':', ' / ')}`);
+    const x = Number.isInteger(img.foco?.x) ? limitar(img.foco.x, 0, 100) : 50;
+    const y = Number.isInteger(img.foco?.y) ? limitar(img.foco.y, 0, 100) : 50;
+    estilo.push(`--foco: ${x}% ${y}%`);
+  }
+  const alinhamento = ALINHAMENTOS.includes(img.alinhamento) && img.alinhamento !== 'esquerda' ? img.alinhamento : null;
+  return `<li${attrs({
+    class: [classe, alinhamento && `alinhar-${alinhamento}`, recorte && 'recortada'].filter(Boolean).join(' '),
+    style: estilo.length ? estilo.join('; ') : null,
+  })}>${html}</li>`;
+}
+
 // Carrossel: a lista rola na horizontal com encaixe e recebe foco (setas do teclado).
 // Com várias imagens, ganha os botões anterior/próxima e o contador, que o site.js ativa;
 // sem JavaScript, os controles ficam ocultos e a lista rola pela barra do navegador.
-// itens: [{ html, tamanho? }]; classes: { lista, item }.
-export function carrossel(itens, { classes, nome, rotulos }) {
+// itens: <li> já montados; classeLista: classes da lista.
+export function carrossel(itens, { classeLista, nome, rotulos }) {
   const varios = itens.length > 1;
   const r = rotulos.projeto;
-  const lis = itens.map(({ html, tamanho }) => `<li${attrs({ class: classes.item, 'data-tamanho': tamanho })}>${html}</li>`).join('\n');
   const lista = `<ul${attrs({
-    class: `${classes.lista} carrossel__trilho`,
+    class: `${classeLista} carrossel__trilho`,
     tabindex: varios ? '0' : null,
     'aria-label': varios ? nome : null,
   })}>
-${lis}
+${itens.join('\n')}
 </ul>`;
   if (!varios) return lista;
   const contador = preencher(r.contadorImagens, { atual: 1, total: itens.length });

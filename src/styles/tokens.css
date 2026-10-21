@@ -48,10 +48,8 @@
   --gutter: 24px;
   --touch: 44px;
 
-  /* Tamanhos de imagem escolhidos no painel (fração da largura disponível) */
-  --img-pequena: 40%;
-  --img-media: 60%;
-  --img-grande: 80%;
+  /* Menor largura de imagem de galeria no mobile, mesmo com escala menor no painel */
+  --escala-min-mobile: 60%;
 
   /* Escala tipográfica (desktop) */
   --fs-nome: clamp(56px, 12vw, 160px);
@@ -103,10 +101,6 @@
     --grid-size: 32px;
     --cover-grid-size: 16px;
     --gutter: 16px;
-
-    --img-pequena: 60%;
-    --img-media: 75%;
-    --img-grande: 90%;
 
     --fs-especialidades: 22px;
     --fs-h1-pagina: 56px;

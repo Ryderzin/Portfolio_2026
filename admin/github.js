@@ -136,6 +136,15 @@ export function criarFonteGitHub({ dono, nome, branch, token }) {
       return resposta.text();
     },
 
+    async lerBytes(caminho) {
+      const resposta = await pedir(
+        `${repo}/contents/${caminhoUrl(`content/${caminho}`)}?ref=${encodeURIComponent(branch)}`,
+        { headers: cabecalhos('application/vnd.github.raw+json') },
+        `content/${caminho}`,
+      );
+      return resposta.arrayBuffer();
+    },
+
     async publicar({ arquivos, mensagem, versaoBase, ensaio = false, aoProgresso = () => {} }) {
       aoProgresso('Conferindo se a branch mudou…');
       const atual = await lerVersao();
@@ -191,6 +200,11 @@ export function criarFonteLocal() {
     async lerTexto(caminho) {
       const resposta = await pedir(`/content/${caminhoUrl(caminho)}`, { cache: 'no-store' }, `content/${caminho}`);
       return resposta.text();
+    },
+
+    async lerBytes(caminho) {
+      const resposta = await pedir(`/content/${caminhoUrl(caminho)}`, {}, `content/${caminho}`);
+      return resposta.arrayBuffer();
     },
 
     // O modo local nunca grava: a publicação é sempre um ensaio.

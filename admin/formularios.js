@@ -2,7 +2,8 @@
 // Cada campo aponta para um caminho dentro do documento JSON (ex.: ['capa', 'alt']).
 // Os valores são gravados no próprio objeto do documento a cada digitação.
 
-import { LAYOUTS_GALERIA, TAMANHOS_IMAGEM } from './validacao.js';
+import { LAYOUTS_GALERIA } from './validacao.js';
+import { editorEnquadramento } from './enquadramento.js';
 import { ACEITA } from './midia.js';
 
 // ---------- DOM ----------
@@ -76,19 +77,10 @@ const AJUDA_ALT = 'Descreva a imagem para quem usa leitor de tela.';
 // Campo de arquivo. formato 'objeto' grava { src, largura, altura } no caminho; 'caminho' grava só o texto.
 const midia = (k, r, aceita, extra = {}) => ({ t: 'midia', k, r, aceita, formato: 'objeto', ...extra });
 
-const NOMES_TAMANHO = { pequena: 'Pequena', media: 'Média', grande: 'Grande', inteira: 'Largura total' };
-
 const IMAGEM_DE_LISTA = [
   midia([], 'Arquivo', 'imagem'),
   texto('alt', 'Texto alternativo', { ajuda: AJUDA_ALT }),
-  {
-    t: 'escolha',
-    k: 'tamanho',
-    r: 'Tamanho',
-    opc: 'Padrão do layout',
-    ajuda: 'Largura da imagem no espaço dela. No carrossel, o padrão deixa a próxima imagem aparecer na borda.',
-    opcoes: TAMANHOS_IMAGEM.map((t) => [t, NOMES_TAMANHO[t]]),
-  },
+  { t: 'enquadramento' },
 ];
 
 const listaImagens = (k, r, extra = {}) => ({
@@ -282,7 +274,7 @@ function camposDoBloco(bloco) {
       return [md('markdown', 'Texto do bloco', { linhas: 8, ajuda: AJUDA_MARKDOWN })];
     case 'galeria':
       return [
-        { t: 'escolha', k: 'layout', r: 'Layout', opcoes: LAYOUTS_GALERIA.map((l) => [l, { duas: 'Duas por linha', grande: 'Uma grande', carrossel: 'Carrossel' }[l]]) },
+        { t: 'escolha', k: 'layout', r: 'Layout', estrutura: true, opcoes: LAYOUTS_GALERIA.map((l) => [l, { duas: 'Duas por linha', grande: 'Uma grande', carrossel: 'Carrossel' }[l]]) },
         listaImagens('imagens', 'Imagens'),
         texto('legenda', 'Legenda', { opc: true }),
       ];
@@ -388,19 +380,38 @@ function escolha(d, ctx, caminho) {
   const id = idPara(caminho);
   const atual = ler(ctx.doc, caminho);
   const mensagem = mensagemCampo(formatarCaminho(caminho));
-  const ajuda = d.ajuda ? h('p', { class: 'campo__ajuda', id: `${id}-ajuda` }, d.ajuda) : null;
-  // Escolha opcional: a primeira opção ("") remove o campo do JSON.
-  const valores = d.opc ? [['', d.opc], ...d.opcoes] : d.opcoes;
-  const opcoes = valores.map(([valor, rotulo]) => h('option', { value: valor }, rotulo));
-  if (!valores.some(([valor]) => valor === (atual ?? ''))) opcoes.unshift(h('option', { value: atual ?? '' }, `${atual ?? ''} (inválido)`));
-  const controle = h('select', { id, 'aria-describedby': [ajuda?.id, mensagem.id].filter(Boolean).join(' ') }, opcoes);
+  const opcoes = d.opcoes.map(([valor, rotulo]) => h('option', { value: valor }, rotulo));
+  if (!d.opcoes.some(([valor]) => valor === atual)) opcoes.unshift(h('option', { value: atual ?? '' }, `${atual ?? ''} (inválido)`));
+  const controle = h('select', { id, 'aria-describedby': mensagem.id }, opcoes);
   controle.value = atual ?? '';
   controle.dataset.campo = formatarCaminho(caminho);
+  // Com "estrutura", o formulário é remontado (ex.: o layout muda o editor de enquadramento).
+  if (d.estrutura) controle.dataset.acao = formatarCaminho(caminho);
   controle.addEventListener('change', () => {
-    escrever(ctx.doc, caminho, controle.value, { opcional: Boolean(d.opc) });
-    ctx.aoMudar();
+    escrever(ctx.doc, caminho, controle.value);
+    if (d.estrutura) ctx.aoEstrutura({ foco: controle.dataset.acao });
+    else ctx.aoMudar();
   });
-  return h('div', { class: 'campo' }, h('label', { for: id, class: 'campo__rotulo' }, d.r), ajuda, controle, mensagem);
+  return h('div', { class: 'campo' }, h('label', { for: id, class: 'campo__rotulo' }, d.r), controle, mensagem);
+}
+
+// Imagem de galeria: caminho é ['galeriaTopo', i] ou ['blocos', b, 'imagens', i].
+function enquadramento(ctx, caminho) {
+  const imagem = ler(ctx.doc, caminho);
+  if (!imagem || !ctx.urlImagem) return null;
+  const carrossel = caminho[0] === 'galeriaTopo'
+    ? (ler(ctx.doc, ['galeriaTopo'])?.length ?? 0) > 1
+    : ler(ctx.doc, caminho.slice(0, -2))?.layout === 'carrossel';
+  const campo = formatarCaminho(caminho);
+  const subcampos = ['escala', 'alinhamento', 'recorte', 'foco', 'foco.x', 'foco.y'].map((k) => `${campo}.${k}`);
+  return editorEnquadramento({
+    imagem,
+    carrossel,
+    campo,
+    mensagem: mensagemCampo(subcampos[0], { apelidos: subcampos.slice(1) }),
+    urlImagem: ctx.urlImagem,
+    aoMudar: ctx.aoMudar,
+  });
 }
 
 function campoLeitura(d, ctx, caminho) {
@@ -635,6 +646,7 @@ function montarCampo(d, ctx, base) {
     case 'midia': return campoMidia(d, ctx, caminho);
     case 'booleano': return caixaMarcar(d, ctx, caminho);
     case 'escolha': return escolha(d, ctx, caminho);
+    case 'enquadramento': return enquadramento(ctx, caminho);
     case 'leitura': return campoLeitura(d, ctx, caminho);
     default: return entrada(d, ctx, caminho);
   }
@@ -644,7 +656,8 @@ function montarCampos(descritores, ctx, base) {
   return descritores.map((d) => montarCampo(d, ctx, base)).filter(Boolean);
 }
 
-// ctx: { doc, aoMudar(), aoEstrutura({ foco }), enviar(arquivo, aceita) → { src, largura, altura } | null }
+// ctx: { doc, aoMudar(), aoEstrutura({ foco }), enviar(arquivo, aceita) → { src, largura, altura } | null,
+//        urlImagem(src) → Promise<url | null> }
 export function montarFormulario(descritores, ctx) {
   return h('form', { class: 'formulario', novalidate: true, onsubmit: (e) => e.preventDefault() }, montarCampos(descritores, ctx, []));
 }

@@ -2,14 +2,14 @@
 
 import { blocos } from './blocos.js';
 import { pagina } from './layout.js';
-import { attrs, attrsLink, carrossel, esc, formatarAno, imagem, preencher, preenchido, seta, urlMidia } from './util.js';
+import { attrs, attrsLink, carrossel, esc, formatarAno, imagem, itemDeGaleria, preencher, preenchido, seta, urlMidia } from './util.js';
 
 // Galeria do topo: carrossel com rolagem por encaixe. Só a primeira imagem é da primeira dobra.
 function galeriaTopo(imagens, slug, rotulos) {
   if (!imagens?.length) return '';
-  const itens = imagens.map((img, i) => ({ html: imagem(img, { slug, prioridade: i === 0 }), tamanho: img.tamanho }));
-  const classes = { lista: `galeria-topo${itens.length > 1 ? '' : ' galeria-topo--uma'}`, item: 'galeria-topo__item' };
-  return carrossel(itens, { classes, nome: rotulos.projeto.galeriaTopo, rotulos });
+  const itens = imagens.map((img, i) => itemDeGaleria('galeria-topo__item', img, imagem(img, { slug, prioridade: i === 0 })));
+  const classeLista = `galeria-topo${itens.length > 1 ? '' : ' galeria-topo--uma'}`;
+  return carrossel(itens, { classeLista, nome: rotulos.projeto.galeriaTopo, rotulos });
 }
 
 function jogar(dados, rotulos) {

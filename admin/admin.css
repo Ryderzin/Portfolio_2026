@@ -765,3 +765,142 @@ body {
   overflow: auto;
   font-size: 14px;
 }
+
+/* ---------- Enquadramento de imagem ---------- */
+
+.enq {
+  grid-column: 1 / -1;
+}
+
+.enq__moldura {
+  max-width: 560px;
+  padding: 16px 28px;
+  background: var(--field-bg);
+  border: var(--border) solid var(--line-soft);
+}
+
+/* O espaço da imagem no site: a área tracejada. */
+.enq__espaco {
+  display: flex;
+  align-items: flex-start;
+  outline: var(--border) dashed var(--ink-muted);
+  outline-offset: 4px;
+}
+
+.enq__espaco[data-alinhamento="centro"] {
+  justify-content: center;
+}
+
+.enq__espaco[data-alinhamento="direita"] {
+  justify-content: flex-end;
+}
+
+.enq__caixa {
+  position: relative;
+  flex: none;
+  background: var(--media);
+  border: var(--border) solid var(--ink);
+}
+
+.enq__foto {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Alça de largura: área de toque de 44 px, barra visível no meio. */
+.enq__alca {
+  position: absolute;
+  top: 50%;
+  right: calc(var(--touch) / -2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch);
+  height: var(--touch);
+  transform: translateY(-50%);
+  cursor: ew-resize;
+  touch-action: none;
+}
+
+.enq__espaco[data-alinhamento="direita"] .enq__alca {
+  right: auto;
+  left: calc(var(--touch) / -2);
+}
+
+.enq__alca::before {
+  content: "";
+  width: 12px;
+  height: 40px;
+  background: var(--ink);
+  border: var(--border) solid var(--surface);
+  box-shadow: 0 0 0 var(--border) var(--ink);
+}
+
+.enq__linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.enq__valor {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.enq__grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.enq__botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.enq__botoes .botao-painel[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+/* Ponto de foco: a imagem inteira, com a parte visível do recorte em destaque. */
+.enq__foco {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  overflow: hidden;
+  background: var(--media);
+  border: var(--border) solid var(--ink);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.enq__foto-inteira {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.enq__janela {
+  position: absolute;
+  outline: 3px solid var(--band);
+  box-shadow: 0 0 0 9999px var(--veil);
+  pointer-events: none;
+}
+
+.enq__ponto {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 3px solid var(--surface);
+  border-radius: 50%;
+  background: var(--ink);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
