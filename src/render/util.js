@@ -1,6 +1,6 @@
 // Utilitários dos renderizadores. Funções puras: sem DOM, rede ou disco.
 
-import { urlPermitida } from '../validacao.js';
+import { anoFinal, urlPermitida } from '../validacao.js';
 
 const ENTIDADES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 
@@ -69,11 +69,16 @@ export function juntar(...partes) {
   return partes.flat().filter(Boolean).join('\n');
 }
 
-// Projetos publicados, na ordem da home: ordem crescente, empate por ano decrescente.
+// Projetos publicados, na ordem da home: ordem crescente, empate pelo ano final decrescente.
 export function ordenarProjetos(projetos) {
   return projetos
     .filter(({ dados }) => dados.publicado === true)
-    .sort((a, b) => a.dados.ordem - b.dados.ordem || b.dados.ano.localeCompare(a.dados.ano) || a.slug.localeCompare(b.slug));
+    .sort((a, b) => a.dados.ordem - b.dados.ordem || anoFinal(b.dados.ano) - anoFinal(a.dados.ano) || a.slug.localeCompare(b.slug));
+}
+
+// Ano ou período para exibir: "2022-2026" vira "2022–2026" (travessão tipográfico).
+export function formatarAno(valor) {
+  return String(valor ?? '').trim().replace(/^(\d{4})\s*[-–]\s*(\d{4})$/, '$1–$2');
 }
 
 // Texto opcional preenchido?

@@ -219,7 +219,7 @@ export const DESCRITORES = {
       texto('subtitulo', 'Subtítulo'),
       texto('categoria', 'Categoria (texto da faixa amarela)', { sugestoes: categorias, ajuda: 'Livre. Até 16 caracteres cabem bem na faixa.' }),
       { t: 'booleano', k: 'ocultarFaixa', r: 'Esconder a faixa amarela', opc: true },
-      texto('ano', 'Ano', { ajuda: 'Quatro dígitos.', inputmode: 'numeric' }),
+      texto('ano', 'Ano ou período', { ajuda: 'Um ano ("2026") ou um período ("2022-2026").' }),
       texto('stack', 'Stack', { ajuda: 'Aparece na lombada, ex.: "C# · ASP.NET Core".' }),
       { t: 'numero', k: 'ordem', r: 'Ordem na home', ajuda: 'Menor aparece primeiro.' },
       { t: 'booleano', k: 'publicado', r: 'Publicado (aparece no site)' },

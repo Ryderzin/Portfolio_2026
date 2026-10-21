@@ -2,7 +2,7 @@
 
 import { blocos } from './blocos.js';
 import { pagina } from './layout.js';
-import { attrs, attrsLink, esc, imagem, preencher, preenchido, seta, urlMidia } from './util.js';
+import { attrs, attrsLink, esc, formatarAno, imagem, preencher, preenchido, seta, urlMidia } from './util.js';
 
 function galeriaTopo(imagens, slug) {
   if (!imagens?.length) return '';
@@ -27,7 +27,7 @@ function ficha(dados, rotulos) {
     [r.tecnologia, dados.ficha.tecnologia],
     [r.linguagem, dados.ficha.linguagem],
     [r.plataformas, dados.ficha.plataformas],
-    [r.ano, dados.ano],
+    [r.ano, formatarAno(dados.ano)],
     [r.papel, dados.ficha.papel],
   ]
     .filter(([, valor]) => preenchido(valor))
@@ -65,7 +65,7 @@ function rodapeProjeto(dados, proximo, rotulos) {
     ? `<a class="proximo titulo"${attrs({ href: `/projetos/${proximo.slug}/` })}><span class="marca">${esc(rotulos.projeto.proximoProjeto)} ${seta('→')}</span></a>`
     : '';
   return `<div class="card-projeto__fim">
-  <p class="card-projeto__meta"><span class="marca">${esc(dados.categoria)} · ${esc(dados.ano)}</span></p>
+  <p class="card-projeto__meta"><span class="marca">${esc(dados.categoria)} · ${esc(formatarAno(dados.ano))}</span></p>
   ${link}
 </div>`;
 }
@@ -74,7 +74,7 @@ function rodapeProjeto(dados, proximo, rotulos) {
 export function renderProjeto({ site, projeto, proximo }) {
   const { slug, dados } = projeto;
   const { rotulos } = site;
-  const stackAno = `${esc(dados.stack)} · ${esc(dados.ano)}`;
+  const stackAno = `${esc(dados.stack)} · ${esc(formatarAno(dados.ano))}`;
 
   const conteudo = `<div class="container voltar">
     <a class="botao botao--secundario botao--pequeno" href="/">${seta('←')} ${esc(rotulos.projeto.voltarProjetos)}</a>

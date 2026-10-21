@@ -103,7 +103,20 @@ const formatoUrlSite = (v) =>
 const formatoCaminhoInterno = (v) =>
   (/^\/(?!\/)\S*$/.test(v) ? null : 'use um caminho do próprio site começando com / (ex.: "/sobre/")');
 
-const formatoAno = (v) => (/^\d{4}$/.test(v) ? null : 'use o ano com quatro dígitos (ex.: "2026")');
+// Ano simples ("2026") ou período ("2022-2026", com hífen ou travessão), com início ≤ fim.
+const ANO = /^(\d{4})(?:\s*[-–]\s*(\d{4}))?$/;
+const formatoAno = (v) => {
+  const partes = ANO.exec(v.trim());
+  if (!partes) return 'use o ano com quatro dígitos (ex.: "2026") ou um período (ex.: "2022-2026")';
+  if (partes[2] && Number(partes[2]) < Number(partes[1])) return 'no período, o ano final deve ser igual ou maior que o inicial';
+  return null;
+};
+
+// Ano final do campo "ano" (o próprio ano ou o fim do período). Usado para ordenar.
+export function anoFinal(valor) {
+  const anos = String(valor ?? '').match(/\d{4}/g);
+  return anos ? Number(anos.at(-1)) : 0;
+}
 
 const formatoLinguagem = (v) =>
   (/^[A-Za-z0-9+#._-]+$/.test(v) ? null : 'use uma palavra só, sem espaços (ex.: "csharp")');
