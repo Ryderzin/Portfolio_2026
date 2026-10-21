@@ -31,14 +31,14 @@
           "alt": "Tela inicial do aplicativo em smartphones.",
           "largura": 923,
           "altura": 2000,
-          "tamanho": "pequena"
+          "escala": 40
         },
         {
           "src": "inb-tablet-r02-03.webp",
           "alt": "Tela inicial do aplicativo em tablets.",
           "largura": 1366,
           "altura": 950,
-          "tamanho": "grande"
+          "escala": 80
         }
       ]
     }
@@ -51,14 +51,14 @@
       "alt": "Tela inicial do aplicativo em smartphones.",
       "largura": 923,
       "altura": 2000,
-      "tamanho": "pequena"
+      "escala": 40
     },
     {
       "src": "screenshot-20261020-213436-inbuilt-jpg.webp",
       "alt": "Tela inicial de seleção de comôdos.",
       "largura": 923,
       "altura": 2000,
-      "tamanho": "pequena"
+      "escala": 40
     }
   ]
 }
