@@ -4,6 +4,7 @@
 // - Capas: o <video> da prévia só é criado quando a capa entra na tela. No desktop toca no
 //   hover/foco; no mobile toca enquanto a capa está visível.
 // - Blocos: vídeos com data-autoplay tocam só quando visíveis; todos pausam ao sair da tela.
+// - Carrosséis: esconde a barra de rolagem e liga os botões anterior/próxima e o contador.
 // - Revelação ao rolar (só até 768 px): os blocos abaixo da dobra aparecem uma única vez.
 // A entrada da home é aplicada pelo script do <head> e feita só com CSS.
 
@@ -93,6 +94,74 @@ function observarVideosDeBloco() {
   videos.forEach((video) => observador.observe(video));
 }
 
+// ---------- Carrosséis ----------
+
+// Folga em px para arredondamentos de rolagem.
+const FOLGA = 2;
+
+function prepararCarrossel(raiz) {
+  const trilho = raiz.querySelector('.carrossel__trilho');
+  const controles = raiz.querySelector('.carrossel__controles');
+  const [anterior, proxima] = controles.querySelectorAll('.carrossel__botao');
+  const contador = controles.querySelector('.carrossel__contador');
+  const texto = contador.querySelector('.marca');
+  const modelo = contador.dataset.modelo;
+  const itens = [...trilho.children];
+
+  const fim = () => trilho.scrollWidth - trilho.clientWidth;
+  // Posição de cada item dentro do trilho (o trilho é position: relative).
+  const inicio = (item) => item.offsetLeft;
+
+  function atualizar() {
+    const x = trilho.scrollLeft;
+    const noFim = x >= fim() - FOLGA;
+    const atual = noFim ? itens.length : Math.max(1, itens.filter((item) => inicio(item) <= x + FOLGA).length);
+    const novo = modelo.replace('{atual}', atual).replace('{total}', itens.length);
+    // Só troca quando muda: o contador é anunciado por leitores de tela.
+    if (texto.textContent !== novo) texto.textContent = novo;
+    anterior.setAttribute('aria-disabled', String(x <= FOLGA));
+    proxima.setAttribute('aria-disabled', String(noFim));
+  }
+
+  function ir(direcao) {
+    const x = trilho.scrollLeft;
+    const alvo = direcao > 0
+      ? itens.find((item) => inicio(item) > x + FOLGA)
+      : itens.findLast((item) => inicio(item) < x - FOLGA);
+    if (!alvo) return;
+    trilho.scrollTo({ left: inicio(alvo), behavior: movimentoReduzido.matches ? 'auto' : 'smooth' });
+  }
+
+  // Só mostra os controles quando há o que rolar (imagens pequenas podem caber todas).
+  function medir() {
+    const rola = fim() > FOLGA;
+    controles.hidden = !rola;
+    raiz.classList.toggle('carrossel--ativo', rola);
+    atualizar();
+  }
+
+  for (const botao of [anterior, proxima]) {
+    // aria-disabled em vez de disabled: o foco não se perde ao chegar na ponta.
+    botao.addEventListener('click', () => {
+      if (botao.getAttribute('aria-disabled') !== 'true') ir(Number(botao.dataset.direcao));
+    });
+  }
+
+  let quadro = 0;
+  trilho.addEventListener('scroll', () => {
+    cancelAnimationFrame(quadro);
+    quadro = requestAnimationFrame(atualizar);
+  }, { passive: true });
+
+  if ('ResizeObserver' in window) new ResizeObserver(medir).observe(trilho);
+  else addEventListener('resize', medir);
+  medir();
+}
+
+function prepararCarrosseis() {
+  document.querySelectorAll('[data-carrossel]').forEach(prepararCarrossel);
+}
+
 // ---------- Revelação ao rolar (mobile) ----------
 
 const REVELAVEIS = [
@@ -153,5 +222,6 @@ function botaoTema() {
 
 botaoTema();
 prepararCapas();
+prepararCarrosseis();
 observarVideosDeBloco();
 revelarAoRolar();

@@ -2,7 +2,7 @@
 // Cada campo aponta para um caminho dentro do documento JSON (ex.: ['capa', 'alt']).
 // Os valores são gravados no próprio objeto do documento a cada digitação.
 
-import { LAYOUTS_GALERIA } from './validacao.js';
+import { LAYOUTS_GALERIA, TAMANHOS_IMAGEM } from './validacao.js';
 import { ACEITA } from './midia.js';
 
 // ---------- DOM ----------
@@ -76,7 +76,20 @@ const AJUDA_ALT = 'Descreva a imagem para quem usa leitor de tela.';
 // Campo de arquivo. formato 'objeto' grava { src, largura, altura } no caminho; 'caminho' grava só o texto.
 const midia = (k, r, aceita, extra = {}) => ({ t: 'midia', k, r, aceita, formato: 'objeto', ...extra });
 
-const IMAGEM_DE_LISTA = [midia([], 'Arquivo', 'imagem'), texto('alt', 'Texto alternativo', { ajuda: AJUDA_ALT })];
+const NOMES_TAMANHO = { pequena: 'Pequena', media: 'Média', grande: 'Grande', inteira: 'Largura total' };
+
+const IMAGEM_DE_LISTA = [
+  midia([], 'Arquivo', 'imagem'),
+  texto('alt', 'Texto alternativo', { ajuda: AJUDA_ALT }),
+  {
+    t: 'escolha',
+    k: 'tamanho',
+    r: 'Tamanho',
+    opc: 'Padrão do layout',
+    ajuda: 'Largura da imagem no espaço dela. No carrossel, o padrão deixa a próxima imagem aparecer na borda.',
+    opcoes: TAMANHOS_IMAGEM.map((t) => [t, NOMES_TAMANHO[t]]),
+  },
+];
 
 const listaImagens = (k, r, extra = {}) => ({
   t: 'lista', k, r, rotuloItem: (_, i) => `Imagem ${i + 1}`, adicionarArquivos: 'imagem', item: IMAGEM_DE_LISTA, ...extra,
@@ -105,6 +118,9 @@ const ROTULOS_INTERFACE = {
     jogarOnline: 'Botão "Jogar online"',
     abreEm: 'Texto ao lado do botão de jogar',
     proximoProjeto: 'Link para o próximo projeto',
+    imagemAnterior: 'Carrossel: botão de imagem anterior (lido por leitores de tela)',
+    proximaImagem: 'Carrossel: botão de próxima imagem (lido por leitores de tela)',
+    contadorImagens: 'Carrossel: contador de imagens',
   },
   sobre: {
     _titulo: 'Sobre',
@@ -122,6 +138,11 @@ const ROTULOS_INTERFACE = {
   },
 };
 
+const AJUDA_ROTULOS = {
+  abreEm: '{onde} vira o nome do site, ex.: "Abre em {onde}".',
+  contadorImagens: '{atual} vira o número da imagem e {total} a quantidade, ex.: "{atual} / {total}".',
+};
+
 const rotulosInterface = () => ({
   t: 'secao',
   r: 'Rótulos da interface',
@@ -130,7 +151,7 @@ const rotulosInterface = () => ({
     t: 'grupo',
     k: ['rotulos', grupo],
     r: _titulo,
-    campos: Object.entries(chaves).map(([k, r]) => texto(k, r, k === 'abreEm' ? { ajuda: '{onde} vira o nome do site, ex.: "Abre em {onde}".' } : {})),
+    campos: Object.entries(chaves).map(([k, r]) => texto(k, r, AJUDA_ROTULOS[k] ? { ajuda: AJUDA_ROTULOS[k] } : {})),
   })),
 });
 
@@ -367,16 +388,19 @@ function escolha(d, ctx, caminho) {
   const id = idPara(caminho);
   const atual = ler(ctx.doc, caminho);
   const mensagem = mensagemCampo(formatarCaminho(caminho));
-  const opcoes = d.opcoes.map(([valor, rotulo]) => h('option', { value: valor }, rotulo));
-  if (!d.opcoes.some(([valor]) => valor === atual)) opcoes.unshift(h('option', { value: atual ?? '' }, `${atual ?? ''} (inválido)`));
-  const controle = h('select', { id, 'aria-describedby': mensagem.id }, opcoes);
+  const ajuda = d.ajuda ? h('p', { class: 'campo__ajuda', id: `${id}-ajuda` }, d.ajuda) : null;
+  // Escolha opcional: a primeira opção ("") remove o campo do JSON.
+  const valores = d.opc ? [['', d.opc], ...d.opcoes] : d.opcoes;
+  const opcoes = valores.map(([valor, rotulo]) => h('option', { value: valor }, rotulo));
+  if (!valores.some(([valor]) => valor === (atual ?? ''))) opcoes.unshift(h('option', { value: atual ?? '' }, `${atual ?? ''} (inválido)`));
+  const controle = h('select', { id, 'aria-describedby': [ajuda?.id, mensagem.id].filter(Boolean).join(' ') }, opcoes);
   controle.value = atual ?? '';
   controle.dataset.campo = formatarCaminho(caminho);
   controle.addEventListener('change', () => {
-    escrever(ctx.doc, caminho, controle.value);
+    escrever(ctx.doc, caminho, controle.value, { opcional: Boolean(d.opc) });
     ctx.aoMudar();
   });
-  return h('div', { class: 'campo' }, h('label', { for: id, class: 'campo__rotulo' }, d.r), controle, mensagem);
+  return h('div', { class: 'campo' }, h('label', { for: id, class: 'campo__rotulo' }, d.r), ajuda, controle, mensagem);
 }
 
 function campoLeitura(d, ctx, caminho) {

@@ -4,6 +4,8 @@
 // com o caminho relativo a content/ (ex.: "projetos/exemplo-web/capa.png").
 
 export const LAYOUTS_GALERIA = ['duas', 'grande', 'carrossel'];
+// Tamanho opcional de cada imagem de galeria; sem ele, a imagem usa o tamanho padrão do layout.
+export const TAMANHOS_IMAGEM = ['pequena', 'media', 'grande', 'inteira'];
 export const ORIGENS_VIDEO = ['arquivo', 'link'];
 export const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
@@ -133,7 +135,7 @@ const camposImagem = {
   altura: inteiro({ min: 1 }),
 };
 
-const imagem = objeto(camposImagem);
+const imagem = objeto({ ...camposImagem, tamanho: opcional(umDe(TAMANHOS_IMAGEM)) });
 const link = objeto({ rotulo: texto(), url: urlLink() });
 
 function autoplayExigeMudo(bloco, campo, ctx) {
@@ -229,6 +231,9 @@ const ESQUEMA_SITE = objeto({
       jogarOnline: texto(),
       abreEm: texto({ formato: (v) => (v.includes('{onde}') ? null : 'inclua {onde}, que vira o nome do site (ex.: "Abre em {onde}")') }),
       proximoProjeto: texto(),
+      imagemAnterior: texto(),
+      proximaImagem: texto(),
+      contadorImagens: texto({ formato: (v) => (v.includes('{atual}') && v.includes('{total}') ? null : 'inclua {atual} e {total} (ex.: "{atual} / {total}")') }),
     }),
     sobre: objeto({ tecnologias: texto(), experiencia: texto(), baixarCurriculo: texto() }),
     contato: objeto({ escreverEmail: texto(), email: texto(), telefone: texto(), linkedin: texto(), github: texto() }),

@@ -59,7 +59,10 @@
       "video": "Vídeo",
       "jogarOnline": "Jogar online",
       "abreEm": "Abre em {onde}",
-      "proximoProjeto": "Próximo projeto"
+      "proximoProjeto": "Próximo projeto",
+      "imagemAnterior": "Imagem anterior",
+      "proximaImagem": "Próxima imagem",
+      "contadorImagens": "{atual} / {total}"
     },
     "sobre": {
       "tecnologias": "Tecnologias",

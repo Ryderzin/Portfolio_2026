@@ -158,7 +158,7 @@ code {
 }
 
 .galeria-topo__item {
-  flex: 0 0 85%;
+  flex: 0 0 var(--tamanho, 85%);
   scroll-snap-align: start;
 }
 
@@ -168,7 +168,7 @@ code {
 }
 
 .galeria-topo--uma .galeria-topo__item {
-  flex-basis: 100%;
+  flex-basis: var(--tamanho, 100%);
 }
 
 .galeria-topo img {
@@ -176,7 +176,8 @@ code {
   background: var(--media);
 }
 
-.galeria-topo + .card-projeto__titulos {
+.galeria-topo + .card-projeto__titulos,
+.carrossel + .card-projeto__titulos {
   margin-top: 36px;
 }
 
@@ -318,13 +319,96 @@ code {
 }
 
 .galeria--carrossel .galeria__item {
-  flex: 0 0 85%;
+  flex: 0 0 var(--tamanho, 85%);
   scroll-snap-align: start;
 }
 
 .galeria__item img {
-  width: 100%;
+  width: var(--tamanho, 100%);
   background: var(--media);
+}
+
+.galeria--carrossel .galeria__item img {
+  width: 100%;
+}
+
+/* Tamanho escolhido no painel para cada imagem. */
+[data-tamanho="pequena"] {
+  --tamanho: var(--img-pequena);
+}
+
+[data-tamanho="media"] {
+  --tamanho: var(--img-media);
+}
+
+[data-tamanho="grande"] {
+  --tamanho: var(--img-grande);
+}
+
+[data-tamanho="inteira"] {
+  --tamanho: 100%;
+}
+
+/* ---------- Carrossel (galeria do topo e blocos em carrossel) ---------- */
+/* Com JavaScript, a barra de rolagem some e os botões e o contador assumem a navegação.
+   O arraste no toque e as setas do teclado na lista continuam funcionando. */
+.carrossel__trilho {
+  position: relative;
+}
+
+.carrossel--ativo .carrossel__trilho {
+  padding-bottom: 0;
+  scrollbar-width: none;
+}
+
+.carrossel--ativo .carrossel__trilho::-webkit-scrollbar {
+  display: none;
+}
+
+.carrossel__controles {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.carrossel__controles[hidden] {
+  display: none;
+}
+
+.carrossel__botao {
+  width: var(--touch);
+  padding: 0;
+  font-size: 20px;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.carrossel__botao:hover {
+  text-decoration: none;
+  background: var(--row-active);
+}
+
+.carrossel__botao:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+.carrossel__botao[aria-disabled="true"] {
+  opacity: 0.4;
+  box-shadow: none;
+  cursor: default;
+}
+
+.carrossel__botao[aria-disabled="true"]:hover {
+  background: var(--surface);
+}
+
+.carrossel__contador {
+  min-width: 4.5em;
+  text-align: center;
+  font-size: var(--fs-rotulo);
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
 }
 
 .midia-video {
@@ -706,7 +790,8 @@ code {
     margin-top: 0;
   }
 
-  .galeria-topo + .card-projeto__titulos {
+  .galeria-topo + .card-projeto__titulos,
+  .carrossel + .card-projeto__titulos {
     margin-top: 24px;
   }
 

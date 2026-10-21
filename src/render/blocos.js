@@ -2,7 +2,7 @@
 
 import { idDeVideo } from '../validacao.js';
 import { markdown } from './markdown.js';
-import { attrs, esc, imagem, preenchido, urlMidia } from './util.js';
+import { attrs, carrossel, esc, imagem, preenchido, urlMidia } from './util.js';
 
 function legenda(texto) {
   return preenchido(texto) ? `<figcaption class="legenda"><span class="marca">${esc(texto)}</span></figcaption>` : '';
@@ -14,19 +14,20 @@ ${markdown(bloco.markdown, { nivel: 2 })}
 </div>`;
 }
 
-function blocoGaleria(bloco, { slug }) {
-  const carrossel = bloco.layout === 'carrossel';
-  const imagens = bloco.imagens
-    .map((img) => `<li class="galeria__item">${imagem(img, { slug })}</li>`)
-    .join('\n');
-  // O carrossel rola na horizontal; tabindex deixa rolar pelo teclado.
+function blocoGaleria(bloco, { slug, rotulos }) {
+  const itens = bloco.imagens.map((img) => ({ html: imagem(img, { slug }), tamanho: img.tamanho }));
+  const classes = { lista: 'galeria__lista', item: 'galeria__item' };
+  let conteudo;
+  if (bloco.layout === 'carrossel') {
+    conteudo = carrossel(itens, { classes, nome: preenchido(bloco.legenda) ? bloco.legenda : rotulos.projeto.galeriaTopo, rotulos });
+  } else {
+    const lis = itens.map(({ html, tamanho }) => `<li${attrs({ class: classes.item, 'data-tamanho': tamanho })}>${html}</li>`).join('\n');
+    conteudo = `<ul class="${classes.lista}">
+${lis}
+</ul>`;
+  }
   return `<figure class="bloco bloco-galeria galeria galeria--${esc(bloco.layout)}">
-<ul class="galeria__lista"${attrs({
-    tabindex: carrossel ? '0' : null,
-    'aria-label': carrossel && preenchido(bloco.legenda) ? bloco.legenda : null,
-  })}>
-${imagens}
-</ul>
+${conteudo}
 ${legenda(bloco.legenda)}
 </figure>`;
 }

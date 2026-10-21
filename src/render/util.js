@@ -62,6 +62,33 @@ export function preencher(modelo, valores) {
   return esc(modelo).replace(/\{(\w+)\}/g, (inteiro, chave) => (chave in valores ? esc(valores[chave]) : inteiro));
 }
 
+// Carrossel: a lista rola na horizontal com encaixe e recebe foco (setas do teclado).
+// Com várias imagens, ganha os botões anterior/próxima e o contador, que o site.js ativa;
+// sem JavaScript, os controles ficam ocultos e a lista rola pela barra do navegador.
+// itens: [{ html, tamanho? }]; classes: { lista, item }.
+export function carrossel(itens, { classes, nome, rotulos }) {
+  const varios = itens.length > 1;
+  const r = rotulos.projeto;
+  const lis = itens.map(({ html, tamanho }) => `<li${attrs({ class: classes.item, 'data-tamanho': tamanho })}>${html}</li>`).join('\n');
+  const lista = `<ul${attrs({
+    class: `${classes.lista} carrossel__trilho`,
+    tabindex: varios ? '0' : null,
+    'aria-label': varios ? nome : null,
+  })}>
+${lis}
+</ul>`;
+  if (!varios) return lista;
+  const contador = preencher(r.contadorImagens, { atual: 1, total: itens.length });
+  return `<div class="carrossel" data-carrossel>
+${lista}
+<div class="carrossel__controles" hidden>
+  <button type="button" class="botao botao--secundario carrossel__botao" data-direcao="-1"${attrs({ 'aria-label': r.imagemAnterior })}>${seta('←')}</button>
+  <span class="carrossel__contador rotulo"${attrs({ 'data-modelo': r.contadorImagens })}><span class="marca" aria-live="polite">${contador}</span></span>
+  <button type="button" class="botao botao--secundario carrossel__botao" data-direcao="1"${attrs({ 'aria-label': r.proximaImagem })}>${seta('→')}</button>
+</div>
+</div>`;
+}
+
 export const seta = (caractere) => `<span class="seta" aria-hidden="true">${caractere}</span>`;
 
 // Junta pedaços de HTML ignorando vazios.

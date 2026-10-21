@@ -2,20 +2,14 @@
 
 import { blocos } from './blocos.js';
 import { pagina } from './layout.js';
-import { attrs, attrsLink, esc, formatarAno, imagem, preencher, preenchido, seta, urlMidia } from './util.js';
+import { attrs, attrsLink, carrossel, esc, formatarAno, imagem, preencher, preenchido, seta, urlMidia } from './util.js';
 
-// Carrossel horizontal com rolagem por encaixe. Com mais de uma imagem, a lista recebe foco
-// (rola com as setas do teclado) e um nome acessível. Só a primeira imagem é da primeira dobra.
+// Galeria do topo: carrossel com rolagem por encaixe. Só a primeira imagem é da primeira dobra.
 function galeriaTopo(imagens, slug, rotulos) {
   if (!imagens?.length) return '';
-  const varias = imagens.length > 1;
-  const itens = imagens.map((img, i) => `<li class="galeria-topo__item">${imagem(img, { slug, prioridade: i === 0 })}</li>`).join('\n');
-  return `<ul class="galeria-topo${varias ? '' : ' galeria-topo--uma'}"${attrs({
-    tabindex: varias ? '0' : null,
-    'aria-label': varias ? rotulos.projeto.galeriaTopo : null,
-  })}>
-${itens}
-</ul>`;
+  const itens = imagens.map((img, i) => ({ html: imagem(img, { slug, prioridade: i === 0 }), tamanho: img.tamanho }));
+  const classes = { lista: `galeria-topo${itens.length > 1 ? '' : ' galeria-topo--uma'}`, item: 'galeria-topo__item' };
+  return carrossel(itens, { classes, nome: rotulos.projeto.galeriaTopo, rotulos });
 }
 
 function jogar(dados, rotulos) {
