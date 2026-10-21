@@ -27,15 +27,11 @@
     "links": [
       {
         "rotulo": "E-mail",
-        "url": "ryan.leite25@gmail.com"
+        "url": "mailto:ryan.leite25@gmail.com"
       },
       {
         "rotulo": "GitHub",
         "url": "https://github.com/Ryderzin"
-      },
-      {
-        "rotulo": "LinkedIn",
-        "url": "https://www.linkedin.com/in/[perfil]"
       }
     ]
   },
