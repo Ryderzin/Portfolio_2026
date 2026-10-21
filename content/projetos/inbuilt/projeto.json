@@ -3,7 +3,7 @@
   "ordem": 1,
   "titulo": "Inbuilt",
   "subtitulo": "Solução de Realidade Aumentada",
-  "categoria": "Ferramenta",
+  "categoria": "Aplicativo",
   "ano": "2022-2026",
   "stack": "Unity, C# · ASP.NET Core e Microsoft SQL",
   "capa": {
@@ -124,5 +124,6 @@
       "escala": 40,
       "moldura": "fina"
     }
-  ]
+  ],
+  "ocultarFaixa": true
 }

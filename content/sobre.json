@@ -1,14 +1,13 @@
 {
   "titulo": "Sobre",
   "foto": {
-    "src": "/midia/foto.webp",
-    "alt": "[DESCRIÇÃO DA FOTO — quem aparece e onde]",
-    "largura": 680,
-    "altura": 850,
-    "legenda": "[LEGENDA OPCIONAL]"
+    "src": "/midia/5gvgqd7p2leulux4bgfocdbxndxqwsezx0cjq-pyagtubqrs25nujfmkevvk.webp",
+    "alt": "Eu",
+    "largura": 1333,
+    "altura": 2000
   },
-  "destaque": "Desenvolvedor full-stack. Back-end em C# e .NET com Entity Framework, bancos SQL e NoSQL, front-end em HTML, CSS e JavaScript, e projetos em Unity.",
-  "texto": "[TRAJETÓRIA — como você chegou à programação, onde trabalhou e que tipo de problema gosta de resolver.]\n\n[COMO VOCÊ TRABALHA — o que valoriza num projeto: modelagem de dados, código legível, performance, ferramentas que poupam tempo do time.]\n\n[O QUE VOCÊ PROCURA — tipo de oportunidade, colaboração ou projeto em que quer se envolver.]",
+  "destaque": "Desenvolvedor full-stack. C# e .NET com Entity Framework, bancos SQL e NoSQL, front-end em HTML, CSS e JavaScript, e desenvolvimento na Unity. Experiência com interações em realidade aumentada, integração de visão computacional, APIs e pipelines de dados na AWS e no Google Cloud.",
+  "texto": "Sempre me interessei por jogos eletrônicos e sempre busquei me especializar neles, então o interesse por programação veio naturalmente. Gosto de otimizar processos e de criar experiências que tragam conforto não só para quem usa as soluções, mas também para quem as implementa.\n\nNo dia a dia, valorizo a **comunicação do time** para entender bem os problemas e a **simplificação dos processos** para resolvê-los da forma mais direta possível. Na Inbuilt, isso me levou a atuar em todas as camadas do produto, da interface do aplicativo à infraestrutura e aos dados, sempre buscando soluções que fossem fáceis de usar e de manter.",
   "tecnologias": [
     {
       "grupo": "Back-end",
@@ -22,9 +21,11 @@
     {
       "grupo": "Dados",
       "itens": [
-        "SQL",
-        "NoSQL",
-        "[BANCOS QUE VOCÊ USA]"
+        "SQL Server",
+        "MongoDB",
+        "BigQuery",
+        "Dataflow",
+        "Looker"
       ]
     },
     {
@@ -32,30 +33,40 @@
       "itens": [
         "HTML",
         "CSS",
-        "JavaScript"
+        "JavaScript",
+        "React"
       ]
     },
     {
-      "grupo": "Unity",
+      "grupo": "Unity e Realidade Aumentada",
       "itens": [
         "C#",
-        "Ferramentas de editor",
-        "[OUTROS]"
+        "ARCore",
+        "ARKit",
+        "OpenCV"
+      ]
+    },
+    {
+      "grupo": "Nuvem",
+      "itens": [
+        "Google Cloud",
+        "AWS",
+        "Migração de APIs e bancos"
       ]
     }
   ],
   "experiencia": [
     {
-      "periodo": "[PERÍODO]",
-      "cargo": "[CARGO]",
-      "empresa": "[EMPRESA]",
-      "resumo": "[UMA LINHA SOBRE O QUE VOCÊ FAZ OU FEZ]"
+      "periodo": "2022-2026",
+      "cargo": "Desenvolvedor",
+      "empresa": "Inbuilt S.A.",
+      "resumo": "Participei da elaboração, desenvolvimento e implementação das soluções da empresa."
     },
     {
-      "periodo": "[PERÍODO]",
-      "cargo": "[CARGO]",
-      "empresa": "[EMPRESA]",
-      "resumo": "[UMA LINHA SOBRE O QUE VOCÊ FAZ OU FEZ]"
+      "periodo": "2021-2022",
+      "cargo": "Aprendiz Administrativo",
+      "empresa": "Lealfer - Industria e Comércio de Aço",
+      "resumo": "Aprendiz na área de qualidade da fábrica."
     }
   ]
 }

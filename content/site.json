@@ -23,11 +23,11 @@
     }
   ],
   "rodape": {
-    "texto": "© 2026 · Feito à mão em HTML, CSS e JS · Hospedado no Render",
+    "texto": "© 2026 · Ryan Leite da Silva",
     "links": [
       {
         "rotulo": "E-mail",
-        "url": "mailto:[seu@email.com]"
+        "url": "ryan.leite25@gmail.com"
       },
       {
         "rotulo": "GitHub",
