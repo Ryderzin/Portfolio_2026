@@ -4,10 +4,16 @@ import { blocos } from './blocos.js';
 import { pagina } from './layout.js';
 import { attrs, attrsLink, esc, formatarAno, imagem, preencher, preenchido, seta, urlMidia } from './util.js';
 
-function galeriaTopo(imagens, slug) {
+// Carrossel horizontal com rolagem por encaixe. Com mais de uma imagem, a lista recebe foco
+// (rola com as setas do teclado) e um nome acessível. Só a primeira imagem é da primeira dobra.
+function galeriaTopo(imagens, slug, rotulos) {
   if (!imagens?.length) return '';
-  const itens = imagens.map((img, i) => `<li>${imagem(img, { slug, prioridade: i < 2 })}</li>`).join('\n');
-  return `<ul class="galeria-topo${imagens.length === 1 ? ' galeria-topo--uma' : ''}">
+  const varias = imagens.length > 1;
+  const itens = imagens.map((img, i) => `<li class="galeria-topo__item">${imagem(img, { slug, prioridade: i === 0 })}</li>`).join('\n');
+  return `<ul class="galeria-topo${varias ? '' : ' galeria-topo--uma'}"${attrs({
+    tabindex: varias ? '0' : null,
+    'aria-label': varias ? rotulos.projeto.galeriaTopo : null,
+  })}>
 ${itens}
 </ul>`;
 }
@@ -85,7 +91,7 @@ export function renderProjeto({ site, projeto, proximo }) {
       ${dados.ocultarFaixa ? '' : `<span class="faixa faixa--card rotulo">${esc(dados.categoria)}</span>`}
       <div class="card-projeto__conteudo">
         <p class="card-projeto__stack rotulo"><span class="marca">${stackAno}</span></p>
-        ${galeriaTopo(dados.galeriaTopo, slug)}
+        ${galeriaTopo(dados.galeriaTopo, slug, rotulos)}
         <header class="card-projeto__titulos">
           <h1 class="card-projeto__titulo"><span class="marca">${esc(dados.titulo)}</span></h1>
           <p class="card-projeto__subtitulo titulo"><span class="marca">${esc(dados.subtitulo)}</span></p>

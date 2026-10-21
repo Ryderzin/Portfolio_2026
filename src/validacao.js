@@ -217,6 +217,7 @@ const ESQUEMA_SITE = objeto({
     geral: objeto({ navegacaoPrincipal: texto(), paginaInicial: texto(), verProjetos: texto(), temaEscuro: texto() }),
     projeto: objeto({
       voltarProjetos: texto(),
+      galeriaTopo: texto(),
       fichaTecnica: texto(),
       tecnologia: texto(),
       linguagem: texto(),

@@ -93,6 +93,7 @@ const ROTULOS_INTERFACE = {
   projeto: {
     _titulo: 'Página de projeto',
     voltarProjetos: 'Botão de voltar',
+    galeriaTopo: 'Nome do carrossel do topo (lido por leitores de tela)',
     fichaTecnica: 'Título da ficha técnica',
     tecnologia: 'Ficha: tecnologia',
     linguagem: 'Ficha: linguagem',

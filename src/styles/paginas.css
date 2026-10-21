@@ -144,17 +144,31 @@ code {
   letter-spacing: 0.08em;
 }
 
+/* Galeria do topo: carrossel horizontal; a próxima imagem aparece na borda. */
 .galeria-topo {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  align-items: flex-start;
   gap: 24px;
   margin: 0;
-  padding: 0;
+  padding: 0 0 12px;
   list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+}
+
+.galeria-topo__item {
+  flex: 0 0 85%;
+  scroll-snap-align: start;
 }
 
 .galeria-topo--uma {
-  grid-template-columns: minmax(0, 1fr);
+  overflow: visible;
+  padding-bottom: 0;
+}
+
+.galeria-topo--uma .galeria-topo__item {
+  flex-basis: 100%;
 }
 
 .galeria-topo img {
@@ -685,7 +699,6 @@ code {
   }
 
   .galeria-topo {
-    grid-template-columns: minmax(0, 1fr);
     gap: 12px;
   }
 
