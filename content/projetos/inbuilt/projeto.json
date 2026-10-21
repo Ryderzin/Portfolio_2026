@@ -1,0 +1,23 @@
+{
+  "publicado": true,
+  "ordem": 1,
+  "titulo": "Inbuilt",
+  "subtitulo": "Solução de Realidade Aumentada",
+  "categoria": "Ferramenta",
+  "ano": "2022-2026",
+  "stack": "Unity, C# · ASP.NET Core e Microsoft SQL",
+  "capa": {
+    "src": "inbuilt-br-logo.webp",
+    "alt": "Inbuilt",
+    "largura": 200,
+    "altura": 200,
+    "previa": {
+      "src": "inbuilt-demo-preview-portfolio-3.mp4",
+      "largura": 720,
+      "altura": 720
+    }
+  },
+  "blocos": [],
+  "ficha": {},
+  "links": []
+}
