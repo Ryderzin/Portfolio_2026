@@ -6,11 +6,13 @@
 export const LAYOUTS_GALERIA = ['duas', 'grande', 'carrossel'];
 // Enquadramento opcional de cada imagem de galeria (todos os campos podem faltar):
 // escala: largura em % do espaço da imagem; alinhamento: onde ela encosta quando é menor que o espaço;
-// recorte: proporção fixa, com a imagem cortada; foco: ponto (x, y em %) que o recorte mantém visível.
+// recorte: proporção fixa, com a imagem cortada; foco: ponto (x, y em %) que o recorte mantém visível;
+// moldura: contorno na cor da tinta do site.
 export const ESCALA_MIN = 20;
 export const ESCALA_MAX = 100;
 export const ALINHAMENTOS = ['esquerda', 'centro', 'direita'];
 export const RECORTES = ['1:1', '4:3', '3:2', '16:9', '3:4'];
+export const MOLDURAS = ['fina', 'grossa', 'sombra', 'passe-partout'];
 export const ORIGENS_VIDEO = ['arquivo', 'link'];
 export const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
@@ -154,6 +156,7 @@ const imagem = objeto({
   alinhamento: opcional(umDe(ALINHAMENTOS)),
   recorte: opcional(umDe(RECORTES)),
   foco: opcional(objeto({ x: porcentagem(), y: porcentagem() })),
+  moldura: opcional(umDe(MOLDURAS)),
 }, { verificar: focoExigeRecorte });
 const link = objeto({ rotulo: texto(), url: urlLink() });
 

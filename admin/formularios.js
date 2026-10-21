@@ -399,14 +399,19 @@ function escolha(d, ctx, caminho) {
 function enquadramento(ctx, caminho) {
   const imagem = ler(ctx.doc, caminho);
   if (!imagem || !ctx.urlImagem) return null;
-  const carrossel = caminho[0] === 'galeriaTopo'
-    ? (ler(ctx.doc, ['galeriaTopo'])?.length ?? 0) > 1
-    : ler(ctx.doc, caminho.slice(0, -2))?.layout === 'carrossel';
+  // 'carrossel' e 'duas' têm largura própria; 'livre' é a imagem sozinha na linha (aceita posição).
+  let layout = 'livre';
+  if (caminho[0] === 'galeriaTopo') {
+    if ((ler(ctx.doc, ['galeriaTopo'])?.length ?? 0) > 1) layout = 'carrossel';
+  } else {
+    const doBloco = ler(ctx.doc, caminho.slice(0, -2))?.layout;
+    if (doBloco === 'carrossel' || doBloco === 'duas') layout = doBloco;
+  }
   const campo = formatarCaminho(caminho);
-  const subcampos = ['escala', 'alinhamento', 'recorte', 'foco', 'foco.x', 'foco.y'].map((k) => `${campo}.${k}`);
+  const subcampos = ['escala', 'alinhamento', 'recorte', 'foco', 'foco.x', 'foco.y', 'moldura'].map((k) => `${campo}.${k}`);
   return editorEnquadramento({
     imagem,
-    carrossel,
+    layout,
     campo,
     mensagem: mensagemCampo(subcampos[0], { apelidos: subcampos.slice(1) }),
     urlImagem: ctx.urlImagem,

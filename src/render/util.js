@@ -1,6 +1,6 @@
 // Utilitários dos renderizadores. Funções puras: sem DOM, rede ou disco.
 
-import { ALINHAMENTOS, ESCALA_MAX, ESCALA_MIN, RECORTES, anoFinal, urlPermitida } from '../validacao.js';
+import { ALINHAMENTOS, ESCALA_MAX, ESCALA_MIN, MOLDURAS, RECORTES, anoFinal, urlPermitida } from '../validacao.js';
 
 const ENTIDADES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 
@@ -65,10 +65,11 @@ export function preencher(modelo, valores) {
 const limitar = (n, min, max) => Math.min(max, Math.max(min, n));
 
 // <li> de galeria com o enquadramento da imagem em variáveis CSS:
-// --escala (largura), --proporcao e --foco (recorte) e uma classe de alinhamento.
+// --escala (fração da largura, ex.: 0.4), --proporcao e --foco (recorte),
+// e classes de alinhamento e de moldura.
 export function itemDeGaleria(classe, img, html) {
   const estilo = [];
-  if (Number.isInteger(img.escala)) estilo.push(`--escala: ${limitar(img.escala, ESCALA_MIN, ESCALA_MAX)}%`);
+  if (Number.isInteger(img.escala)) estilo.push(`--escala: ${limitar(img.escala, ESCALA_MIN, ESCALA_MAX) / 100}`);
   const recorte = RECORTES.includes(img.recorte) ? img.recorte : null;
   if (recorte) {
     estilo.push(`--proporcao: ${recorte.replace(':', ' / ')}`);
@@ -77,8 +78,9 @@ export function itemDeGaleria(classe, img, html) {
     estilo.push(`--foco: ${x}% ${y}%`);
   }
   const alinhamento = ALINHAMENTOS.includes(img.alinhamento) && img.alinhamento !== 'esquerda' ? img.alinhamento : null;
+  const moldura = MOLDURAS.includes(img.moldura) ? `moldura-${img.moldura}` : null;
   return `<li${attrs({
-    class: [classe, alinhamento && `alinhar-${alinhamento}`, recorte && 'recortada'].filter(Boolean).join(' '),
+    class: [classe, alinhamento && `alinhar-${alinhamento}`, recorte && 'recortada', moldura].filter(Boolean).join(' '),
     style: estilo.length ? estilo.join('; ') : null,
   })}>${html}</li>`;
 }

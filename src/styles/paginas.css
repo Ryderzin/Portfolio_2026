@@ -158,7 +158,7 @@ code {
 }
 
 .galeria-topo__item {
-  flex: 0 0 var(--escala, 85%);
+  flex: 0 0 calc(var(--escala, 0.85) * 100%);
   scroll-snap-align: start;
 }
 
@@ -168,7 +168,7 @@ code {
 }
 
 .galeria-topo--uma .galeria-topo__item {
-  flex-basis: var(--escala, 100%);
+  flex-basis: calc(var(--escala, 1) * 100%);
 }
 
 .galeria-topo img {
@@ -301,8 +301,16 @@ code {
   list-style: none;
 }
 
+/* Duas por linha: lado a lado e juntas no centro; a escala é sobre a metade da linha. */
 .galeria--duas .galeria__lista {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.galeria--duas .galeria__item {
+  flex: 0 0 calc(var(--escala, 1) * (100% - 24px) / 2);
 }
 
 .galeria--grande .galeria__lista {
@@ -319,17 +327,43 @@ code {
 }
 
 .galeria--carrossel .galeria__item {
-  flex: 0 0 var(--escala, 85%);
+  flex: 0 0 calc(var(--escala, 0.85) * 100%);
   scroll-snap-align: start;
 }
 
 .galeria__item img {
-  width: var(--escala, 100%);
+  width: calc(var(--escala, 1) * 100%);
   background: var(--media);
 }
 
-.galeria--carrossel .galeria__item img {
+.galeria--carrossel .galeria__item img,
+.galeria--duas .galeria__item img {
   width: 100%;
+}
+
+/* Molduras escolhidas no painel, na cor da tinta (azul no claro, clara no escuro). */
+.moldura-fina img,
+.moldura-sombra img,
+.moldura-passe-partout img {
+  border: var(--border) solid var(--ink);
+}
+
+.moldura-grossa img {
+  border: var(--moldura-grossa) solid var(--ink);
+}
+
+.moldura-sombra img {
+  box-shadow: var(--moldura-sombra) var(--moldura-sombra) 0 var(--ink);
+}
+
+.moldura-passe-partout img {
+  padding: var(--moldura-respiro);
+  background: var(--surface);
+}
+
+/* No carrossel, a lista rola e cortaria a sombra: abre espaço para ela. */
+ul.carrossel__trilho:has(.moldura-sombra) {
+  padding: 0 var(--moldura-sombra) var(--moldura-sombra) 0;
 }
 
 /* Enquadramento escolhido no painel: alinhamento e recorte com ponto de foco. */
@@ -849,16 +883,20 @@ code {
 
   /* Imagens com escala pequena não ficam minúsculas na tela estreita. */
   .galeria__item img {
-    width: max(var(--escala, 100%), var(--escala-min-mobile));
+    width: calc(max(var(--escala, 1), var(--escala-min-mobile)) * 100%);
+  }
+
+  .galeria--duas .galeria__item {
+    flex-basis: calc(max(var(--escala, 1), var(--escala-min-mobile)) * 100%);
   }
 
   .galeria--carrossel .galeria__item,
   .galeria-topo__item {
-    flex-basis: max(var(--escala, 85%), var(--escala-min-mobile));
+    flex-basis: calc(max(var(--escala, 0.85), var(--escala-min-mobile)) * 100%);
   }
 
   .galeria-topo--uma .galeria-topo__item {
-    flex-basis: max(var(--escala, 100%), var(--escala-min-mobile));
+    flex-basis: calc(max(var(--escala, 1), var(--escala-min-mobile)) * 100%);
   }
 
   .bloco-citacao {

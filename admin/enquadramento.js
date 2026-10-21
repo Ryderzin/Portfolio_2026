@@ -1,14 +1,23 @@
 // Editor visual do enquadramento de uma imagem de galeria.
 // - Largura: arrastando a alça na borda da miniatura (ou setas do teclado), de 5 em 5%.
-// - Posição: esquerda, centro ou direita, quando a imagem é menor que o espaço (fora do carrossel).
+// - Posição: esquerda, centro ou direita, quando a imagem está sozinha na linha e é menor que ela.
 // - Recorte: proporção fixa; o ponto de foco escolhe a parte da imagem que fica visível.
-// Grava escala, alinhamento, recorte e foco direto no objeto da imagem; padrões não são gravados.
+// - Moldura: contorno na cor da tinta do site.
+// Grava escala, alinhamento, recorte, foco e moldura direto no objeto da imagem; padrões não são gravados.
 
-import { ALINHAMENTOS, ESCALA_MAX, ESCALA_MIN, RECORTES } from './validacao.js';
+import { ALINHAMENTOS, ESCALA_MAX, ESCALA_MIN, MOLDURAS, RECORTES } from './validacao.js';
 import { h } from './formularios.js';
 
 const PASSO = 5;
 const NOMES_ALINHAMENTO = { esquerda: 'Esquerda', centro: 'Centro', direita: 'Direita' };
+const NOMES_MOLDURA = { fina: 'Fina', grossa: 'Grossa', sombra: 'Sombra dura', 'passe-partout': 'Passe-partout' };
+
+// Explicação da largura em cada layout.
+const AJUDAS = {
+  carrossel: 'Arraste a alça para mudar a largura do slide. O padrão (85%) deixa a próxima imagem aparecer na borda.',
+  duas: 'Arraste a alça para mudar a largura em relação à metade da linha (a área tracejada). As duas imagens ficam juntas e centralizadas.',
+  livre: 'Arraste a alça para mudar a largura da imagem na linha (a área tracejada).',
+};
 
 const limitar = (n, min, max) => Math.min(max, Math.max(min, n));
 const arredondar = (n) => Math.round(n / PASSO) * PASSO;
@@ -45,9 +54,11 @@ function grupoDeBotoes(rotulo, botoes) {
     titulo, h('div', { class: 'enq__botoes' }, botoes));
 }
 
-// opcoes: { imagem, carrossel, campo ("blocos[1].imagens[0]"), mensagem, urlImagem(src) → Promise<url|null>, aoMudar() }
-export function editorEnquadramento({ imagem, carrossel, campo, mensagem, urlImagem, aoMudar }) {
-  const padrao = carrossel ? 85 : 100;
+// opcoes: { imagem, layout ('carrossel' | 'duas' | 'livre'), campo ("blocos[1].imagens[0]"), mensagem,
+//           urlImagem(src) → Promise<url|null>, aoMudar() }
+export function editorEnquadramento({ imagem, layout, campo, mensagem, urlImagem, aoMudar }) {
+  const padrao = layout === 'carrossel' ? 85 : 100;
+  const comPosicao = layout === 'livre';
   const natural = imagem.largura > 0 && imagem.altura > 0 ? imagem.largura / imagem.altura : 4 / 3;
 
   // ---------- Miniatura no espaço, com a alça de largura ----------
@@ -99,6 +110,17 @@ export function editorEnquadramento({ imagem, carrossel, campo, mensagem, urlIma
     },
   }, nome));
 
+  const opcoesMoldura = [['', 'Nenhuma'], ...MOLDURAS.map((m) => [m, NOMES_MOLDURA[m]])];
+  const botoesMoldura = opcoesMoldura.map(([m, nome]) => h('button', {
+    type: 'button',
+    class: 'botao-painel botao-painel--secundario',
+    onclick: () => {
+      if (m) imagem.moldura = m;
+      else delete imagem.moldura;
+      atualizar(true);
+    },
+  }, nome));
+
   // ---------- Ponto de foco ----------
   const fotoInteira = h('img', { class: 'enq__foto-inteira', alt: '', draggable: 'false' });
   const janela = h('div', { class: 'enq__janela' });
@@ -139,10 +161,11 @@ export function editorEnquadramento({ imagem, carrossel, campo, mensagem, urlIma
 
   function atualizar(mudou) {
     const escala = imagem.escala ?? padrao;
-    const posicao = carrossel ? 'esquerda' : (imagem.alinhamento ?? 'esquerda');
+    const posicao = comPosicao ? (imagem.alinhamento ?? 'esquerda') : 'esquerda';
     espaco.dataset.alinhamento = posicao;
     caixa.style.width = `${escala}%`;
     caixa.style.aspectRatio = String(imagem.recorte ? proporcao(imagem.recorte) : natural);
+    caixa.dataset.moldura = imagem.moldura ?? '';
     const { x, y } = foco();
     foto.style.objectPosition = `${x}% ${y}%`;
 
@@ -154,6 +177,7 @@ export function editorEnquadramento({ imagem, carrossel, campo, mensagem, urlIma
 
     botoesPosicao.forEach((b, i) => b.setAttribute('aria-pressed', String(ALINHAMENTOS[i] === posicao)));
     botoesRecorte.forEach((b, i) => b.setAttribute('aria-pressed', String(opcoesRecorte[i][0] === (imagem.recorte ?? ''))));
+    botoesMoldura.forEach((b, i) => b.setAttribute('aria-pressed', String(opcoesMoldura[i][0] === (imagem.moldura ?? ''))));
     grupoFoco.hidden = !imagem.recorte;
     if (imagem.recorte) desenharFoco();
     if (mudou) aoMudar();
@@ -216,13 +240,12 @@ export function editorEnquadramento({ imagem, carrossel, campo, mensagem, urlIma
 
   return h('div', { class: 'campo enq' },
     h('span', { class: 'campo__rotulo' }, 'Enquadramento'),
-    h('p', { class: 'campo__ajuda' }, carrossel
-      ? 'Arraste a alça para mudar a largura do slide. O padrão (85%) deixa a próxima imagem aparecer na borda.'
-      : 'Arraste a alça para mudar a largura da imagem no espaço dela (a área tracejada).'),
+    h('p', { class: 'campo__ajuda' }, AJUDAS[layout]),
     h('div', { class: 'enq__moldura' }, espaco),
     h('div', { class: 'enq__linha' }, valor, usarPadrao),
-    carrossel ? null : grupoDeBotoes('Posição', botoesPosicao),
+    comPosicao ? grupoDeBotoes('Posição', botoesPosicao) : null,
     grupoDeBotoes('Recorte', botoesRecorte),
     grupoFoco,
+    grupoDeBotoes('Moldura', botoesMoldura),
     mensagem);
 }

@@ -799,7 +799,26 @@ body {
   position: relative;
   flex: none;
   background: var(--media);
+}
+
+/* A miniatura mostra a moldura escolhida, como no site. */
+.enq__caixa[data-moldura="fina"],
+.enq__caixa[data-moldura="sombra"],
+.enq__caixa[data-moldura="passe-partout"] {
   border: var(--border) solid var(--ink);
+}
+
+.enq__caixa[data-moldura="grossa"] {
+  border: var(--moldura-grossa) solid var(--ink);
+}
+
+.enq__caixa[data-moldura="sombra"] {
+  box-shadow: var(--moldura-sombra) var(--moldura-sombra) 0 var(--ink);
+}
+
+.enq__caixa[data-moldura="passe-partout"] {
+  padding: 6px;
+  background: var(--surface);
 }
 
 .enq__foto {
