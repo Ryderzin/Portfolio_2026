@@ -20,27 +20,60 @@
   "blocos": [
     {
       "tipo": "texto",
-      "markdown": "Na **Inbuilt**, atuei de ponta a ponta no produto: das interfaces do aplicativo à infraestrutura em nuvem, passando por realidade aumentada, visão computacional e dados.\n\n### Stack\n\n- **Aplicativo e realidade aumentada:** Unity com C#, ARCore e ARKit\n- **Visão computacional:** OpenCV integrado à Unity\n- **API:** C# com Entity Framework\n- **Nuvem e dados:** Google Cloud, Dataflow, BigQuery e Looker\n- **Web:** `model-viewer` para as miniaturas 3D"
+      "markdown": "Na **Inbuilt**, atuei de ponta a ponta no produto: das interfaces e da experiência do aplicativo à realidade aumentada, visão computacional, APIs, infraestrutura e dados em nuvem.\n\n### Stack\n\n- **Aplicativo e realidade aumentada:** Unity com C#, ARCore e ARKit\n- **Visão computacional:** OpenCV integrado à Unity\n- **API:** C# com Entity Framework\n- **Nuvem e dados:** Google Cloud, Dataflow, BigQuery e Looker\n- **Web:** `model-viewer` para as miniaturas 3D\n\n\n### Interfaces e UX\n\n- Implementação das interfaces do aplicativo na Unity, com foco em clareza para quem não é técnico\n- Desenho e ajuste dos fluxos de uso (UX) a partir do retorno de usuários\n- Interfaces responsivas, adaptadas para uso em **tablets** além de smartphones"
     },
     {
       "tipo": "galeria",
-      "layout": "carrossel",
+      "layout": "duas",
       "imagens": [
         {
           "src": "screenshot-20261020-212109-inbuilt-jpg-2.webp",
           "alt": "Tela inicial do aplicativo em smartphones.",
           "largura": 923,
           "altura": 2000,
-          "escala": 40
+          "escala": 60,
+          "moldura": "sombra"
         },
         {
           "src": "inb-tablet-r02-03.webp",
           "alt": "Tela inicial do aplicativo em tablets.",
           "largura": 1366,
           "altura": 950,
-          "escala": 80
+          "moldura": "sombra"
         }
-      ]
+      ],
+      "legenda": "Interfaces responsivas"
+    },
+    {
+      "tipo": "texto",
+      "markdown": "### Inbuilt X: realidade aumentada para o cliente final\n\nSeção dentro do aplicativo para visualizar as instalações da casa em realidade aumentada, pensada para o cliente final e usada também durante a obra. Participei ativamente do desenvolvimento e da manutenção e de melhorias  dentro do aplicativo e no backend.\n\n- Interações em realidade aumentada para visualizar a arquitetura da casa no próprio ambiente, como instalações **elétricas**, **hidráulicas**, de **gás**, de **esgoto** e afins\n- Camadas que podem ser ligadas e desligadas, para enxergar uma instalação de cada vez\n- Desenvolvido na Unity com C#, **ARCore**/**ARKit**\n\n### Visão computacional\n\n- Integração do **OpenCV** ao aplicativo para identificar **pontos de início** a partir da câmera\n- Uso da detecção para posicionar as instalações em realidade aumentada com mais precisão"
+    },
+    {
+      "tipo": "video",
+      "origem": "link",
+      "url": "https://youtube.com/shorts/Ji5ko-MkqEk",
+      "legenda": "Funcionamento App Inbuilt X"
+    },
+    {
+      "tipo": "texto",
+      "markdown": "### Inbuilt GO: Fachada do empreendimento em tamanho real\nSeção dentro do aplicativo que mostra a **fachada do empreendimento em tamanho real**, no próprio terreno, em realidade aumentada. Participei da implementação inicial e ativamente da manutenção e melhorias do serviço dentro do aplicativo e no backend.\n\n- Posicionamento por geolocalização com as bibliotecas do **ARCore Extensions**\n- Miniaturas 3D dos empreendimentos na web com `model-viewer`\n\n"
+    },
+    {
+      "tipo": "video",
+      "origem": "link",
+      "url": "https://youtube.com/shorts/hOyXHARPQhU",
+      "legenda": "Funcionamento App Inbuilt GO. Fonte: @meuhabitare no Instagram"
+    },
+    {
+      "tipo": "video",
+      "origem": "arquivo",
+      "src": "gravando-2026-10-21-000650.mp4",
+      "loop": true,
+      "mudo": true,
+      "autoplay": true,
+      "largura": 1906,
+      "altura": 944,
+      "legenda": "Miniaturas na web da fachada do empreendimento"
     }
   ],
   "ficha": {},
@@ -51,14 +84,16 @@
       "alt": "Tela inicial do aplicativo em smartphones.",
       "largura": 923,
       "altura": 2000,
-      "escala": 40
+      "escala": 40,
+      "moldura": "fina"
     },
     {
       "src": "screenshot-20261020-213436-inbuilt-jpg.webp",
       "alt": "Tela inicial de seleção de comôdos.",
       "largura": 923,
       "altura": 2000,
-      "escala": 40
+      "escala": 40,
+      "moldura": "fina"
     }
   ]
 }
