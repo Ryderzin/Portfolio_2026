@@ -2,7 +2,7 @@
   "titulo": "Sobre",
   "foto": {
     "src": "/midia/5gvgqd7p2leulux4bgfocdbxndxqwsezx0cjq-pyagtubqrs25nujfmkevvk.webp",
-    "alt": "Eu",
+    "alt": "Foto de Ryan Leite",
     "largura": 1333,
     "altura": 2000
   },
@@ -65,7 +65,7 @@
     {
       "periodo": "2021-2022",
       "cargo": "Aprendiz Administrativo",
-      "empresa": "Lealfer - Industria e Comércio de Aço",
+      "empresa": "Lealfer - Indústria e Comércio de Aço",
       "resumo": "Aprendiz na área de qualidade da fábrica."
     }
   ]

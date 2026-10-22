@@ -22,7 +22,7 @@
   "blocos": [
     {
       "tipo": "texto",
-      "markdown": "O **House Canvas** é o **MVP** de uma aplicação web para quem está comprando um apartamento **na planta**: antes mesmo de a obra terminar, o futuro morador monta o seu apartamento em 3D com **móveis e objetos reais, em tamanho real**. Assim dá para ver se o sofá cabe na sala, como a mesa fica na cozinha e quanto espaço sobra para circular, e isso ajuda na **decisão de compra**, tanto do imóvel quanto dos móveis.\n\nParticipei da **concepção** e das decisões de interface, experiência e controles, e desenvolvi o MVP completo para **validar a ideia com clientes reais** em testes nos empreendimentos.\n\n### Aplicação 3D na Unity\n\n- Implementação da interface na Unity, com builds  em **WebGL**\n- **Interface e controles responsivos**: a aplicação detecta automaticamente se o acesso é pelo celular ou pelo computador e adapta o layout e a forma de interagir (toque ou mouse) a cada um\n-  **Controles 3D**: posicionar, mover, girar e duplicar móveis no chão e nas paredes\n- Móveis **carregados sob demanda** pela API e renderizados na hora, sem necessidade de um download inicial grande\n- Objetos com as **dimensões reais** dos produtos e **colisão física**: os móveis não atravessam paredes nem uns aos outros, e cada ponto de encaixe respeita o tamanho máximo do que cabe ali\n- Painel de informações para cada item com informações do item no mundo real e link para compra em lojas reais\n- Múltiplas configurações gráficas para cada tipo de dispositivo"
+      "markdown": "O **House Canvas** é o **MVP** de uma aplicação web para quem está comprando um apartamento **na planta**: antes mesmo de a obra terminar, o futuro morador monta o seu apartamento em 3D com **móveis e objetos reais, em tamanho real**. Assim dá para ver se o sofá cabe na sala, como a mesa fica na cozinha e quanto espaço sobra para circular, e isso ajuda na **decisão de compra**, tanto do imóvel quanto dos móveis.\n\nParticipei da **concepção** e das decisões de interface, experiência e controles, e desenvolvi o MVP completo para **validar a ideia com clientes reais** em testes nos empreendimentos.\n\n### Aplicação 3D na Unity\n\n- Implementação da interface na Unity, com builds em **WebGL**\n- **Interface e controles responsivos**: a aplicação detecta automaticamente se o acesso é pelo celular ou pelo computador e adapta o layout e a forma de interagir (toque ou mouse) a cada um\n- **Controles 3D**: posicionar, mover, girar e duplicar móveis no chão e nas paredes\n- Móveis **carregados sob demanda** pela API e renderizados na hora, sem necessidade de um download inicial grande\n- Objetos com as **dimensões reais** dos produtos e **colisão física**: os móveis não atravessam paredes nem uns aos outros, e cada ponto de encaixe respeita o tamanho máximo do que cabe ali\n- Painel de cada item com as informações do produto real e link para comprá-lo nas lojas\n- Múltiplas configurações gráficas para cada tipo de dispositivo"
     },
     {
       "tipo": "video",
@@ -115,7 +115,7 @@
           "moldura": "sombra"
         }
       ],
-      "legenda": "QR cocde com as informações da planta levando direto ao registro"
+      "legenda": "QR Code com as informações da planta levando direto ao registro"
     },
     {
       "tipo": "texto",
@@ -124,7 +124,7 @@
   ],
   "ficha": {
     "papel": "Desenvolvedor full-stack do MVP: aplicação 3D, API e painel",
-    "tecnologia": "Unity, ASP.NET Core, SQL, Google Cloud",
+    "tecnologia": "Unity, ASP.NET Core, SQL Server, Google Cloud",
     "linguagem": "C#, JavaScript",
     "plataformas": "Web (desktop e celular)"
   },

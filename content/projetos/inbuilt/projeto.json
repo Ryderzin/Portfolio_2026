@@ -5,7 +5,7 @@
   "subtitulo": "Solução de Realidade Aumentada",
   "categoria": "Aplicativo",
   "ano": "2022-2026",
-  "stack": "Unity, C# · ASP.NET Core e Microsoft SQL",
+  "stack": "Unity, C# · ASP.NET Core e SQL Server",
   "capa": {
     "src": "inbuilt-br-logo.webp",
     "alt": "Inbuilt",
@@ -22,7 +22,7 @@
   "blocos": [
     {
       "tipo": "texto",
-      "markdown": "Na **Inbuilt**, atuei de ponta a ponta no produto: das interfaces e da experiência do aplicativo à realidade aumentada, visão computacional, APIs, infraestrutura e dados em nuvem.\n\n### Stack\n\n- **Aplicativo e realidade aumentada:** Unity com C#, ARCore e ARKit\n- **Visão computacional:** OpenCV integrado à Unity\n- **API:** C# com Entity Framework\n- **Nuvem e dados:** Google Cloud, Dataflow, BigQuery e Looker\n- **Web:** HTML, JavaScript e CSS; `model-viewer` para as miniaturas 3D\n\n\n### Interfaces e UX\n\n- Implementação das interfaces do aplicativo na Unity, com foco em clareza para quem não é técnico\n- Desenho e ajuste dos fluxos de uso (UX) a partir do retorno de usuários\n- Interfaces responsivas, adaptadas para uso em **tablets** além de smartphones"
+      "markdown": "Na **Inbuilt**, atuei de ponta a ponta no produto: das interfaces e da experiência do aplicativo à realidade aumentada, visão computacional, APIs, infraestrutura e dados em nuvem.\n\n### Interfaces e UX\n\n- Implementação das interfaces do aplicativo na Unity, com foco em clareza para quem não é técnico\n- Desenho e ajuste dos fluxos de uso (UX) a partir do retorno de usuários\n- Interfaces responsivas, adaptadas para uso em **tablets** além de smartphones"
     },
     {
       "tipo": "galeria",
@@ -48,7 +48,7 @@
     },
     {
       "tipo": "texto",
-      "markdown": "### Inbuilt X: realidade aumentada para o cliente final\n\nSeção dentro do aplicativo para visualizar as instalações da casa em realidade aumentada, pensada para o cliente final e usada também durante a obra. Participei ativamente do desenvolvimento e da manutenção e de melhorias  dentro do aplicativo e no backend.\n\n- Detecção automática da disponibilidade da interação através da geolocalização do usuário\n- Interações em realidade aumentada para visualizar a arquitetura da casa no próprio ambiente, como instalações **elétricas**, **hidráulicas**, de **gás**, de **esgoto** e afins\n- Camadas que podem ser ligadas e desligadas, para enxergar uma instalação de cada vez\n- Desenvolvido na Unity com C#, **ARCore**/**ARKit**\n\n### Visão computacional\n\n- Integração do **OpenCV** ao aplicativo para identificar **pontos de início** a partir da câmera\n- Uso da detecção para posicionar as instalações em realidade aumentada com mais precisão"
+      "markdown": "### Inbuilt X: realidade aumentada para o cliente final\n\nSeção dentro do aplicativo para visualizar as instalações da casa em realidade aumentada, pensada para o cliente final e usada também durante a obra. Participei ativamente do desenvolvimento, da manutenção e das melhorias, no aplicativo e no backend.\n\n- Detecção automática da disponibilidade da interação através da geolocalização do usuário\n- Interações em realidade aumentada para visualizar a arquitetura da casa no próprio ambiente, como instalações **elétricas**, **hidráulicas**, de **gás**, de **esgoto** e afins\n- Camadas que podem ser ligadas e desligadas, para enxergar uma instalação de cada vez\n- Desenvolvido na Unity com C#, **ARCore**/**ARKit**\n\n### Visão computacional\n\n- Integração do **OpenCV** ao aplicativo para identificar **pontos de início** a partir da câmera\n- Uso da detecção para posicionar as instalações em realidade aumentada com mais precisão"
     },
     {
       "tipo": "video",
@@ -58,7 +58,7 @@
     },
     {
       "tipo": "texto",
-      "markdown": "### Inbuilt GO: Fachada do empreendimento em tamanho real\nSeção dentro do aplicativo que mostra a **fachada do empreendimento em tamanho real**, no próprio terreno, em realidade aumentada. Participei da implementação inicial e ativamente da manutenção e melhorias do serviço dentro do aplicativo e no backend.\n\n- Posicionamento por geolocalização com as bibliotecas do **ARCore Extensions**\n- Detecção automática da disponibilidade da interação através da geolocalização do usuário\n\n"
+      "markdown": "### Inbuilt GO: Fachada do empreendimento em tamanho real\nSeção dentro do aplicativo que mostra a **fachada do empreendimento em tamanho real**, no próprio terreno, em realidade aumentada. Participei da implementação inicial e, ativamente, da manutenção e das melhorias do serviço, no aplicativo e no backend.\n\n- Posicionamento por geolocalização com as bibliotecas do **ARCore Extensions**\n- Detecção automática da disponibilidade da interação através da geolocalização do usuário"
     },
     {
       "tipo": "video",
@@ -68,7 +68,7 @@
     },
     {
       "tipo": "texto",
-      "markdown": "### Inbuilt GO: Miniaturas do empreendimento na Web\n\nInterações na Web que permimtem a visualização da fachada num visualizador 3D e também em realidade aumentada como uma **maquete digital**. Construi a API que cria e gerencia as páginas dessas interações no site institucional da **Inbuilt**\n\n- Miniaturas 3D dos empreendimentos na web com `model-viewer`"
+      "markdown": "### Inbuilt GO: Miniaturas do empreendimento na Web\n\nInterações na Web que permitem a visualização da fachada num visualizador 3D e também em realidade aumentada como uma **maquete digital**. Construí a API que cria e gerencia as páginas dessas interações no site institucional da **Inbuilt**\n\n- Miniaturas 3D dos empreendimentos na web com `model-viewer`"
     },
     {
       "tipo": "video",
@@ -83,7 +83,7 @@
     },
     {
       "tipo": "texto",
-      "markdown": "### Nuvem e dados\n\n- **Migração** das APIs e dos bancos de dados da AWS para o **Google Cloud**\n- Sistema de captação de uso registrado no SQL, com scripts no **Dataflow** levando os dados para o **BigQuery**\n- Painéis no **Looker** com indicadores atualizados e disponibilizados para os clientes"
+      "markdown": "### Nuvem e dados\n\n- **Migração** das APIs e dos bancos de dados da AWS para o **Google Cloud**\n- Sistema de captação de uso registrado no SQL, com scripts no **Dataflow** levando os dados para o **BigQuery**\n- Painéis no **Looker** com indicadores atualizados e disponibilizados para os clientes\n\n### Stack\n\n- **Aplicativo e realidade aumentada:** Unity com C#, ARCore e ARKit\n- **Visão computacional:** OpenCV integrado à Unity\n- **API:** C# com ASP.NET Core e Entity Framework, banco SQL Server\n- **Nuvem e dados:** Google Cloud, Dataflow, BigQuery e Looker\n- **Web:** HTML, JavaScript e CSS; `model-viewer` para as miniaturas 3D"
     },
     {
       "tipo": "galeria",
@@ -100,8 +100,10 @@
     }
   ],
   "ficha": {
-    "papel": "Desenvolvedor",
-    "plataformas": "Android e IOS"
+    "tecnologia": "Unity, ARCore/ARKit, OpenCV, Google Cloud",
+    "linguagem": "C#",
+    "papel": "Desenvolvedor full-stack",
+    "plataformas": "Android e iOS"
   },
   "links": [
     {
@@ -120,7 +122,7 @@
     },
     {
       "src": "screenshot-20261020-213436-inbuilt-jpg.webp",
-      "alt": "Tela inicial de seleção de comôdos.",
+      "alt": "Tela inicial de seleção de cômodos.",
       "largura": 923,
       "altura": 2000,
       "escala": 40,
