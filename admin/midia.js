@@ -1,7 +1,7 @@
 // Preparação de arquivos enviados pelo painel (no navegador, sem bibliotecas).
 // - Imagens: redimensionadas para no máximo 2000 px no lado maior e convertidas para WebP (≈ 0,82).
 // - GIF: mantido como está, até 8 MB, com aviso sugerindo MP4.
-// - Vídeo: MP4 ou WebM, até 25 MB (prévia da capa: até 5 MB).
+// - Vídeo: MP4 ou WebM, até 25 MB (prévia da capa: até 7,5 MB).
 // - PDF: até 5 MB.
 
 const MB = 1024 * 1024;
@@ -12,7 +12,7 @@ export const LIMITES = {
   gif: 8 * MB,
   imagemOriginal: 30 * MB,
   video: 25 * MB,
-  previa: 5 * MB,
+  previa: 7.5 * MB,
   pdf: 5 * MB,
 };
 

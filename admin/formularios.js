@@ -243,7 +243,7 @@ export const DESCRITORES = {
       { t: 'grupo', k: 'capa', campos: [
         midia([], 'Imagem da capa', 'imagem', { ajuda: 'JPG, PNG, WebP ou AVIF: convertida para WebP com até 2000 px. GIF é mantido.' }),
         texto('alt', 'Texto alternativo', { ajuda: AJUDA_ALT }),
-        midia('previa', 'Prévia em movimento', 'previa', { removivel: true, ajuda: 'Opcional. MP4 ou WebM curto, sem som, até 5 MB.' }),
+        midia('previa', 'Prévia em movimento', 'previa', { removivel: true, ajuda: 'Opcional. MP4 ou WebM curto, sem som, até 7,5 MB.' }),
       ] },
     ] },
     { t: 'secao', r: 'Galeria do topo', ajuda: 'Opcional. Imagens acima do título.', campos: [listaImagens('galeriaTopo', null, { opc: true })] },
