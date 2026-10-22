@@ -15,7 +15,9 @@
       "src": "inbuilt-demo-preview-portfolio-3.mp4",
       "largura": 720,
       "altura": 720
-    }
+    },
+    "encaixe": "conter",
+    "moldura": "fina"
   },
   "blocos": [
     {
