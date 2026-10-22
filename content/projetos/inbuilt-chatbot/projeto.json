@@ -48,7 +48,8 @@
           "alt": "Página do manual referenciada na pergunta.",
           "largura": 750,
           "altura": 938,
-          "moldura": "sombra"
+          "moldura": "sombra",
+          "escala": 60
         }
       ],
       "legenda": "Página do manual referenciada na pergunta."
@@ -72,14 +73,16 @@
       "alt": "Tela de Seleção de Torre",
       "largura": 755,
       "altura": 944,
-      "moldura": "sombra"
+      "moldura": "sombra",
+      "escala": 60
     },
     {
       "src": "inb-chat-print1-3.webp",
       "alt": "Tela do Chat",
       "largura": 752,
       "altura": 940,
-      "moldura": "sombra"
+      "moldura": "sombra",
+      "escala": 60
     }
   ]
 }
