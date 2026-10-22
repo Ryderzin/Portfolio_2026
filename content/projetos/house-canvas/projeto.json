@@ -5,7 +5,7 @@
   "subtitulo": "Customização de Plantas na Web",
   "categoria": "Aplicativo Web",
   "ano": "2026",
-  "stack": "Unity",
+  "stack": "Unity WebGL · ASP.NET Core · Google Cloud",
   "capa": {
     "src": "hc-logo-01-1.webp",
     "alt": "House Canvas Logo",
@@ -19,8 +19,131 @@
     "moldura": "fina",
     "encaixe": "conter"
   },
-  "blocos": [],
-  "ficha": {},
+  "blocos": [
+    {
+      "tipo": "texto",
+      "markdown": "O **House Canvas** é o **MVP** de uma aplicação web para quem está comprando um apartamento **na planta**: antes mesmo de a obra terminar, o futuro morador monta o seu apartamento em 3D com **móveis e objetos reais, em tamanho real**. Assim dá para ver se o sofá cabe na sala, como a mesa fica na cozinha e quanto espaço sobra para circular, e isso ajuda na **decisão de compra**, tanto do imóvel quanto dos móveis.\n\nParticipei da **concepção** e das decisões de interface, experiência e controles, e desenvolvi o MVP completo para **validar a ideia com clientes reais** em testes nos empreendimentos.\n\n### Aplicação 3D na Unity\n\n- Implementação da interface na Unity, com builds  em **WebGL**\n- **Interface e controles responsivos**: a aplicação detecta automaticamente se o acesso é pelo celular ou pelo computador e adapta o layout e a forma de interagir (toque ou mouse) a cada um\n-  **Controles 3D**: posicionar, mover, girar e duplicar móveis no chão e nas paredes\n- Móveis **carregados sob demanda** pela API e renderizados na hora, sem necessidade de um download inicial grande\n- Objetos com as **dimensões reais** dos produtos e **colisão física**: os móveis não atravessam paredes nem uns aos outros, e cada ponto de encaixe respeita o tamanho máximo do que cabe ali\n- Painel de informações para cada item com informações do item no mundo real e link para compra em lojas reais\n- Múltiplas configurações gráficas para cada tipo de dispositivo"
+    },
+    {
+      "tipo": "video",
+      "origem": "link",
+      "url": "https://youtu.be/7FJWYRsCojM",
+      "legenda": "Aplicação Web"
+    },
+    {
+      "tipo": "galeria",
+      "layout": "carrossel",
+      "imagens": [
+        {
+          "src": "infos.webp",
+          "alt": "Interface de Informações com acesso à loja",
+          "largura": 1919,
+          "altura": 1079,
+          "moldura": "sombra",
+          "escala": 100
+        },
+        {
+          "src": "mobile-landscape.webp",
+          "alt": "Interface mobile em modo Paisagem.",
+          "largura": 2000,
+          "altura": 923,
+          "moldura": "sombra",
+          "escala": 100
+        },
+        {
+          "src": "mobile-portrait.webp",
+          "alt": "Interface mobile em modo Retrato.",
+          "largura": 923,
+          "altura": 2000,
+          "moldura": "sombra",
+          "escala": 25
+        }
+      ],
+      "legenda": "Interface responsiva no desktop e mobile."
+    },
+    {
+      "tipo": "texto",
+      "markdown": "### API e infraestrutura do MVP\n\n- Projetei e desenvolvi **toda a API**, em C# com ASP.NET Core e Entity Framework\n- **Modelagem do banco relacional** em SQL Server: incorporadoras, empreendimentos, plantas, assets, usuários e chaves de convidado, com os relacionamentos entre eles (cada incorporadora com seus empreendimentos, cada empreendimento com suas plantas)\n- Evolução do esquema com **migrations** do Entity Framework, mantendo o banco versionado junto com o código\n- Autenticação com **múltiplos papéis** (administradores e usuários) e **chaves de convidado** para controlar o acesso em testes presenciais\n- Cadastro e gerenciamento de **assets 3D**, com categorias por cômodo e tipo de fixação (chão ou parede)\n- Hospedagem no **Google Cloud**, com os modelos 3D e as imagens guardados em buckets do Cloud Storage"
+    },
+    {
+      "tipo": "video",
+      "origem": "link",
+      "url": "https://youtu.be/QAlzbCo7fBA",
+      "legenda": "Funcionamento da Interface de Admin"
+    },
+    {
+      "tipo": "galeria",
+      "layout": "duas",
+      "imagens": [
+        {
+          "src": "adminauth.webp",
+          "alt": "Autenticação na interface de Admin",
+          "largura": 1907,
+          "altura": 941,
+          "moldura": "sombra"
+        },
+        {
+          "src": "adminassets.webp",
+          "alt": "Página de assets na interface de Admin",
+          "largura": 1905,
+          "altura": 943,
+          "moldura": "sombra"
+        }
+      ],
+      "legenda": "Interface de Admin"
+    },
+    {
+      "tipo": "texto",
+      "markdown": "### Testes com clientes nos totens\n\n- As sessões de teste aconteceram em **totens** instalados nos empreendimentos, com acesso controlado pelas chaves de convidado\n- Ao terminar a customização, o cliente escaneia um **QR Code** e vai para uma página de cadastro que **guarda o estado da planta** que ele montou, para a equipe acompanhar o interesse e as escolhas de cada um\n- Páginas de cadastro e login feitas em HTML, CSS e JavaScript"
+    },
+    {
+      "tipo": "galeria",
+      "layout": "duas",
+      "imagens": [
+        {
+          "src": "qrcode.webp",
+          "alt": "QR code de registro com customização atual",
+          "largura": 1805,
+          "altura": 881,
+          "moldura": "sombra"
+        },
+        {
+          "src": "captura-de-tela-2026-10-22-015037.webp",
+          "alt": "Tela de registro na Web",
+          "largura": 1919,
+          "altura": 939,
+          "moldura": "sombra"
+        }
+      ],
+      "legenda": "Interface de registro"
+    },
+    {
+      "tipo": "texto",
+      "markdown": "### Stack\n\n- **Aplicação 3D:** Unity com C#, com builds para Web\n- **API e dados:** C# com ASP.NET Core e Entity Framework, banco relacional SQL Server\n- **Painel e páginas web:** HTML, CSS e JavaScript\n- **Nuvem:** Google Cloud, com Cloud Storage para os arquivos 3D e as imagens"
+    }
+  ],
+  "ficha": {
+    "papel": "Desenvolvedor full-stack do MVP: aplicação 3D, API e painel",
+    "tecnologia": "Unity, ASP.NET Core, SQL, Google Cloud",
+    "linguagem": "C#, JavaScript",
+    "plataformas": "Web (desktop e celular)"
+  },
   "links": [],
-  "ocultarFaixa": true
+  "ocultarFaixa": true,
+  "galeriaTopo": [
+    {
+      "src": "paredesdownfromfar.webp",
+      "alt": "Tela inicial do Aplicativo",
+      "largura": 1919,
+      "altura": 1079,
+      "moldura": "fina"
+    },
+    {
+      "src": "guardaroupaparedeup.webp",
+      "alt": "Controles por asset",
+      "largura": 1919,
+      "altura": 1079,
+      "moldura": "fina"
+    }
+  ]
 }
