@@ -19,5 +19,6 @@
   },
   "blocos": [],
   "ficha": {},
-  "links": []
+  "links": [],
+  "ocultarFaixa": true
 }
