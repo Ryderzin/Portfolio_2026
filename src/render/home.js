@@ -2,9 +2,9 @@
 
 import { MOLDURAS } from '../validacao.js';
 import { pagina } from './layout.js';
-import { attrs, esc, imagem, urlMidia } from './util.js';
+import { attrs, esc, imagem, rota, urlMidia } from './util.js';
 
-export function capa({ slug, dados }, { prioridade = false } = {}) {
+export function capa({ slug, dados }, { site, prioridade = false }) {
   const previa = dados.capa.previa
     ? attrs({ 'data-previa': urlMidia(dados.capa.previa.src, slug) })
     : '';
@@ -14,7 +14,7 @@ export function capa({ slug, dados }, { prioridade = false } = {}) {
     MOLDURAS.includes(dados.capa.moldura) && `capa__janela--moldura-${dados.capa.moldura}`,
   ].filter(Boolean).join(' ');
   return `<li class="capas__item">
-  <a class="capa" href="/projetos/${esc(slug)}/">
+  <a class="capa"${attrs({ href: rota(site, `/projetos/${slug}/`) })}>
     ${dados.ocultarFaixa ? '' : `<span class="faixa faixa--capa rotulo">${esc(dados.categoria)}</span>`}
     <span class="capa__titulo titulo"><span class="marca">${esc(dados.titulo)}</span></span>
     <span class="capa__subtitulo titulo"><span class="marca">${esc(dados.subtitulo)}</span></span>
@@ -25,7 +25,7 @@ export function capa({ slug, dados }, { prioridade = false } = {}) {
 
 // conteudo: { site, home, projetos (já ordenados e publicados) }
 export function renderHome({ site, home, projetos }) {
-  const capas = projetos.map((projeto, i) => capa(projeto, { prioridade: i === 0 })).join('\n');
+  const capas = projetos.map((projeto, i) => capa(projeto, { site, prioridade: i === 0 })).join('\n');
 
   const conteudo = `<main>
     <section class="abertura container" aria-labelledby="nome">

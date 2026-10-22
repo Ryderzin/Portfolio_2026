@@ -1,0 +1,72 @@
+{
+  "titulo": "Inbuilt",
+  "subtitulo": "Augmented Reality Solution",
+  "categoria": "Mobile App",
+  "stack": "Unity, C# · ASP.NET Core and SQL Server",
+  "capa": {
+    "alt": "Inbuilt"
+  },
+  "blocos": [
+    {
+      "markdown": "At **Inbuilt**, I worked end to end on the product: from the app's interfaces and experience to augmented reality, computer vision, APIs, infrastructure and cloud data.\n\n### Interfaces and UX\n\n- Built the app's interfaces in Unity, focused on clarity for non-technical users\n- Designed and refined user flows (UX) based on user feedback\n- Responsive interfaces, adapted for **tablets** as well as smartphones"
+    },
+    {
+      "imagens": [
+        {
+          "alt": "App home screen on smartphones."
+        },
+        {
+          "alt": "App home screen on tablets."
+        }
+      ],
+      "legenda": "Responsive interfaces"
+    },
+    {
+      "markdown": "### Inbuilt X: augmented reality for homeowners\n\nA section of the app for viewing a home's installations in augmented reality, designed for homeowners and also used during construction. I was actively involved in its development, maintenance and improvements, in the app and in the backend.\n\n- Automatic detection of when the experience is available, based on the user's location\n- Augmented reality interactions to view the home's architecture in the room itself, such as **electrical**, **plumbing**, **gas** and **sewage** installations\n- Layers that can be turned on and off, to see one installation at a time\n- Built in Unity with C#, **ARCore**/**ARKit**\n\n### Computer vision\n\n- Integrated **OpenCV** into the app to identify **starting points** from the camera\n- Used the detection to place the installations in augmented reality more accurately"
+    },
+    {
+      "legenda": "Inbuilt X app in action"
+    },
+    {
+      "markdown": "### Inbuilt GO: the building's façade at real size\nA section of the app that shows the **development's façade at real size**, on the actual site, in augmented reality. I took part in the initial implementation and was actively involved in maintaining and improving the service, in the app and in the backend.\n\n- Geolocation-based positioning with the **ARCore Extensions** libraries\n- Automatic detection of when the experience is available, based on the user's location"
+    },
+    {
+      "legenda": "Inbuilt GO app in action. Source: @meuhabitare on Instagram"
+    },
+    {
+      "markdown": "### Inbuilt GO: development miniatures on the web\n\nWeb experiences that show the façade in a 3D viewer and also in augmented reality as a **digital scale model**. I built the API that creates and manages the pages for these experiences on **Inbuilt**'s corporate website\n\n- 3D miniatures of the developments on the web with `model-viewer`"
+    },
+    {
+      "legenda": "Web miniatures of the development's façade"
+    },
+    {
+      "markdown": "### Cloud and data\n\n- **Migrated** the APIs and databases from AWS to **Google Cloud**\n- Usage tracking recorded in SQL, with **Dataflow** scripts moving the data to **BigQuery**\n- **Looker** dashboards with up-to-date metrics made available to clients\n\n### Stack\n\n- **App and augmented reality:** Unity with C#, ARCore and ARKit\n- **Computer vision:** OpenCV integrated into Unity\n- **API:** C# with ASP.NET Core and Entity Framework, SQL Server database\n- **Cloud and data:** Google Cloud, Dataflow, BigQuery and Looker\n- **Web:** HTML, JavaScript and CSS; `model-viewer` for the 3D miniatures"
+    },
+    {
+      "imagens": [
+        {
+          "alt": "Looker dashboard for the client"
+        }
+      ]
+    }
+  ],
+  "ficha": {
+    "tecnologia": "Unity, ARCore/ARKit, OpenCV, Google Cloud",
+    "linguagem": "C#",
+    "papel": "Full-stack developer",
+    "plataformas": "Android and iOS"
+  },
+  "links": [
+    {
+      "rotulo": "@inbuilt_br on Instagram"
+    }
+  ],
+  "galeriaTopo": [
+    {
+      "alt": "App home screen on smartphones."
+    },
+    {
+      "alt": "Room selection home screen."
+    }
+  ]
+}

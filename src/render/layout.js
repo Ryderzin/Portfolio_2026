@@ -1,6 +1,6 @@
 // Estrutura comum das páginas: <head>, header com item ativo e rodapé.
 
-import { attrs, attrsLink, esc } from './util.js';
+import { attrs, attrsLink, esc, rota } from './util.js';
 
 export const ESTILOS = ['tokens.css', 'base.css', 'componentes.css', 'paginas.css', 'movimento.css'];
 export const FONTE_PRELOAD = '/fonts/dm-serif-display/dm-serif-display-latin-400-normal.woff2';
@@ -11,16 +11,44 @@ export function urlAbsoluta(site, caminho) {
 
 // Roda antes da primeira pintura (sem piscar):
 // - aplica o tema salvo (sem JS ou sem escolha: claro);
-// - na home, marca a entrada animada uma vez por sessão, se o movimento não estiver reduzido.
-export const SCRIPT_INICIAL = '<script>(function(d){'
-  + 'try{if(localStorage.getItem("tema")==="escuro")d.dataset.tema="escuro"}catch(e){}'
-  + 'try{if((location.pathname==="/"||location.pathname==="/index.html")&&!sessionStorage.getItem("entrada")'
-  + '&&!matchMedia("(prefers-reduced-motion: reduce)").matches){d.classList.add("entrada");sessionStorage.setItem("entrada","1")}}catch(e){}'
-  + '})(document.documentElement)</script>';
+// - na home (de qualquer idioma), marca a entrada animada uma vez por sessão, se o movimento não estiver reduzido.
+export function scriptInicial(site) {
+  const homes = (site.lingua?.todos ?? [{ prefixo: '' }]).flatMap(({ prefixo }) => [`${prefixo}/`, `${prefixo}/index.html`]);
+  return '<script>(function(d){'
+    + 'try{if(localStorage.getItem("tema")==="escuro")d.dataset.tema="escuro"}catch(e){}'
+    + `try{if(${JSON.stringify(homes)}.indexOf(location.pathname)>=0&&!sessionStorage.getItem("entrada")`
+    + '&&!matchMedia("(prefers-reduced-motion: reduce)").matches){d.classList.add("entrada");sessionStorage.setItem("entrada","1")}}catch(e){}'
+    + '})(document.documentElement)</script>';
+}
 
-function cabecalho(site, ativo) {
+// Seletor de idioma: um link por idioma para a mesma página (no 404, para a home).
+// O idioma atual fica marcado; no mobile só aparece o outro.
+function seletorIdioma(site, caminho) {
+  const { lingua } = site;
+  if (!lingua || lingua.todos.length < 2) return '';
+  const itens = lingua.todos.map(({ codigo, sigla, nome, prefixo }) => `<li><a${attrs({
+    href: `${prefixo}${caminho}`,
+    hreflang: codigo,
+    lang: codigo,
+    'aria-label': nome,
+    'aria-current': codigo === lingua.codigo ? 'true' : null,
+  })}>${esc(sigla)}</a></li>`).join('');
+  return `<nav class="idiomas"${attrs({ 'aria-label': site.rotulos.geral.idiomas })}><ul>${itens}</ul></nav>`;
+}
+
+// <link rel="alternate" hreflang> de cada idioma, mais o x-default (o principal).
+function alternativas(site, caminho) {
+  const { lingua } = site;
+  if (!lingua || lingua.todos.length < 2) return [];
+  const links = lingua.todos.map(({ codigo, prefixo }) =>
+    `<link rel="alternate"${attrs({ hreflang: codigo, href: urlAbsoluta(site, `${prefixo}${caminho}`) })}>`);
+  links.push(`<link rel="alternate" hreflang="x-default"${attrs({ href: urlAbsoluta(site, caminho) })}>`);
+  return links;
+}
+
+function cabecalho(site, ativo, caminhoIdioma) {
   const itens = site.navegacao.map(({ rotulo, caminho }) =>
-    `<li><a${attrs({ href: caminho, 'aria-current': caminho === ativo ? 'page' : null })}>${esc(rotulo)}</a></li>`).join('\n          ');
+    `<li><a${attrs({ href: rota(site, caminho), 'aria-current': caminho === ativo ? 'page' : null })}>${esc(rotulo)}</a></li>`).join('\n          ');
   return `<header class="cabecalho">
     <div class="container cabecalho__interno">
       <nav class="nav-principal"${attrs({ 'aria-label': site.rotulos.geral.navegacaoPrincipal })}>
@@ -28,6 +56,7 @@ function cabecalho(site, ativo) {
           ${itens}
         </ul>
       </nav>
+      ${seletorIdioma(site, caminhoIdioma)}
       ${botaoTema(site)}
     </div>
   </header>`;
@@ -71,11 +100,14 @@ function rodape(site, chamada) {
   </footer>`;
 }
 
-// Página completa.
+// Página completa. caminho e ativo são os do idioma principal ("/sobre/"); o prefixo
+// do idioma (site.lingua) é aplicado aqui.
 // opcoes: { site, caminho, titulo?, descricao, imagem?, tipo?, noindex?, ativo?, chamadaRodape?, conteudo }
 export function pagina({ site, caminho, titulo, descricao, imagem, tipo = 'website', noindex = false, ativo, chamadaRodape, conteudo }) {
   const tituloCompleto = titulo ? `${titulo} — ${site.titulo}` : site.titulo;
-  const url = urlAbsoluta(site, caminho);
+  const url = urlAbsoluta(site, rota(site, caminho));
+  // Páginas fora do índice (404) não têm equivalente: o seletor leva à home do outro idioma.
+  const caminhoIdioma = noindex ? '/' : caminho;
   const meta = [
     `<meta name="description"${attrs({ content: descricao })}>`,
     noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical"${attrs({ href: url })}>`,
@@ -85,6 +117,7 @@ export function pagina({ site, caminho, titulo, descricao, imagem, tipo = 'websi
     `<meta property="og:description"${attrs({ content: descricao })}>`,
     `<meta property="og:url"${attrs({ content: url })}>`,
     `<meta property="og:locale"${attrs({ content: site.idioma.replace('-', '_') })}>`,
+    ...(noindex ? [] : alternativas(site, caminho)),
   ];
   if (imagem) {
     meta.push(
@@ -103,7 +136,7 @@ export function pagina({ site, caminho, titulo, descricao, imagem, tipo = 'websi
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  ${SCRIPT_INICIAL}
+  ${scriptInicial(site)}
   <title>${esc(tituloCompleto)}</title>
   ${meta.join('\n  ')}
   <link rel="preload" href="${FONTE_PRELOAD}" as="font" type="font/woff2" crossorigin>
@@ -111,7 +144,7 @@ export function pagina({ site, caminho, titulo, descricao, imagem, tipo = 'websi
   <script type="module" src="/js/site.js"></script>
 </head>
 <body>
-  ${cabecalho(site, ativo)}
+  ${cabecalho(site, ativo, caminhoIdioma)}
 
   ${conteudo}
 

@@ -2,7 +2,7 @@
 
 import { pagina } from './layout.js';
 import { markdown } from './markdown.js';
-import { attrs, esc, imagem, preenchido, seta } from './util.js';
+import { attrs, esc, imagem, preenchido, rota, seta } from './util.js';
 
 function foto(dados) {
   if (!dados.foto) return '';
@@ -71,7 +71,7 @@ ${markdown(sobre.texto, { nivel: 2 })}
       ${experiencia(sobre, rotulos)}
       <div class="acoes rotulo">
         ${curriculo}
-        <a class="botao ${curriculo ? 'botao--secundario' : 'botao--primario'}" href="/#projetos">${esc(rotulos.geral.verProjetos)} ${seta('→')}</a>
+        <a class="botao ${curriculo ? 'botao--secundario' : 'botao--primario'}" ${attrs({ href: rota(site, '/#projetos') })}>${esc(rotulos.geral.verProjetos)} ${seta('→')}</a>
       </div>
     </article>
   </main>`;

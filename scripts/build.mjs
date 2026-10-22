@@ -13,6 +13,7 @@ import { renderProjeto } from '../src/render/projeto.js';
 import { renderSobre } from '../src/render/sobre.js';
 import { renderContato } from '../src/render/contato.js';
 import { renderErro404 } from '../src/render/erro404.js';
+import { aplicarTraducao, arquivoTraducao, idiomasDo, siteNoIdioma } from '../src/idiomas.js';
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = path.join(RAIZ, 'dist');
@@ -26,6 +27,7 @@ const COPIAS = [
   ['admin', 'admin'],
   ['src/render', 'admin/render'],
   ['src/validacao.js', 'admin/validacao.js'],
+  ['src/idiomas.js', 'admin/idiomas.js'],
 ];
 
 async function limparDist() {
@@ -135,30 +137,49 @@ async function build() {
   await limparDist();
   for (const [origem, destino] of COPIAS) await copiar(origem, destino);
 
-  const { site, home, sobre, contato, erro404 } = conteudo;
-  const projetos = ordenarProjetos(conteudo.projetos);
-
   // O painel lê daqui em qual repositório e branch buscar o conteúdo.
-  await gravar('admin/config.json', `${JSON.stringify(site.repositorio, null, 2)}\n`);
+  await gravar('admin/config.json', `${JSON.stringify(conteudo.site.repositorio, null, 2)}\n`);
 
-  await gravar('index.html', renderHome({ site, home, projetos }));
+  // Cada idioma é gerado com os textos da sua tradução sobre os do idioma principal.
+  // O principal fica na raiz; os outros, numa pasta com o código ("/en/"). A mídia é a mesma.
+  const idiomas = idiomasDo(conteudo.site);
+  const caminhos = [];
+  let publicados = 0;
+  for (const [n, { codigo }] of idiomas.entries()) {
+    const principal = n === 0;
+    const traducao = principal ? { paginas: {}, projetos: {} } : (conteudo.traducoes?.[codigo] ?? { paginas: {}, projetos: {} });
+    const traduzir = (chave) => aplicarTraducao(conteudo[chave], traducao.paginas[chave]);
+    const site = siteNoIdioma(conteudo.site, traducao.paginas.site, codigo);
+    const projetos = ordenarProjetos(conteudo.projetos.map(({ slug, dados }) => ({ slug, dados: aplicarTraducao(dados, traducao.projetos[slug]) })));
+    const pasta = site.lingua.prefixo ? `${site.lingua.prefixo.slice(1)}/` : '';
+    publicados = projetos.length;
 
-  for (const [i, projeto] of projetos.entries()) {
-    const proximo = projetos.length > 1 ? projetos[(i + 1) % projetos.length] : null;
-    await gravar(`projetos/${projeto.slug}/index.html`, renderProjeto({ site, projeto, proximo }));
-    await copiarPasta(path.join(RAIZ, 'content', 'projetos', projeto.slug), path.join(DIST, 'projetos', projeto.slug), ['projeto.json']);
+    await gravar(`${pasta}index.html`, renderHome({ site, home: traduzir('home'), projetos }));
+
+    for (const [i, projeto] of projetos.entries()) {
+      const proximo = projetos.length > 1 ? projetos[(i + 1) % projetos.length] : null;
+      await gravar(`${pasta}projetos/${projeto.slug}/index.html`, renderProjeto({ site, projeto, proximo }));
+      if (principal) {
+        const ignorar = idiomas.map((idioma, k) => (k === 0 ? 'projeto.json' : arquivoTraducao('projeto.json', idioma.codigo)));
+        await copiarPasta(path.join(RAIZ, 'content', 'projetos', projeto.slug), path.join(DIST, 'projetos', projeto.slug), ignorar);
+      }
+    }
+
+    await gravar(`${pasta}sobre/index.html`, renderSobre({ site, sobre: traduzir('sobre') }));
+    await gravar(`${pasta}contato/index.html`, renderContato({ site, contato: traduzir('contato') }));
+    await gravar(`${pasta}404.html`, renderErro404({ site, erro404: traduzir('erro404') }));
+
+    const prefixo = site.lingua.prefixo;
+    caminhos.push(...['/', ...projetos.map(({ slug }) => `/projetos/${slug}/`), '/sobre/', '/contato/'].map((c) => `${prefixo}${c}`));
   }
 
-  await gravar('sobre/index.html', renderSobre({ site, sobre }));
-  await gravar('contato/index.html', renderContato({ site, contato }));
-  await gravar('404.html', renderErro404({ site, erro404 }));
+  await gravar('sitemap.xml', sitemap(conteudo.site, caminhos));
+  await gravar('robots.txt', robots(conteudo.site));
 
-  const caminhos = ['/', ...projetos.map(({ slug }) => `/projetos/${slug}/`), '/sobre/', '/contato/'];
-  await gravar('sitemap.xml', sitemap(site, caminhos));
-  await gravar('robots.txt', robots(site));
-
-  const ocultos = conteudo.projetos.length - projetos.length;
-  console.log(`  páginas: home, ${projetos.length} ${projetos.length === 1 ? 'projeto' : 'projetos'}${ocultos ? ` (${ocultos} rascunho(s) ignorado(s))` : ''}, sobre, contato, 404`);
+  const ocultos = conteudo.projetos.length - publicados;
+  const siglas = idiomas.map((i) => i.codigo).join(', ');
+  console.log(`  páginas: home, ${publicados} ${publicados === 1 ? 'projeto' : 'projetos'}${ocultos ? ` (${ocultos} rascunho(s) ignorado(s))` : ''}, sobre, contato, 404`);
+  console.log(`  idiomas: ${siglas}${idiomas.length > 1 ? ` (${idiomas.slice(1).map((i) => `/${i.codigo.toLowerCase()}/`).join(', ')})` : ''}`);
   console.log('  sitemap.xml e robots.txt gerados');
 
   const ausentes = await urlsAusentesNoCss();

@@ -6,6 +6,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PAGINAS, formatarProblema, validarConteudo } from '../src/validacao.js';
+import { arquivoTraducao, traducoesDo } from '../src/idiomas.js';
 
 export const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const CONTENT = path.join(RAIZ, 'content');
@@ -50,7 +51,9 @@ async function lerJson(relativo, problemas) {
 }
 
 // Devolve { conteudo, arquivos, problemas }.
-// conteudo: { site, home, sobre, contato, erro404, projetos: [{ slug, dados }] }
+// conteudo: { site, home, sobre, contato, erro404, projetos: [{ slug, dados }],
+//             traducoes: { [codigo]: { paginas: { [chave]: dados }, projetos: { [slug]: dados } } } }
+// Uma tradução que não existe fica de fora (todos os textos usam o idioma principal).
 export async function carregarConteudo() {
   const problemas = [];
   const conteudo = { projetos: [] };
@@ -83,6 +86,20 @@ export async function carregarConteudo() {
     if (dados !== undefined) conteudo.projetos.push({ slug: item.name, dados });
   }
 
+  conteudo.traducoes = {};
+  for (const { codigo } of traducoesDo(conteudo.site)) {
+    const traducao = { paginas: {}, projetos: {} };
+    for (const [chave, { arquivo }] of Object.entries(PAGINAS)) {
+      const caminho = arquivoTraducao(arquivo, codigo);
+      if (arquivos.has(caminho)) traducao.paginas[chave] = await lerJson(caminho, problemas);
+    }
+    for (const { slug } of conteudo.projetos) {
+      const caminho = arquivoTraducao(`projetos/${slug}/projeto.json`, codigo);
+      if (arquivos.has(caminho)) traducao.projetos[slug] = await lerJson(caminho, problemas);
+    }
+    conteudo.traducoes[codigo] = traducao;
+  }
+
   return { conteudo, arquivos, problemas };
 }
 
@@ -95,8 +112,9 @@ export async function validarDoDisco() {
 // Imprime o resultado da validação. Devolve true se não houver erros.
 export function imprimirRelatorio(conteudo, problemas) {
   const erros = problemas.filter((p) => p.nivel === 'erro');
-  const avisos = problemas.filter((p) => p.nivel === 'aviso' && !p.marcador);
+  const avisos = problemas.filter((p) => p.nivel === 'aviso' && !p.marcador && !p.pendente);
   const marcadores = problemas.filter((p) => p.marcador);
+  const pendentes = problemas.filter((p) => p.pendente);
 
   const paginas = Object.keys(PAGINAS).filter((chave) => conteudo[chave] !== undefined).length;
   const projetos = conteudo.projetos.length;
@@ -107,6 +125,13 @@ export function imprimirRelatorio(conteudo, problemas) {
     const porArquivo = new Map();
     for (const p of marcadores) porArquivo.set(p.arquivo, [...(porArquivo.get(p.arquivo) ?? []), p.campo]);
     for (const [arquivo, campos] of porArquivo) console.log(`  ${arquivo}: ${campos.join(', ')}`);
+  }
+
+  if (pendentes.length > 0) {
+    console.log(`\nTraduções pendentes (${pendentes.length} textos usam o idioma principal):`);
+    const porArquivo = new Map();
+    for (const p of pendentes) porArquivo.set(p.arquivo, (porArquivo.get(p.arquivo) ?? 0) + 1);
+    for (const [arquivo, total] of porArquivo) console.log(`  ${arquivo}: ${total} ${total === 1 ? 'texto' : 'textos'}`);
   }
 
   if (avisos.length > 0) {

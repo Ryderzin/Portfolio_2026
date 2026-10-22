@@ -923,3 +923,39 @@ body {
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
+
+/* ---------- Idiomas ---------- */
+
+.idioma-painel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.idioma-painel .botao-painel[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+.editor__nota {
+  max-width: 72ch;
+  margin: 0 0 12px;
+  color: var(--ink-muted);
+}
+
+/* Texto no idioma principal, como referência para a tradução. */
+.campo__original {
+  max-height: 9em;
+  overflow: auto;
+  padding: 6px 10px;
+  border-left: var(--border-strong) solid var(--line-soft);
+  background: var(--field-bg);
+  color: var(--ink-muted);
+  font-size: 13px;
+  white-space: pre-wrap;
+}
+
+.campo__original-rotulo {
+  font-weight: 700;
+}

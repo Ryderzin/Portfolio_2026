@@ -1,0 +1,69 @@
+{
+  "titulo": "About",
+  "foto": {
+    "alt": "Photo of Ryan Leite"
+  },
+  "destaque": "Full-stack developer. C# and .NET with Entity Framework, SQL and NoSQL databases, front-end with HTML, CSS and JavaScript, and Unity development. Experience with augmented reality interactions, computer vision integration, APIs and data pipelines on AWS and Google Cloud.",
+  "texto": "I have always been interested in video games and have always tried to specialize in them, so my interest in programming came naturally. I enjoy optimizing processes and creating experiences that bring comfort not only to the people who use the solutions, but also to the people who build them.\n\nDay to day, I value **team communication** to understand problems well and **simpler processes** to solve them as directly as possible. At Inbuilt, this led me to work on every layer of the product, from the app interface to the infrastructure and the data, always looking for solutions that were easy to use and to maintain.",
+  "tecnologias": [
+    {
+      "grupo": "Back-end",
+      "itens": [
+        "C#",
+        ".NET",
+        "ASP.NET Core",
+        "Entity Framework"
+      ]
+    },
+    {
+      "grupo": "Data",
+      "itens": [
+        "SQL Server",
+        "MongoDB",
+        "BigQuery",
+        "Dataflow",
+        "Looker"
+      ]
+    },
+    {
+      "grupo": "Front-end",
+      "itens": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "React"
+      ]
+    },
+    {
+      "grupo": "Unity and Augmented Reality",
+      "itens": [
+        "C#",
+        "ARCore",
+        "ARKit",
+        "OpenCV"
+      ]
+    },
+    {
+      "grupo": "Cloud",
+      "itens": [
+        "Google Cloud",
+        "AWS",
+        "API and database migration"
+      ]
+    }
+  ],
+  "experiencia": [
+    {
+      "periodo": "2022-2026",
+      "cargo": "Full-Stack Developer",
+      "empresa": "Inbuilt S.A.",
+      "resumo": "Took part in designing, developing and deploying the company's solutions."
+    },
+    {
+      "periodo": "2021-2022",
+      "cargo": "Administrative Apprentice",
+      "empresa": "Lealfer - Indústria e Comércio de Aço",
+      "resumo": "Apprentice in the factory's quality department."
+    }
+  ]
+}

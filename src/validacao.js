@@ -3,6 +3,8 @@
 // Quem chama informa quais arquivos existem por meio de existeArquivo(caminho),
 // com o caminho relativo a content/ (ex.: "projetos/exemplo-web/capa.png").
 
+import { aplicarTraducao, arquivoTraducao } from './idiomas.js';
+
 export const LAYOUTS_GALERIA = ['duas', 'grande', 'carrossel'];
 // Enquadramento opcional de cada imagem de galeria (todos os campos podem faltar):
 // escala: largura em % do espaço da imagem; alinhamento: onde ela encosta quando é menor que o espaço;
@@ -97,6 +99,8 @@ const lista = (item, extra = {}) => ({ tipo: 'lista', item, ...extra });
 const variante = (chave, opcoes) => ({ tipo: 'variante', chave, opcoes });
 const midia = (extensoes) => ({ tipo: 'midia', extensoes });
 const opcional = (regra) => ({ ...regra, opcional: true });
+// Texto igual em todos os idiomas (endereços, códigos, e-mail…): não entra nas traduções.
+const fixo = (regra) => ({ ...regra, fixo: true });
 
 const formatoEmail = (v) => (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? null : 'e-mail inválido');
 
@@ -221,26 +225,44 @@ const BLOCO = variante('tipo', {
   }),
   codigo: objeto({
     tipo: qualquer(),
-    linguagem: texto({ formato: formatoLinguagem }),
-    codigo: texto({ ignorarMarcadores: true }),
+    linguagem: fixo(texto({ formato: formatoLinguagem })),
+    codigo: fixo(texto({ ignorarMarcadores: true })),
   }),
   citacao: objeto({ tipo: qualquer(), texto: texto(), autor: opcional(texto()) }),
 });
+
+const formatoIdioma = (v) => (/^[a-z]{2,3}(-[A-Z]{2})?$/.test(v) ? null : 'use um código de idioma como "pt-BR" ou "en"');
+
+// O primeiro idioma é o principal (o de "idioma"); os códigos não se repetem.
+function idiomasValidos(lista, campo, ctx) {
+  const codigos = lista.map((i) => i?.codigo);
+  if (ctx.raiz && codigos[0] !== ctx.raiz.idioma) {
+    reportar(ctx, 'erro', juntar(juntar(campo, 0), 'codigo'), `o primeiro idioma é o principal e deve ser igual a "idioma" (${JSON.stringify(ctx.raiz.idioma)})`);
+  }
+  codigos.forEach((codigo, i) => {
+    if (codigos.indexOf(codigo) !== i) reportar(ctx, 'erro', juntar(juntar(campo, i), 'codigo'), 'idioma repetido');
+  });
+}
 
 const ESQUEMA_SITE = objeto({
   titulo: texto(),
   descricao: texto(),
   url: texto({ url: true, formato: formatoUrlSite }),
-  idioma: texto({ formato: (v) => (/^[a-z]{2,3}(-[A-Z]{2})?$/.test(v) ? null : 'use um código de idioma como "pt-BR"') }),
+  idioma: fixo(texto({ formato: formatoIdioma })),
+  idiomas: opcional(lista(objeto({
+    codigo: fixo(texto({ formato: formatoIdioma })),
+    sigla: fixo(texto()),
+    nome: fixo(texto()),
+  }), { min: 1, verificar: idiomasValidos })),
   repositorio: objeto({
-    dono: texto({ formato: (v) => (/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/.test(v) ? null : 'nome de usuário do GitHub inválido') }),
-    nome: texto({ formato: (v) => (/^[A-Za-z0-9._-]+$/.test(v) ? null : 'nome de repositório inválido') }),
-    branch: texto({ formato: (v) => (/^[^\s~^:?*\\]+$/.test(v) ? null : 'nome de branch inválido') }),
+    dono: fixo(texto({ formato: (v) => (/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/.test(v) ? null : 'nome de usuário do GitHub inválido') })),
+    nome: fixo(texto({ formato: (v) => (/^[A-Za-z0-9._-]+$/.test(v) ? null : 'nome de repositório inválido') })),
+    branch: fixo(texto({ formato: (v) => (/^[^\s~^:?*\\]+$/.test(v) ? null : 'nome de branch inválido') })),
   }),
-  navegacao: lista(objeto({ rotulo: texto(), caminho: texto({ formato: formatoCaminhoInterno }) }), { min: 1 }),
+  navegacao: lista(objeto({ rotulo: texto(), caminho: fixo(texto({ formato: formatoCaminhoInterno })) }), { min: 1 }),
   rodape: objeto({ texto: texto(), links: lista(link) }),
   rotulos: objeto({
-    geral: objeto({ navegacaoPrincipal: texto(), paginaInicial: texto(), verProjetos: texto(), temaEscuro: texto() }),
+    geral: objeto({ navegacaoPrincipal: texto(), paginaInicial: texto(), verProjetos: texto(), temaEscuro: texto(), idiomas: texto() }),
     projeto: objeto({
       voltarProjetos: texto(),
       galeriaTopo: texto(),
@@ -285,14 +307,14 @@ const ESQUEMA_SOBRE = objeto({
 const ESQUEMA_CONTATO = objeto({
   titulo: texto(),
   frase: texto(),
-  email: texto({ formato: formatoEmail }),
+  email: fixo(texto({ formato: formatoEmail })),
   assuntoEmail: texto(),
-  telefone: opcional(texto({ formato: formatoTelefone })),
+  telefone: opcional(fixo(texto({ formato: formatoTelefone }))),
   linkedin: opcional(urlCompleta()),
   github: opcional(urlCompleta()),
 });
 
-const ESQUEMA_404 = objeto({ codigo: texto(), titulo: texto(), texto: texto() });
+const ESQUEMA_404 = objeto({ codigo: fixo(texto()), titulo: texto(), texto: texto() });
 
 const ESQUEMA_PROJETO = objeto({
   publicado: booleano(),
@@ -301,7 +323,7 @@ const ESQUEMA_PROJETO = objeto({
   subtitulo: texto(),
   categoria: texto(),
   ocultarFaixa: opcional(booleano()),
-  ano: texto({ formato: formatoAno }),
+  ano: fixo(texto({ formato: formatoAno })),
   stack: texto(),
   capa: objeto({
     ...camposImagem,
@@ -504,7 +526,7 @@ function validarVariante(regra, valor, campo, ctx) {
 export function validarPagina(chave, dados, existeArquivo) {
   const pagina = PAGINAS[chave];
   if (!pagina) throw new Error(`página desconhecida: ${chave}`);
-  const ctx = { arquivo: `content/${pagina.arquivo}`, pastaMidia: null, existeArquivo, problemas: [] };
+  const ctx = { arquivo: `content/${pagina.arquivo}`, pastaMidia: null, existeArquivo, problemas: [], raiz: dados };
   validarValor(pagina.esquema, dados, '', ctx);
   return ctx.problemas;
 }
@@ -515,6 +537,7 @@ export function validarProjeto(slug, dados, existeArquivo) {
     pastaMidia: `projetos/${slug}`,
     existeArquivo,
     problemas: [],
+    raiz: dados,
   };
   if (!SLUG.test(slug)) {
     ctx.problemas.push({
@@ -528,8 +551,137 @@ export function validarProjeto(slug, dados, existeArquivo) {
   return ctx.problemas;
 }
 
-// conteudo: { site, home, sobre, contato, erro404, projetos: [{ slug, dados }] }
+// ---------- Traduções ----------
+// Uma tradução tem a mesma forma do original, mas só com os textos traduzíveis.
+// Endereços, mídia, números, escolhas e textos fixos (e-mail, ano, código…) ficam no original.
+
+export function esquemaDaPagina(chave) {
+  return PAGINAS[chave]?.esquema ?? null;
+}
+
+export function esquemaDoProjeto() {
+  return ESQUEMA_PROJETO;
+}
+
+const regraTraduzivel = (regra) => regra?.tipo === 'texto' && !regra.url && !regra.fixo;
+
+function resolverVariante(regra, valor) {
+  let atual = regra;
+  while (atual?.tipo === 'variante') atual = ehObjeto(valor) ? atual.opcoes[valor[atual.chave]] : null;
+  return atual ?? null;
+}
+
+// Regra do esquema num caminho do documento (as variantes são resolvidas pelo original).
+function regraNoCaminho(esquema, caminho, original) {
+  let regra = esquema;
+  let valor = original;
+  for (const chave of caminho) {
+    regra = resolverVariante(regra, valor);
+    if (regra?.tipo === 'objeto') regra = regra.campos[chave];
+    else if (regra?.tipo === 'lista') regra = regra.item;
+    else return null;
+    valor = valor?.[chave];
+  }
+  return resolverVariante(regra, valor);
+}
+
+// O campo nesse caminho entra na tradução? (texto traduzível ou lista de textos traduzíveis)
+export function ehTraduzivel(esquema, caminho, original) {
+  const regra = regraNoCaminho(esquema, caminho, original);
+  return regraTraduzivel(regra) || (regra?.tipo === 'lista' && regraTraduzivel(regra.item));
+}
+
+function vazio(valor) {
+  return valor === undefined || valor === null || (typeof valor === 'string' && valor.trim() === '');
+}
+
+function validarTraducaoValor(regraBruta, trad, orig, campo, ctx) {
+  const regra = resolverVariante(regraBruta, orig);
+  if (!regra) {
+    if (!vazio(trad)) reportar(ctx, 'erro', campo, 'não existe no original; apague da tradução');
+    return;
+  }
+  if (regraTraduzivel(regra)) {
+    if (vazio(trad)) {
+      if (!vazio(orig)) ctx.problemas.push({ nivel: 'aviso', arquivo: ctx.arquivo, campo, mensagem: 'sem tradução: usa o texto original', pendente: true });
+    } else if (typeof trad !== 'string') {
+      reportar(ctx, 'erro', campo, `deveria ser texto (entre aspas), mas é ${descrever(trad)}`);
+    }
+    return;
+  }
+  if (regra.tipo === 'objeto') {
+    if (!vazio(trad) && !ehObjeto(trad)) return reportar(ctx, 'erro', campo || '(arquivo)', `deveria ser um objeto { … }, mas é ${descrever(trad)}`);
+    const traduzido = ehObjeto(trad) ? trad : {};
+    for (const chave of Object.keys(traduzido)) {
+      if (!Object.hasOwn(regra.campos, chave)) reportar(ctx, 'erro', juntar(campo, chave), 'campo desconhecido (confira a grafia)');
+    }
+    for (const [chave, sub] of Object.entries(regra.campos)) {
+      validarTraducaoValor(sub, traduzido[chave], ehObjeto(orig) ? orig[chave] : undefined, juntar(campo, chave), ctx);
+    }
+    return;
+  }
+  if (regra.tipo === 'lista') {
+    if (!vazio(trad) && !Array.isArray(trad)) return reportar(ctx, 'erro', campo, `deveria ser uma lista [ … ], mas é ${descrever(trad)}`);
+    const traduzida = Array.isArray(trad) ? trad : [];
+    const originais = Array.isArray(orig) ? orig : [];
+    if (traduzida.length > originais.length) {
+      reportar(ctx, 'aviso', campo, `a tradução tem ${traduzida.length} itens e o original ${originais.length}; os itens a mais são ignorados`);
+    }
+    originais.forEach((item, i) => validarTraducaoValor(regra.item, traduzida[i], item, juntar(campo, i), ctx));
+    return;
+  }
+  // Mídia, números, escolhas e textos fixos: na tradução, só podem repetir o original.
+  if (!vazio(trad) && JSON.stringify(trad) !== JSON.stringify(orig)) {
+    reportar(ctx, 'erro', campo, 'não se traduz: é igual em todos os idiomas. Apague da tradução e mude no original');
+  }
+}
+
+// Valida a tradução de um documento: a forma (contra o esquema e o original), os textos
+// traduzidos (formatos, marcadores) e os pendentes (avisos com pendente: true).
+function validarTraducao({ esquema, arquivo, pastaMidia, traducao, original, existeArquivo, doOriginal }) {
+  const ctx = { arquivo, pastaMidia, existeArquivo, problemas: [], raiz: original };
+  validarTraducaoValor(esquema, traducao, original, '', ctx);
+  if (ctx.problemas.some((p) => p.nivel === 'erro')) return ctx.problemas;
+
+  // Formatos e marcadores dos textos traduzidos: valida o documento já traduzido e fica
+  // só com os problemas que o original não tem.
+  const jaNoOriginal = new Set(doOriginal.map((p) => `${p.campo}\u0000${p.mensagem}`));
+  const traduzido = { ...ctx, problemas: [], raiz: aplicarTraducao(original, traducao) };
+  validarValor(esquema, traduzido.raiz, '', traduzido);
+  ctx.problemas.push(...traduzido.problemas.filter((p) => !jaNoOriginal.has(`${p.campo}\u0000${p.mensagem}`)));
+  return ctx.problemas;
+}
+
+export function validarTraducaoPagina(chave, codigo, traducao, original, existeArquivo) {
+  const pagina = PAGINAS[chave];
+  if (!pagina) throw new Error(`página desconhecida: ${chave}`);
+  return validarTraducao({
+    esquema: pagina.esquema,
+    arquivo: `content/${arquivoTraducao(pagina.arquivo, codigo)}`,
+    pastaMidia: null,
+    traducao,
+    original,
+    existeArquivo,
+    doOriginal: validarPagina(chave, original, existeArquivo),
+  });
+}
+
+export function validarTraducaoProjeto(slug, codigo, traducao, original, existeArquivo) {
+  return validarTraducao({
+    esquema: ESQUEMA_PROJETO,
+    arquivo: `content/${arquivoTraducao(`projetos/${slug}/projeto.json`, codigo)}`,
+    pastaMidia: `projetos/${slug}`,
+    traducao,
+    original,
+    existeArquivo,
+    doOriginal: validarProjeto(slug, original, existeArquivo),
+  });
+}
+
+// conteudo: { site, home, sobre, contato, erro404, projetos: [{ slug, dados }],
+//             traducoes?: { [codigo]: { paginas: { [chave]: dados }, projetos: { [slug]: dados } } } }
 // Páginas ausentes (undefined) são ignoradas aqui; quem carrega os arquivos informa a ausência.
+// Traduções ausentes contam como vazias: todos os textos ficam pendentes.
 export function validarConteudo(conteudo, existeArquivo) {
   const problemas = [];
   for (const chave of Object.keys(PAGINAS)) {
@@ -537,6 +689,16 @@ export function validarConteudo(conteudo, existeArquivo) {
   }
   for (const { slug, dados } of conteudo.projetos ?? []) {
     problemas.push(...validarProjeto(slug, dados, existeArquivo));
+  }
+  for (const [codigo, { paginas = {}, projetos = {} }] of Object.entries(conteudo.traducoes ?? {})) {
+    for (const chave of Object.keys(PAGINAS)) {
+      if (conteudo[chave] === undefined) continue;
+      problemas.push(...validarTraducaoPagina(chave, codigo, paginas[chave], conteudo[chave], existeArquivo));
+    }
+    for (const { slug, dados } of conteudo.projetos ?? []) {
+      if (dados?.publicado !== true && projetos[slug] === undefined) continue;
+      problemas.push(...validarTraducaoProjeto(slug, codigo, projetos[slug], dados, existeArquivo));
+    }
   }
   return problemas;
 }

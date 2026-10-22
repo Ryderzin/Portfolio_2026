@@ -5,7 +5,11 @@
 import { ErroConflito, ErroFonte, criarFonteGitHub, criarFonteLocal } from './github.js';
 import { DESCRITORES, formatarCaminho, h, montarFormulario, mostrarProblemas } from './formularios.js';
 import { ErroEnvio, nomeLivre, nomeSeguro, processarImagem, processarPdf, processarVideo } from './midia.js';
-import { PAGINAS, SLUG, formatarProblema, validarPagina, validarProjeto } from './validacao.js';
+import {
+  PAGINAS, SLUG, ehTraduzivel, esquemaDaPagina, esquemaDoProjeto, formatarProblema,
+  validarPagina, validarProjeto, validarTraducaoPagina, validarTraducaoProjeto,
+} from './validacao.js';
+import { aplicarTraducao, arquivoTraducao, idiomasDo, podarTraducao, siteNoIdioma, traducoesDo } from './idiomas.js';
 import { ordenarProjetos } from './render/util.js';
 import { renderHome } from './render/home.js';
 import { renderProjeto } from './render/projeto.js';
@@ -27,6 +31,8 @@ const estado = {
   uploads: new Map(), // caminho → { bytes, url } enviados nesta sessão, ainda não publicados
   miniaturas: new Map(), // caminho → Promise<url | null> das imagens já publicadas, lidas da fonte
   docs: new Map(), // caminho → { caminho, tipo: 'pagina'|'projeto', chave, slug, original, dados, novo }
+  traducoes: new Map(), // caminho → { caminho, tipo: 'traducao', codigo, base (o doc original), original, dados }
+  idioma: null, // idioma em edição; o principal edita os documentos, os outros as traduções
   atual: null,
   formulario: null,
   saindo: false,
@@ -38,12 +44,65 @@ function serializar(dados) {
   return `${JSON.stringify(dados, null, 2)}\n`;
 }
 
+// Tradução: só o que traduz algo (sem textos vazios); sem tradução nenhuma, o arquivo não é criado.
+function textoDe(doc) {
+  return doc.tipo === 'traducao' ? serializar(podarTraducao(doc.dados) ?? {}) : serializar(doc.dados);
+}
+
 function alterado(doc) {
-  return serializar(doc.dados) !== doc.original;
+  if (doc.tipo === 'traducao' && doc.original === '') return textoDe(doc) !== serializar({});
+  return textoDe(doc) !== doc.original;
 }
 
 function docsAlterados() {
-  return [...estado.docs.values()].filter(alterado);
+  return [...estado.docs.values(), ...estado.traducoes.values()].filter(alterado);
+}
+
+// ---------- Idiomas ----------
+
+function idiomaPrincipal() {
+  return idiomasDo(doc('site.json')?.dados)[0].codigo;
+}
+
+function emTraducao() {
+  return estado.idioma !== null && estado.idioma !== idiomaPrincipal();
+}
+
+// Tradução de um documento num idioma; criada vazia quando ainda não existe.
+function traducaoDe(base, codigo) {
+  const caminho = arquivoTraducao(base.caminho, codigo);
+  let traducao = estado.traducoes.get(caminho);
+  if (!traducao) {
+    traducao = { caminho, tipo: 'traducao', codigo, base, original: '', dados: {} };
+    estado.traducoes.set(caminho, traducao);
+  }
+  return traducao;
+}
+
+// Documento que o formulário está editando: o original ou a tradução dele.
+function emEdicao() {
+  return emTraducao() ? traducaoDe(estado.atual, estado.idioma) : estado.atual;
+}
+
+function lerCaminho(objeto, caminho) {
+  return caminho.reduce((atual, chave) => (atual === undefined || atual === null ? undefined : atual[chave]), objeto);
+}
+
+// Mover ou remover itens no original faz o mesmo em cada tradução, para ela continuar no item certo.
+function espelharEm(base) {
+  return (caminho, operacao) => {
+    const total = (lerCaminho(base.dados, caminho)?.length ?? 0) + 1;
+    for (const { codigo } of traducoesDo(doc('site.json').dados)) {
+      const lista = lerCaminho(estado.traducoes.get(arquivoTraducao(base.caminho, codigo))?.dados, caminho);
+      if (!Array.isArray(lista)) continue;
+      while (lista.length < total) lista.push(null);
+      operacao(lista);
+    }
+  };
+}
+
+function esquemaDe(base) {
+  return base.tipo === 'projeto' ? esquemaDoProjeto() : esquemaDaPagina(base.chave);
 }
 
 // Uploads ainda usados por algum documento (os removidos da página não são publicados).
@@ -66,6 +125,12 @@ function existeArquivo(caminho) {
 }
 
 function validar(doc) {
+  if (doc.tipo === 'traducao') {
+    const { base } = doc;
+    return base.tipo === 'projeto'
+      ? validarTraducaoProjeto(base.slug, doc.codigo, doc.dados, base.dados, existeArquivo)
+      : validarTraducaoPagina(base.chave, doc.codigo, doc.dados, base.dados, existeArquivo);
+  }
   return doc.tipo === 'projeto'
     ? validarProjeto(doc.slug, doc.dados, existeArquivo)
     : validarPagina(doc.chave, doc.dados, existeArquivo);
@@ -167,6 +232,7 @@ async function carregar(fonte) {
   for (const promessa of estado.miniaturas.values()) promessa.then((url) => url && URL.revokeObjectURL(url));
   estado.miniaturas.clear();
   estado.docs.clear();
+  estado.traducoes.clear();
 
   const alvos = [
     ...Object.entries(PAGINAS).map(([chave, { arquivo }]) => ({ caminho: arquivo, tipo: 'pagina', chave })),
@@ -186,6 +252,22 @@ async function carregar(fonte) {
     }
   }));
   if (!doc('site.json')) throw new ErroFonte(`Não foi possível ler content/site.json. ${falhas.join(' ')}`);
+
+  // Traduções existentes; as que faltam são criadas vazias quando forem editadas.
+  const traducoes = traducoesDo(doc('site.json').dados).flatMap(({ codigo }) =>
+    [...estado.docs.values()].map((base) => ({ base, codigo, caminho: arquivoTraducao(base.caminho, codigo) })))
+    .filter(({ caminho }) => estado.arquivos.has(caminho));
+  await Promise.all(traducoes.map(async ({ base, codigo, caminho }) => {
+    try {
+      const dados = JSON.parse(await fonte.lerTexto(caminho));
+      const traducao = traducaoDe(base, codigo);
+      traducao.dados = dados;
+      traducao.original = textoDe(traducao);
+    } catch (erro) {
+      falhas.push(`content/${caminho}: ${erro instanceof SyntaxError ? 'JSON inválido' : erro.message}`);
+    }
+  }));
+  if (!traducoesDo(doc('site.json').dados).some(({ codigo }) => codigo === estado.idioma)) estado.idioma = idiomaPrincipal();
   return falhas;
 }
 
@@ -238,11 +320,13 @@ window.addEventListener('hashchange', () => {
 const NOMES_PAGINAS = { home: 'Home', sobre: 'Sobre', contato: 'Contato', erro404: 'Página 404', site: 'Site e rótulos' };
 
 function itemNavegacao(d, titulo, detalhe) {
+  const traducaoAlterada = traducoesDo(doc('site.json').dados)
+    .some(({ codigo }) => { const t = estado.traducoes.get(arquivoTraducao(d.caminho, codigo)); return t && alterado(t); });
   return h('li', {},
     h('a', { href: rotaPara(d), class: 'nav-painel__item', 'aria-current': estado.atual === d ? 'page' : null },
       h('span', { class: 'nav-painel__titulo' }, titulo),
       detalhe ? h('span', { class: 'nav-painel__detalhe' }, detalhe) : null,
-      alterado(d) ? h('span', { class: 'nav-painel__alterado' }, d.novo ? 'novo' : 'alterado') : null));
+      alterado(d) || traducaoAlterada ? h('span', { class: 'nav-painel__alterado' }, d.novo ? 'novo' : 'alterado') : null));
 }
 
 function desenharNavegacao() {
@@ -266,7 +350,7 @@ function desenharStatus() {
   status.classList.toggle('selo--alterado', total > 0);
   $('#publicar').disabled = total === 0;
   const desfazer = $('#desfazer');
-  if (desfazer) desfazer.disabled = !alterado(estado.atual);
+  if (desfazer) desfazer.disabled = !alterado(emEdicao());
 }
 
 // ---------- Mídia ----------
@@ -313,16 +397,17 @@ function urlImagem(src) {
 
 // ---------- Editor ----------
 
-// Resumo acima do formulário: só aparece quando há erro, aviso ou marcador.
-function resumoValidacao(problemas, semCampo) {
+// Resumo acima do formulário: só aparece quando há erro, aviso, marcador ou texto sem tradução.
+function resumoValidacao(problemas, semCampo, pendentes) {
   const erros = problemas.filter((p) => p.nivel === 'erro');
   const marcadores = problemas.filter((p) => p.marcador).length;
   const avisos = problemas.filter((p) => p.nivel === 'aviso' && !p.marcador);
-  if (!erros.length && !marcadores && !avisos.length) return null;
+  if (!erros.length && !marcadores && !avisos.length && !pendentes) return null;
   const partes = [];
   if (erros.length) partes.push(`${erros.length} ${erros.length === 1 ? 'erro' : 'erros'}`);
   if (marcadores) partes.push(`${marcadores} ${marcadores === 1 ? 'marcador […] a preencher' : 'marcadores […] a preencher'}`);
   if (avisos.length) partes.push(`${avisos.length} ${avisos.length === 1 ? 'aviso' : 'avisos'}`);
+  if (pendentes) partes.push(`${pendentes} ${pendentes === 1 ? 'texto sem tradução (usa o original)' : 'textos sem tradução (usam o original)'}`);
 
   const extras = semCampo.filter((p) => !p.marcador);
   return h('div', { class: `resumo ${erros.length ? 'resumo--erro' : ''}` },
@@ -331,9 +416,11 @@ function resumoValidacao(problemas, semCampo) {
 }
 
 function revalidar() {
-  const problemas = validar(estado.atual);
+  // Textos sem tradução só entram na contagem do resumo, não junto de cada campo.
+  const todos = validar(emEdicao());
+  const problemas = todos.filter((p) => !p.pendente);
   const semCampo = mostrarProblemas(estado.formulario, problemas);
-  const resumo = resumoValidacao(problemas, semCampo);
+  const resumo = resumoValidacao(problemas, semCampo, todos.length - problemas.length);
   $('#resumo').replaceChildren(...(resumo ? [resumo] : []));
 }
 
@@ -357,6 +444,21 @@ function focarDepois(foco) {
 
 function botoesDoTopo(d) {
   const botoes = [];
+  if (emTraducao()) {
+    const traducao = traducaoDe(d, estado.idioma);
+    botoes.push(h('button', {
+      type: 'button',
+      id: 'desfazer',
+      class: 'botao-painel botao-painel--secundario',
+      disabled: !alterado(traducao),
+      onclick: () => {
+        if (!confirm('Desfazer as alterações desta tradução?')) return;
+        traducao.dados = traducao.original ? JSON.parse(traducao.original) : {};
+        abrir(d);
+      },
+    }, 'Desfazer alterações'));
+    return botoes;
+  }
   if (d.tipo === 'projeto' && d.dados.publicado === true) {
     botoes.push(h('button', {
       type: 'button',
@@ -389,25 +491,63 @@ function botoesDoTopo(d) {
   return botoes;
 }
 
+// Chave de idioma do editor; só aparece quando o site tem traduções.
+function chaveIdioma(d) {
+  const idiomas = idiomasDo(doc('site.json').dados);
+  if (idiomas.length < 2) return null;
+  return h('div', { class: 'idioma-painel', role: 'group', 'aria-label': 'Idioma do conteúdo' },
+    idiomas.map(({ codigo, nome, sigla }) => h('button', {
+      type: 'button',
+      class: 'botao-painel botao-painel--secundario',
+      'aria-pressed': String(codigo === estado.idioma),
+      lang: codigo,
+      onclick: () => {
+        if (codigo === estado.idioma) return;
+        estado.idioma = codigo;
+        abrir(d);
+      },
+    }, nome || sigla || codigo)));
+}
+
 function abrir(d, { foco } = {}) {
   const rolagem = estado.atual === d ? window.scrollY : 0;
   estado.atual = d;
   const descritores = d.tipo === 'projeto' ? DESCRITORES.projeto(d.slug, { categorias: categoriasUsadas() }) : DESCRITORES[d.chave];
-  const titulo = d.tipo === 'projeto' ? `Editar projeto: ${d.dados.titulo || d.slug}` : `Editar: ${NOMES_PAGINAS[d.chave]}`;
+  const traducao = emTraducao() ? traducaoDe(d, estado.idioma) : null;
+  const idioma = idiomasDo(doc('site.json').dados).find((i) => i.codigo === estado.idioma);
+  const nome = d.tipo === 'projeto' ? `Editar projeto: ${d.dados.titulo || d.slug}` : `Editar: ${NOMES_PAGINAS[d.chave]}`;
+  const titulo = traducao ? `${nome} · ${idioma?.nome ?? estado.idioma}` : nome;
 
-  estado.formulario = montarFormulario(descritores, {
+  const ctx = {
     doc: d.dados,
     aoMudar,
     aoEstrutura: ({ foco: novoFoco } = {}) => abrir(d, { foco: novoFoco }),
     enviar,
     urlImagem,
-  });
+    espelhar: espelharEm(d),
+  };
+  if (traducao) {
+    const esquema = esquemaDe(d);
+    Object.assign(ctx, {
+      doc: traducao.dados,
+      original: d.dados,
+      traduzivel: (caminho) => ehTraduzivel(esquema, caminho, d.dados),
+      idiomaOriginal: idiomaPrincipal(),
+    });
+  }
+  estado.formulario = montarFormulario(descritores, ctx);
+  if (traducao) estado.formulario.setAttribute('lang', estado.idioma);
 
+  const principal = idiomasDo(doc('site.json').dados)[0];
   $('#editor').replaceChildren(
     h('div', { class: 'editor__topo' },
       h('h1', { class: 'editor__titulo' }, h('span', { class: 'marca' }, titulo)),
       h('div', { class: 'editor__botoes' }, botoesDoTopo(d))),
-    h('p', { class: 'editor__arquivo' }, `content/${d.caminho}`),
+    chaveIdioma(d),
+    traducao
+      ? h('p', { class: 'editor__nota' }, `Tradução para ${idioma?.nome ?? estado.idioma}. Só os textos aparecem aqui; imagens, ordem e configurações vêm de ${principal.nome ?? principal.codigo}. O que ficar vazio usa o texto original.`)
+      : null,
+    h('p', { class: 'editor__arquivo' }, `content/${traducao ? traducao.caminho : d.caminho}`),
     h('div', { id: 'resumo', 'aria-live': 'polite' }),
     estado.formulario,
   );
@@ -476,26 +616,34 @@ $('#form-novo').addEventListener('submit', (evento) => {
 
 // ---------- Pré-visualização ----------
 
+// Dados de um documento no idioma em edição (o original com a tradução por cima).
+function noIdioma(base) {
+  return emTraducao() ? aplicarTraducao(base.dados, traducaoDe(base, estado.idioma).dados) : base.dados;
+}
+
 function htmlDaPrevia() {
   const d = estado.atual;
-  const site = doc('site.json').dados;
-  const todos = projetos();
+  const siteDoc = doc('site.json');
+  const codigo = estado.idioma ?? idiomaPrincipal();
+  const site = siteNoIdioma(siteDoc.dados, emTraducao() ? traducaoDe(siteDoc, codigo).dados : undefined, codigo);
+  const todos = [...estado.docs.values()].filter((p) => p.tipo === 'projeto').map((p) => ({ slug: p.slug, dados: noIdioma(p) }));
+  const dados = noIdioma(d);
   switch (d.tipo === 'projeto' ? 'projeto' : d.chave) {
     case 'site':
     case 'home':
-      return renderHome({ site, home: doc('home.json').dados, projetos: ordenarProjetos(todos) });
+      return renderHome({ site, home: noIdioma(doc('home.json')), projetos: ordenarProjetos(todos) });
     case 'sobre':
-      return renderSobre({ site, sobre: d.dados });
+      return renderSobre({ site, sobre: dados });
     case 'contato':
-      return renderContato({ site, contato: d.dados });
+      return renderContato({ site, contato: dados });
     case 'erro404':
-      return renderErro404({ site, erro404: d.dados });
+      return renderErro404({ site, erro404: dados });
     default: {
       const publicados = ordenarProjetos(todos);
       const i = publicados.findIndex((p) => p.slug === d.slug);
       const candidatos = publicados.filter((p) => p.slug !== d.slug);
       const proximo = i >= 0 ? (publicados.length > 1 ? publicados[(i + 1) % publicados.length] : null) : (candidatos[0] ?? null);
-      return renderProjeto({ site, projeto: { slug: d.slug, dados: d.dados }, proximo });
+      return renderProjeto({ site, projeto: { slug: d.slug, dados }, proximo });
     }
   }
 }
@@ -537,21 +685,24 @@ for (const botao of document.querySelectorAll('[data-largura]')) {
 // ---------- Publicação ----------
 
 function nomeDoc(d) {
+  if (d.tipo === 'traducao') return `${nomeDoc(d.base)} (${d.codigo})`;
   return d.tipo === 'projeto' ? `projeto ${d.slug}` : `página ${d.chave === 'erro404' ? '404' : d.chave}`;
 }
+
+const ehNovo = (d) => d.novo || (d.tipo === 'traducao' && d.original === '');
 
 function mensagemCommit(alterados, midias) {
   let titulo;
   if (alterados.length === 1) {
     const [d] = alterados;
-    titulo = `conteúdo: ${d.novo ? 'cria' : 'atualiza'} ${nomeDoc(d)}`;
+    titulo = `conteúdo: ${ehNovo(d) ? 'cria' : 'atualiza'} ${nomeDoc(d)}`;
   } else if (alterados.length === 0) {
     titulo = `conteúdo: envia ${midias.length} ${midias.length === 1 ? 'arquivo de mídia' : 'arquivos de mídia'}`;
   } else {
     titulo = `conteúdo: atualiza ${alterados.length} itens`;
   }
   const linhas = [
-    ...alterados.map((d) => `- ${d.novo ? 'cria' : 'atualiza'} ${nomeDoc(d)}`),
+    ...alterados.map((d) => `- ${ehNovo(d) ? 'cria' : 'atualiza'} ${nomeDoc(d)}`),
     ...midias.map((c) => `- envia content/${c}`),
   ];
   return linhas.length > 1 ? `${titulo}\n\n${linhas.join('\n')}` : titulo;
@@ -587,7 +738,7 @@ async function publicar() {
   }
 
   const arquivos = [
-    ...alterados.map((d) => ({ caminho: d.caminho, texto: serializar(d.dados) })),
+    ...alterados.map((d) => ({ caminho: d.caminho, texto: textoDe(d) })),
     ...midias.map((caminho) => ({ caminho, bytes: estado.uploads.get(caminho).bytes })),
   ];
   const mensagem = mensagemCommit(alterados, midias);
@@ -607,7 +758,7 @@ async function publicar() {
       return;
     }
     for (const d of alterados) {
-      d.original = serializar(d.dados);
+      d.original = textoDe(d);
       d.novo = false;
     }
     for (const caminho of estado.uploads.keys()) estado.arquivos.add(caminho);

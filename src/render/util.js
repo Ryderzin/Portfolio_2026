@@ -36,6 +36,12 @@ export function attrsLink(url) {
   return ehExterna(segura) ? attrs({ href: segura, target: '_blank', rel: 'noopener' }) : attrs({ href: segura });
 }
 
+// Caminho de uma página no idioma em que o site está sendo gerado: "/sobre/" → "/en/sobre/".
+// Mídia e arquivos (css, js) não passam por aqui: são os mesmos em todos os idiomas.
+export function rota(site, caminho) {
+  return `${site.lingua?.prefixo ?? ''}${caminho}`;
+}
+
 // Caminho público de uma mídia: "/midia/…" fica como está; o resto é relativo à pasta do projeto.
 export function urlMidia(src, slug) {
   if (src.startsWith('/')) return src;

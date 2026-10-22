@@ -1,0 +1,79 @@
+{
+  "titulo": "House Canvas MVP",
+  "subtitulo": "Floor Plan Customization on the Web",
+  "categoria": "Web App",
+  "stack": "Unity WebGL · ASP.NET Core · Google Cloud",
+  "capa": {
+    "alt": "House Canvas logo"
+  },
+  "blocos": [
+    {
+      "markdown": "**House Canvas** is the **MVP** of a web app for people buying an apartment **off-plan**: even before construction is finished, the future resident furnishes their apartment in 3D with **real furniture and objects at real size**. They can see whether the sofa fits in the living room, how the table looks in the kitchen and how much space is left to move around, which helps with the **buying decision**, for both the property and the furniture.\n\nI took part in the **concept** and in the interface, experience and control decisions, and built the complete MVP to **validate the idea with real customers** in tests at the developments.\n\n### 3D app in Unity\n\n- Built the interface in Unity, with **WebGL** builds\n- **Responsive interface and controls**: the app automatically detects whether it is opened on a phone or a computer and adapts the layout and the way of interacting (touch or mouse) to each\n- **3D controls**: place, move, rotate and duplicate furniture on the floor and on the walls\n- Furniture **loaded on demand** from the API and rendered instantly, with no large initial download\n- Objects with the products' **real dimensions** and **physical collision**: furniture does not go through walls or through each other, and each placement point respects the maximum size that fits there\n- An info panel for each item with the real product's details and a link to buy it in stores\n- Multiple graphics settings for each type of device"
+    },
+    {
+      "legenda": "Web app"
+    },
+    {
+      "imagens": [
+        {
+          "alt": "Info panel with a link to the store"
+        },
+        {
+          "alt": "Mobile interface in landscape mode."
+        },
+        {
+          "alt": "Mobile interface in portrait mode."
+        }
+      ],
+      "legenda": "Responsive interface on desktop and mobile."
+    },
+    {
+      "markdown": "### MVP API and infrastructure\n\n- Designed and built **the entire API**, in C# with ASP.NET Core and Entity Framework\n- **Relational database modeling** in SQL Server: developers, developments, floor plans, assets, users and guest keys, with the relationships between them (each developer with its developments, each development with its floor plans)\n- Schema changes with Entity Framework **migrations**, keeping the database versioned alongside the code\n- Authentication with **multiple roles** (administrators and users) and **guest keys** to control access in on-site tests\n- Registration and management of **3D assets**, with categories by room and by mounting type (floor or wall)\n- Hosted on **Google Cloud**, with the 3D models and images stored in Cloud Storage buckets\n\n### Admin panel\n\n- Built the **admin interface** with **React and Vite**, with administrator login to manage the whole catalog\n- **Real-time 3D preview** with `model-viewer`: when uploading, the model appears as soon as the file is chosen, so it can be checked before sending; when managing, hosted models can be rotated and inspected\n- Asset registration **one by one or in bulk from a spreadsheet**, with a validation step that shows what will be created or updated before saving\n- Management of developers, developments, floor plans and **guest tokens**"
+    },
+    {
+      "legenda": "How the admin interface works"
+    },
+    {
+      "imagens": [
+        {
+          "alt": "Sign-in on the admin interface"
+        },
+        {
+          "alt": "Assets page on the admin interface"
+        }
+      ],
+      "legenda": "Admin interface"
+    },
+    {
+      "markdown": "### Customer tests at kiosks\n\n- Test sessions took place at **kiosks** installed in the development's showroom, with access controlled by guest keys\n- After customizing, the customer scans a **QR code** and goes to a sign-up page that **saves the floor plan they put together**, so the team can follow each person's interest and choices\n- Sign-up and login pages built with HTML, CSS and JavaScript"
+    },
+    {
+      "imagens": [
+        {
+          "alt": "Sign-up QR code with the current customization"
+        },
+        {
+          "alt": "Sign-up screen on the web"
+        }
+      ],
+      "legenda": "QR code with the floor plan details, leading straight to sign-up"
+    },
+    {
+      "markdown": "### Stack\n\n- **3D app:** Unity with C#, with web builds\n- **API and data:** C# with ASP.NET Core and Entity Framework, SQL Server relational database\n- **Admin panel:** React with Vite, with `model-viewer` for the 3D models\n- **Kiosk sign-up pages:** HTML, CSS and JavaScript\n- **Cloud:** Google Cloud, with Cloud Storage for the 3D files and images"
+    }
+  ],
+  "ficha": {
+    "papel": "Full-stack developer of the MVP: 3D app, API and admin panel",
+    "tecnologia": "Unity, ASP.NET Core, SQL Server, Google Cloud",
+    "linguagem": "C#, JavaScript",
+    "plataformas": "Web (desktop and mobile)"
+  },
+  "galeriaTopo": [
+    {
+      "alt": "App home screen"
+    },
+    {
+      "alt": "Per-asset controls"
+    }
+  ]
+}

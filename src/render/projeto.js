@@ -2,7 +2,7 @@
 
 import { blocos } from './blocos.js';
 import { pagina } from './layout.js';
-import { attrs, attrsLink, carrossel, esc, formatarAno, imagem, itemDeGaleria, preencher, preenchido, seta } from './util.js';
+import { attrs, attrsLink, carrossel, esc, formatarAno, imagem, itemDeGaleria, preencher, preenchido, rota, seta } from './util.js';
 
 // Galeria do topo: carrossel com rolagem por encaixe. Só a primeira imagem é da primeira dobra.
 function galeriaTopo(imagens, slug, rotulos) {
@@ -60,9 +60,9 @@ ${itens}
 </section>`;
 }
 
-function rodapeProjeto(dados, proximo, rotulos) {
+function rodapeProjeto(site, dados, proximo, rotulos) {
   const link = proximo
-    ? `<a class="proximo titulo"${attrs({ href: `/projetos/${proximo.slug}/` })}><span class="marca">${esc(rotulos.projeto.proximoProjeto)} ${seta('→')}</span></a>`
+    ? `<a class="proximo titulo"${attrs({ href: rota(site, `/projetos/${proximo.slug}/`) })}><span class="marca">${esc(rotulos.projeto.proximoProjeto)} ${seta('→')}</span></a>`
     : '';
   return `<div class="card-projeto__fim">
   <p class="card-projeto__meta"><span class="marca">${esc(dados.categoria)} · ${esc(formatarAno(dados.ano))}</span></p>
@@ -77,7 +77,7 @@ export function renderProjeto({ site, projeto, proximo }) {
   const stackAno = `${esc(dados.stack)} · ${esc(formatarAno(dados.ano))}`;
 
   const conteudo = `<div class="container voltar">
-    <a class="botao botao--secundario botao--pequeno" href="/">${seta('←')} ${esc(rotulos.projeto.voltarProjetos)}</a>
+    <a class="botao botao--secundario botao--pequeno"${attrs({ href: rota(site, '/') })}>${seta('←')} ${esc(rotulos.projeto.voltarProjetos)}</a>
   </div>
 
   <main class="container">
@@ -98,7 +98,7 @@ ${blocos(dados.blocos, { slug, rotulos })}
           ${ficha(dados, rotulos)}
           ${links(dados, rotulos)}
         </div>
-        ${rodapeProjeto(dados, proximo, rotulos)}
+        ${rodapeProjeto(site, dados, proximo, rotulos)}
       </div>
       <div class="lombada" aria-hidden="true">
         <span class="lombada__titulo titulo">${esc(dados.titulo)}</span>

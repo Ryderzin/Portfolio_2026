@@ -1,0 +1,68 @@
+{
+  "titulo": "Ryan Leite",
+  "descricao": "Portfolio of Ryan Leite — full-stack developer.",
+  "navegacao": [
+    {
+      "rotulo": "Projects"
+    },
+    {
+      "rotulo": "About"
+    },
+    {
+      "rotulo": "Contact"
+    }
+  ],
+  "rodape": {
+    "texto": "© 2026 · Ryan Leite da Silva",
+    "links": [
+      {
+        "rotulo": "Email"
+      },
+      {
+        "rotulo": "GitHub"
+      },
+      {
+        "rotulo": "LinkedIn"
+      }
+    ]
+  },
+  "rotulos": {
+    "geral": {
+      "navegacaoPrincipal": "Main",
+      "paginaInicial": "Home page",
+      "verProjetos": "See projects",
+      "temaEscuro": "Dark mode",
+      "idiomas": "Languages"
+    },
+    "projeto": {
+      "voltarProjetos": "Back to projects",
+      "galeriaTopo": "Project images",
+      "fichaTecnica": "Project details",
+      "tecnologia": "Technology",
+      "linguagem": "Language",
+      "plataformas": "Platform",
+      "ano": "Year",
+      "papel": "Role",
+      "links": "Links",
+      "video": "Video",
+      "jogarOnline": "Play online",
+      "abreEm": "Opens on {onde}",
+      "proximoProjeto": "Next project",
+      "imagemAnterior": "Previous image",
+      "proximaImagem": "Next image",
+      "contadorImagens": "{atual} / {total}"
+    },
+    "sobre": {
+      "tecnologias": "Technologies",
+      "experiencia": "Experience",
+      "baixarCurriculo": "Download résumé (PDF)"
+    },
+    "contato": {
+      "escreverEmail": "Send an email",
+      "email": "Email",
+      "telefone": "Phone",
+      "linkedin": "LinkedIn",
+      "github": "GitHub"
+    }
+  }
+}

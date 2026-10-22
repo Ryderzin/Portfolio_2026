@@ -42,10 +42,10 @@ function vazio(valor) {
 // Grava o valor. Campo opcional vazio é removido; objeto opcional que fica vazio também.
 function escrever(objeto, caminho, valor, { opcional = false, podar = null } = {}) {
   let pai = objeto;
-  for (const chave of caminho.slice(0, -1)) {
+  for (const [n, chave] of caminho.slice(0, -1).entries()) {
     if (pai[chave] === undefined || pai[chave] === null) {
       if (opcional && vazio(valor)) return;
-      pai[chave] = {};
+      pai[chave] = typeof caminho[n + 1] === 'number' ? [] : {};
     }
     pai = pai[chave];
   }
@@ -62,6 +62,31 @@ function escrever(objeto, caminho, valor, { opcional = false, podar = null } = {
 function mover(lista, de, para) {
   const [item] = lista.splice(de, 1);
   lista.splice(para, 0, item);
+}
+
+// ---------- Modo tradução ----------
+// Com ctx.original, o formulário edita a tradução (ctx.doc) de um documento do idioma principal
+// (ctx.original, só leitura): listas, blocos e grupos seguem o original, só os textos traduzíveis
+// (ctx.traduzivel(caminho)) viram campos, e cada um mostra o texto original como referência.
+
+const emTraducao = (ctx) => ctx.original !== undefined;
+
+// Documento que define a estrutura (quais itens e blocos existem).
+const estrutura = (ctx) => (emTraducao(ctx) ? ctx.original : ctx.doc);
+
+function textoOriginal(ctx, caminho, id) {
+  const valor = ler(ctx.original, caminho);
+  const texto = Array.isArray(valor) ? valor.join('\n') : valor;
+  if (typeof texto !== 'string' || texto.trim() === '') return null;
+  return h('div', { class: 'campo__original', id },
+    h('span', { class: 'campo__original-rotulo' }, 'Original: '),
+    h('span', { lang: ctx.idiomaOriginal ?? null }, texto));
+}
+
+// No idioma principal, mover ou remover itens de uma lista faz o mesmo nas traduções,
+// para cada tradução continuar no item certo.
+function espelhar(ctx, caminho, operacao) {
+  if (!emTraducao(ctx)) ctx.espelhar?.(caminho, operacao);
 }
 
 // ---------- Descritores ----------
@@ -94,6 +119,7 @@ const ROTULOS_INTERFACE = {
     paginaInicial: 'Botão "Página inicial" (404)',
     verProjetos: 'Botão "Ver projetos"',
     temaEscuro: 'Botão de modo escuro',
+    idiomas: 'Nome do seletor de idioma (lido por leitores de tela)',
   },
   projeto: {
     _titulo: 'Página de projeto',
@@ -322,9 +348,12 @@ function mensagemCampo(campo, { apelidos = [], unico = false } = {}) {
 }
 
 function entrada(d, ctx, caminho) {
+  if (emTraducao(ctx) && !ctx.traduzivel(caminho)) return null;
   const id = idPara(caminho);
   const valor = ler(ctx.doc, caminho);
-  const ajuda = d.ajuda ? h('p', { class: 'campo__ajuda', id: `${id}-ajuda` }, d.ajuda) : null;
+  const ajuda = emTraducao(ctx)
+    ? textoOriginal(ctx, caminho, `${id}-ajuda`)
+    : d.ajuda ? h('p', { class: 'campo__ajuda', id: `${id}-ajuda` }, d.ajuda) : null;
   const mensagem = mensagemCampo(formatarCaminho(caminho));
   const descritoPor = [ajuda && `${id}-ajuda`, mensagem.id].filter(Boolean).join(' ');
   const multilinha = ['area', 'markdown', 'codigo', 'linhas'].includes(d.t);
@@ -354,12 +383,12 @@ function entrada(d, ctx, caminho) {
     let novo = controle.value;
     if (d.t === 'numero') novo = novo === '' ? undefined : Number(novo);
     if (d.t === 'linhas') novo = novo.split('\n').map((l) => l.trim()).filter(Boolean);
-    escrever(ctx.doc, caminho, novo, { opcional: d.opc, podar: ctx.podar });
+    escrever(ctx.doc, caminho, novo, { opcional: d.opc || emTraducao(ctx), podar: ctx.podar });
     ctx.aoMudar();
   });
 
   return h('div', { class: 'campo' },
-    h('label', { for: id, class: 'campo__rotulo' }, d.r, d.opc ? h('span', { class: 'campo__opcional' }, ' (opcional)') : null),
+    h('label', { for: id, class: 'campo__rotulo' }, d.r, d.opc && !emTraducao(ctx) ? h('span', { class: 'campo__opcional' }, ' (opcional)') : null),
     ajuda,
     controle,
     sugestoes,
@@ -496,23 +525,28 @@ function campoMidia(d, ctx, caminho) {
 }
 
 function lista(d, ctx, caminho) {
-  const itens = ler(ctx.doc, caminho);
+  const itens = ler(estrutura(ctx), caminho);
   const nomeCampo = formatarCaminho(caminho);
+  const traducao = emTraducao(ctx);
   const removerItem = (i) => {
     itens.splice(i, 1);
+    espelhar(ctx, caminho, (lista) => lista.splice(i, 1));
     if (d.opc && itens.length === 0) escrever(ctx.doc, caminho, [], { opcional: true });
     ctx.aoEstrutura({ foco: `${nomeCampo}:adicionar` });
   };
   const elementos = (Array.isArray(itens) ? itens : []).map((item, i) => {
     const rotulo = d.rotuloItem ? d.rotuloItem(item, i) : `Item ${i + 1}`;
-    const acoes = d.fixa ? null : h('span', { class: 'item__acoes' },
-      botaoIcone(`Mover "${rotulo}" para cima`, '↑', () => { mover(itens, i, i - 1); ctx.aoEstrutura({ foco: `${nomeCampo}[${i - 1}]` }); }, i === 0),
-      botaoIcone(`Mover "${rotulo}" para baixo`, '↓', () => { mover(itens, i, i + 1); ctx.aoEstrutura({ foco: `${nomeCampo}[${i + 1}]` }); }, i === itens.length - 1),
+    const acoes = d.fixa || traducao ? null : h('span', { class: 'item__acoes' },
+      botaoIcone(`Mover "${rotulo}" para cima`, '↑', () => { mover(itens, i, i - 1); espelhar(ctx, caminho, (lista) => mover(lista, i, i - 1)); ctx.aoEstrutura({ foco: `${nomeCampo}[${i - 1}]` }); }, i === 0),
+      botaoIcone(`Mover "${rotulo}" para baixo`, '↓', () => { mover(itens, i, i + 1); espelhar(ctx, caminho, (lista) => mover(lista, i, i + 1)); ctx.aoEstrutura({ foco: `${nomeCampo}[${i + 1}]` }); }, i === itens.length - 1),
       botaoIcone(`Remover "${rotulo}"`, '✕', () => { if (confirm(`Remover "${rotulo}"?`)) removerItem(i); }));
+    const campos = montarCampos(d.item, ctx, [...caminho, i]);
+    if (traducao && !campos.length) return null;
     return h('div', { class: 'item', 'data-item': `${nomeCampo}[${i}]` },
       h('div', { class: 'item__topo' }, h('span', { class: 'item__nome' }, rotulo), acoes),
-      h('div', { class: 'item__campos' }, montarCampos(d.item, ctx, [...caminho, i])));
-  });
+      h('div', { class: 'item__campos' }, campos));
+  }).filter(Boolean);
+  if (traducao && !elementos.length) return null;
 
   const garantirLista = () => {
     if (!Array.isArray(ler(ctx.doc, caminho))) escrever(ctx.doc, caminho, []);
@@ -520,7 +554,9 @@ function lista(d, ctx, caminho) {
   };
 
   let adicionar = null;
-  if (d.adicionarArquivos) {
+  if (traducao) {
+    // A tradução segue os itens do original: nada se adiciona aqui.
+  } else if (d.adicionarArquivos) {
     adicionar = botaoArquivo('+ Adicionar imagens', d.adicionarArquivos, true, async (arquivos) => {
       let ultimo = null;
       for (const arquivo of arquivos) {
@@ -563,9 +599,23 @@ const MODELOS_BLOCO = [
 ];
 
 function blocosEditor(d, ctx, caminho) {
-  const blocos = ler(ctx.doc, caminho) ?? [];
+  const blocos = ler(estrutura(ctx), caminho) ?? [];
   const nomeCampo = formatarCaminho(caminho);
   let arrastado = null;
+
+  if (emTraducao(ctx)) {
+    // Mesma ordem do original; só os blocos com texto para traduzir.
+    const itens = blocos.map((bloco, i) => {
+      const campos = montarCampos(camposDoBloco(bloco), ctx, [...caminho, i]);
+      if (!campos.length) return null;
+      const nome = `${NOMES_BLOCO[bloco.tipo] ?? bloco.tipo}${bloco.tipo === 'video' ? (bloco.origem === 'link' ? ' · link' : ' · arquivo') : ''}`;
+      return h('div', { class: 'item item--bloco', 'data-item': `${nomeCampo}[${i}]` },
+        h('div', { class: 'item__topo' }, h('span', { class: 'item__nome' }, `${i + 1} · ${nome}`)),
+        h('div', { class: 'item__campos' }, campos),
+        mensagemCampo(formatarCaminho([...caminho, i])));
+    }).filter(Boolean);
+    return itens.length ? h('div', { class: 'blocos-editor' }, itens, mensagemCampo(nomeCampo)) : null;
+  }
 
   const itens = blocos.map((bloco, i) => {
     const nome = `${NOMES_BLOCO[bloco.tipo] ?? bloco.tipo}${bloco.tipo === 'video' ? (bloco.origem === 'link' ? ' · link' : ' · arquivo') : ''}`;
@@ -599,18 +649,21 @@ function blocosEditor(d, ctx, caminho) {
         e.preventDefault();
         e.currentTarget.classList.remove('item--alvo');
         if (arrastado === null || arrastado === i) return;
-        mover(blocos, arrastado, i);
+        const de = arrastado;
+        mover(blocos, de, i);
+        espelhar(ctx, caminho, (lista) => mover(lista, de, i));
         ctx.aoEstrutura({ foco: `${nomeCampo}[${i}]` });
       },
     },
     h('div', { class: 'item__topo' },
       h('span', { class: 'item__nome' }, alca, ` ${i + 1} · ${nome}`),
       h('span', { class: 'item__acoes' },
-        botaoIcone(`Mover ${rotulo} para cima`, '↑', () => { mover(blocos, i, i - 1); ctx.aoEstrutura({ foco: `${nomeCampo}[${i - 1}]` }); }, i === 0),
-        botaoIcone(`Mover ${rotulo} para baixo`, '↓', () => { mover(blocos, i, i + 1); ctx.aoEstrutura({ foco: `${nomeCampo}[${i + 1}]` }); }, i === blocos.length - 1),
+        botaoIcone(`Mover ${rotulo} para cima`, '↑', () => { mover(blocos, i, i - 1); espelhar(ctx, caminho, (lista) => mover(lista, i, i - 1)); ctx.aoEstrutura({ foco: `${nomeCampo}[${i - 1}]` }); }, i === 0),
+        botaoIcone(`Mover ${rotulo} para baixo`, '↓', () => { mover(blocos, i, i + 1); espelhar(ctx, caminho, (lista) => mover(lista, i, i + 1)); ctx.aoEstrutura({ foco: `${nomeCampo}[${i + 1}]` }); }, i === blocos.length - 1),
         botaoIcone(`Remover ${rotulo}`, '✕', () => {
           if (!confirm(`Remover o ${rotulo}? O conteúdo dele será perdido.`)) return;
           blocos.splice(i, 1);
+          espelhar(ctx, caminho, (lista) => lista.splice(i, 1));
           ctx.aoEstrutura({ foco: `${nomeCampo}:adicionar` });
         }))),
     h('div', { class: 'item__campos' }, montarCampos(camposDoBloco(bloco), ctx, [...caminho, i])),
@@ -637,22 +690,29 @@ function montarCampo(d, ctx, base) {
   const caminho = d.k === undefined ? base : [...base, ...[].concat(d.k)];
   switch (d.t) {
     case 'secao': {
-      if (d.seExiste && ler(ctx.doc, [...base, d.seExiste]) === undefined) return null;
+      if (d.seExiste && ler(estrutura(ctx), [...base, d.seExiste]) === undefined) return null;
+      const campos = montarCampos(d.campos, ctx, base);
+      if (emTraducao(ctx) && !campos.length) return null;
       return h('section', { class: 'painel-secao' },
         h('h2', { class: 'painel-secao__titulo' }, d.r),
-        d.ajuda ? h('p', { class: 'campo__ajuda' }, d.ajuda) : null,
-        h('div', { class: 'painel-secao__campos' }, montarCampos(d.campos, ctx, base)));
+        d.ajuda && !emTraducao(ctx) ? h('p', { class: 'campo__ajuda' }, d.ajuda) : null,
+        h('div', { class: 'painel-secao__campos' }, campos));
     }
     case 'grupo': {
-      if (!d.opc && ler(ctx.doc, caminho) === undefined) return null;
-      const filho = { ...ctx, podar: d.opc ? caminho : ctx.podar };
+      if ((!d.opc || emTraducao(ctx)) && ler(estrutura(ctx), caminho) === undefined) return null;
+      const filho = { ...ctx, podar: d.opc && !emTraducao(ctx) ? caminho : ctx.podar };
       const conteudo = montarCampos(d.campos, filho, caminho);
+      if (emTraducao(ctx) && !conteudo.length) return null;
       return d.r
         ? h('fieldset', { class: 'grupo' }, h('legend', { class: 'lista__titulo' }, d.r), conteudo, mensagemCampo(formatarCaminho(caminho)))
         : h('div', { class: 'grupo grupo--simples' }, conteudo, mensagemCampo(formatarCaminho(caminho)));
     }
     case 'lista': return lista(d, ctx, caminho);
     case 'blocos': return blocosEditor(d, ctx, caminho);
+  }
+  // Na tradução, só textos: arquivos, caixas, escolhas, enquadramento e campos só de leitura ficam no original.
+  if (emTraducao(ctx) && !['texto', 'area', 'markdown', 'linhas', 'codigo'].includes(d.t)) return null;
+  switch (d.t) {
     case 'midia': return campoMidia(d, ctx, caminho);
     case 'booleano': return caixaMarcar(d, ctx, caminho);
     case 'escolha': return escolha(d, ctx, caminho);
@@ -667,7 +727,8 @@ function montarCampos(descritores, ctx, base) {
 }
 
 // ctx: { doc, aoMudar(), aoEstrutura({ foco }), enviar(arquivo, aceita) → { src, largura, altura } | null,
-//        urlImagem(src) → Promise<url | null> }
+//        urlImagem(src) → Promise<url | null>, espelhar?(caminho, operacao(lista)) }
+// Na tradução, também: { original, traduzivel(caminho) → boolean, idiomaOriginal }.
 export function montarFormulario(descritores, ctx) {
   return h('form', { class: 'formulario', novalidate: true, onsubmit: (e) => e.preventDefault() }, montarCampos(descritores, ctx, []));
 }

@@ -1,0 +1,45 @@
+{
+  "titulo": "Inbuilt Chat",
+  "subtitulo": "Proof of concept: AI assistant for owner's manuals",
+  "categoria": "AI / Web",
+  "stack": "TypeScript · React · Gemini Agent",
+  "capa": {
+    "alt": "Inbuilt logo"
+  },
+  "blocos": [
+    {
+      "markdown": "**Inbuilt Chat** is a **proof of concept** of a virtual assistant that answers residents' questions based on the development's **owner's manual**. I built the **entire** project, from the interface to the server and the AI integration. The app was deployed for testing and demos, but **was never put into use with residents**.\n\n### How it works\n\n- The user picks their apartment's tower and talks to the assistant in natural language\n- Answers come **only from the manual's content**: if a question is off-topic, the assistant says it can only help with the manuals\n- Every technical detail (warranty periods, loads, recommendations) comes with its **source page**, and clicking the reference opens that part of the manual to check\n- Suggested frequently asked questions help start the conversation"
+    },
+    {
+      "legenda": "The app in action"
+    },
+    {
+      "markdown": "### AI with reliable answers\n\n- Integration with a **Gemini** agent through the API\n- The manual was structured page by page (title, category and content), and this material is the only source for the answers\n- The conversation history is sent with each question, so the assistant understands follow-up questions\n- Page references in the answer are recognized by the interface and become links to the original passage"
+    },
+    {
+      "imagens": [
+        {
+          "alt": "Manual page referenced in the answer."
+        }
+      ],
+      "legenda": "Manual page referenced in the answer."
+    },
+    {
+      "markdown": "### Stack\n\n- **Interface:** React with TypeScript, Vite and Tailwind CSS, with animations in Motion\n- **Server:** Node.js with Express, which serves the app and handles the calls to the AI\n- **Artificial intelligence:** Google Gemini, through the official SDK\n- **Hosting:** Google Cloud"
+    }
+  ],
+  "ficha": {
+    "tecnologia": "React, Node.js, Gemini",
+    "linguagem": "TypeScript",
+    "plataformas": "Web (desktop and mobile)",
+    "papel": "Full development"
+  },
+  "galeriaTopo": [
+    {
+      "alt": "Tower selection screen"
+    },
+    {
+      "alt": "Chat screen"
+    }
+  ]
+}

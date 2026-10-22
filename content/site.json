@@ -3,6 +3,18 @@
   "descricao": "Portfólio de Ryan Leite — desenvolvedor full-stack.",
   "url": "https://portfolio-2026-rgrp.onrender.com/",
   "idioma": "pt-BR",
+  "idiomas": [
+    {
+      "codigo": "pt-BR",
+      "sigla": "PT",
+      "nome": "Português"
+    },
+    {
+      "codigo": "en",
+      "sigla": "EN",
+      "nome": "English"
+    }
+  ],
   "repositorio": {
     "dono": "Ryderzin",
     "nome": "Portfolio_2026",
@@ -44,7 +56,8 @@
       "navegacaoPrincipal": "Principal",
       "paginaInicial": "Página inicial",
       "verProjetos": "Ver projetos",
-      "temaEscuro": "Modo escuro"
+      "temaEscuro": "Modo escuro",
+      "idiomas": "Idiomas"
     },
     "projeto": {
       "voltarProjetos": "Voltar aos projetos",

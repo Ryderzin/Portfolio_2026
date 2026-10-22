@@ -59,6 +59,41 @@
   outline-offset: -6px;
 }
 
+/* Seletor de idioma, entre o menu e o botão de tema: o idioma atual fica sublinhado. */
+.idiomas ul {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.idiomas a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--touch);
+  min-height: var(--touch);
+  padding: 0 8px;
+  border-bottom: var(--border-strong) solid transparent;
+  color: var(--header-muted);
+  font-family: var(--fonte-rotulo);
+  font-stretch: 75%;
+  font-weight: 700;
+  font-size: var(--fs-rotulo);
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+
+.idiomas a:hover,
+.idiomas a[aria-current="true"] {
+  color: var(--header-text);
+}
+
+.idiomas a[aria-current="true"] {
+  border-bottom-color: var(--header-text);
+}
+
 /* Botão de tema, no fim do header: só aparece com JavaScript.
    Contorno na cor do texto do header; preenchido quando o modo escuro está ligado. */
 .botao-tema {
@@ -511,8 +546,21 @@ main.container {
 /* ---------- Mobile ---------- */
 
 @media (max-width: 768px) {
+  /* Menu, idioma e tema numa linha só: menos espaço entre os links e só o outro idioma. */
+  .cabecalho__interno {
+    gap: 8px;
+  }
+
+  .nav-principal ul {
+    gap: 0;
+  }
+
   .nav-principal a {
-    padding: 14px 10px;
+    padding: 14px 6px;
+  }
+
+  .idiomas li:has(a[aria-current="true"]) {
+    display: none;
   }
 
   /* Só o ícone: o rótulo fica disponível para leitores de tela. */
@@ -618,17 +666,15 @@ main.container {
   }
 }
 
-/* Telas muito estreitas (até 360 px): menu e botão de tema numa linha só. */
+/* Telas muito estreitas (até 360 px): letras um pouco menores para tudo caber numa linha. */
 @media (max-width: 360px) {
-  .cabecalho__interno {
-    gap: 8px;
-  }
-
-  .nav-principal ul {
-    gap: 0;
+  .nav-principal a,
+  .idiomas a {
+    font-size: 14px;
   }
 
   .nav-principal a {
-    padding: 14px 6px;
+    padding: 14px 3px;
+    letter-spacing: 0.03em;
   }
 }
