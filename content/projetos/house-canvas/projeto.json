@@ -1,0 +1,23 @@
+{
+  "publicado": true,
+  "ordem": 2,
+  "titulo": "House Canvas MVP",
+  "subtitulo": "Aplicativo Web de Customização de Plantas",
+  "categoria": "Aplicativo Web",
+  "ano": "2026",
+  "stack": "Unity",
+  "capa": {
+    "src": "hc-logo-01.webp",
+    "alt": "logo",
+    "largura": 2000,
+    "altura": 1125,
+    "previa": {
+      "src": "housepreviewfinal-4.mp4",
+      "largura": 720,
+      "altura": 720
+    }
+  },
+  "blocos": [],
+  "ficha": {},
+  "links": []
+}
