@@ -2,10 +2,10 @@
   "publicado": true,
   "ordem": 3,
   "titulo": "Inbuilt Chat",
-  "subtitulo": "IA para o manual do proprietário",
-  "categoria": "Aplicativo Web",
+  "subtitulo": "Prova de conceito: assistente de manuais com IA",
+  "categoria": "IA / Web",
   "ano": "2026",
-  "stack": "JavaScript · CSS · Agentes de IA",
+  "stack": "TypeScript · React · Agente Gemini",
   "capa": {
     "src": "favicon.webp",
     "alt": "Inbuilt Logo",
@@ -19,8 +19,67 @@
     "moldura": "fina",
     "encaixe": "conter"
   },
-  "blocos": [],
-  "ficha": {},
+  "blocos": [
+    {
+      "tipo": "texto",
+      "markdown": "O **InbuiltChat** é uma **prova de conceito** de um assistente virtual que responde dúvidas dos moradores com base no **manual do proprietário** do empreendimento. Desenvolvi o projeto **inteiro**, da interface ao servidor e à integração com inteligência artificial. A aplicação chegou a ser publicada para testes e demonstração, mas **não foi colocada em uso com moradores**.\n\n### Como funciona\n\n- A pessoa escolhe o a torre do seu apartamento e conversa com o assistente em linguagem natural\n- As respostas vêm **exclusivamente do conteúdo do manual**: se a pergunta foge do assunto, o assistente avisa que só pode ajudar com os manuais\n- Toda informação técnica (prazos de garantia, cargas, recomendações) vem com a **página de origem**, e clicar na referência abre o trecho do manual para conferência\n- Sugestões de perguntas frequentes ajudam a começar a conversa"
+    },
+    {
+      "tipo": "video",
+      "origem": "arquivo",
+      "src": "chatbot-preview-1.mp4",
+      "loop": true,
+      "mudo": true,
+      "autoplay": true,
+      "largura": 1080,
+      "altura": 1080,
+      "legenda": "Funcionamento do App"
+    },
+    {
+      "tipo": "texto",
+      "markdown": "### Inteligência artificial com respostas confiáveis\n\n- Integração com um agente **Gemini** pela API\n- O manual foi estruturado página por página (título, categoria e conteúdo), e esse material é a única fonte das respostas\n- O histórico da conversa vai junto a cada pergunta, para o assistente entender perguntas de continuação\n- As referências de página na resposta são reconhecidas pela interface e viram links para o trecho original"
+    },
+    {
+      "tipo": "galeria",
+      "layout": "grande",
+      "imagens": [
+        {
+          "src": "inb-chat-print3.webp",
+          "alt": "Página do manual referenciada na pergunta.",
+          "largura": 750,
+          "altura": 938,
+          "moldura": "sombra"
+        }
+      ],
+      "legenda": "Página do manual referenciada na pergunta."
+    },
+    {
+      "tipo": "texto",
+      "markdown": "### Stack\n\n- **Interface:** React com TypeScript, Vite e Tailwind CSS, com animações em Motion\n- **Servidor:** Node.js com Express, que serve a aplicação e intermedeia as chamadas à IA\n- **Inteligência artificial:** Google Gemini, pelo SDK oficial\n- **Hospedagem:** Google Cloud"
+    }
+  ],
+  "ficha": {
+    "tecnologia": "React, Node.js, Gemini",
+    "linguagem": "TypeScript",
+    "plataformas": "Web (desktop e celular)",
+    "papel": "Desenvolvimento completo"
+  },
   "links": [],
-  "ocultarFaixa": true
+  "ocultarFaixa": true,
+  "galeriaTopo": [
+    {
+      "src": "inb-chat-print2-2.webp",
+      "alt": "Tela de Seleção de Torre",
+      "largura": 755,
+      "altura": 944,
+      "moldura": "sombra"
+    },
+    {
+      "src": "inb-chat-print1-3.webp",
+      "alt": "Tela do Chat",
+      "largura": 752,
+      "altura": 940,
+      "moldura": "sombra"
+    }
+  ]
 }
