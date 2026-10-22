@@ -1,7 +1,7 @@
 {
   "publicado": true,
   "ordem": 1,
-  "titulo": "House Canvas MVP",
+  "titulo": "House Canvas",
   "subtitulo": "Customização de Plantas na Web",
   "categoria": "Aplicativo Web",
   "ano": "2026",
@@ -22,7 +22,7 @@
   "blocos": [
     {
       "tipo": "texto",
-      "markdown": "O **House Canvas** é o **MVP** de uma aplicação web para quem está comprando um apartamento **na planta**: antes mesmo de a obra terminar, o futuro morador monta o seu apartamento em 3D com **móveis e objetos reais, em tamanho real**. Assim dá para ver se o sofá cabe na sala, como a mesa fica na cozinha e quanto espaço sobra para circular, e isso ajuda na **decisão de compra**, tanto do imóvel quanto dos móveis.\n\nParticipei da **concepção** e das decisões de interface, experiência e controles, e desenvolvi o MVP completo para **validar a ideia com clientes reais** em testes nos empreendimentos.\n\n### Aplicação 3D na Unity\n\n- Implementação da interface na Unity, com builds em **WebGL**\n- **Interface e controles responsivos**: a aplicação detecta automaticamente se o acesso é pelo celular ou pelo computador e adapta o layout e a forma de interagir (toque ou mouse) a cada um\n- **Controles 3D**: posicionar, mover, girar e duplicar móveis no chão e nas paredes\n- Móveis **carregados sob demanda** pela API e renderizados na hora, sem necessidade de um download inicial grande\n- Objetos com as **dimensões reais** dos produtos e **colisão física**: os móveis não atravessam paredes nem uns aos outros, e cada ponto de encaixe respeita o tamanho máximo do que cabe ali\n- Painel de cada item com as informações do produto real e link para comprá-lo nas lojas\n- Múltiplas configurações gráficas para cada tipo de dispositivo"
+      "markdown": "O **House Canvas** é uma aplicação web para quem está comprando um apartamento **na planta**: antes mesmo de a obra terminar, o futuro morador monta o seu apartamento em 3D com **móveis e objetos reais, em tamanho real**. Assim dá para ver se o sofá cabe na sala, como a mesa fica na cozinha e quanto espaço sobra para circular, e isso ajuda na **decisão de compra**, tanto do imóvel quanto dos móveis.\n\nParticipei da **concepção** e das decisões de interface, experiência e controles, e desenvolvi o app completo para **validar a ideia com clientes reais** em testes nos empreendimentos.\n\n### Aplicação 3D na Unity\n\n- Implementação da interface na Unity, com builds em **WebGL**\n- **Interface e controles responsivos**: a aplicação detecta automaticamente se o acesso é pelo celular ou pelo computador e adapta o layout e a forma de interagir (toque ou mouse) a cada um\n- **Controles 3D**: posicionar, mover, girar e duplicar móveis no chão e nas paredes\n- Móveis **carregados sob demanda** pela API e renderizados na hora, sem necessidade de um download inicial grande\n- Objetos com as **dimensões reais** dos produtos e **colisão física**: os móveis não atravessam paredes nem uns aos outros, e cada ponto de encaixe respeita o tamanho máximo do que cabe ali\n- Painel de cada item com as informações do produto real e link para comprá-lo nas lojas\n- Múltiplas configurações gráficas para cada tipo de dispositivo"
     },
     {
       "tipo": "video",
@@ -63,7 +63,7 @@
     },
     {
       "tipo": "texto",
-      "markdown": "### API e infraestrutura do MVP\n\n- Projetei e desenvolvi **toda a API**, em C# com ASP.NET Core e Entity Framework\n- **Modelagem do banco relacional** em SQL Server: incorporadoras, empreendimentos, plantas, assets, usuários e chaves de convidado, com os relacionamentos entre eles (cada incorporadora com seus empreendimentos, cada empreendimento com suas plantas)\n- Evolução do esquema com **migrations** do Entity Framework, mantendo o banco versionado junto com o código\n- Autenticação com **múltiplos papéis** (administradores e usuários) e **chaves de convidado** para controlar o acesso em testes presenciais\n- Cadastro e gerenciamento de **assets 3D**, com categorias por cômodo e tipo de fixação (chão ou parede)\n- Hospedagem no **Google Cloud**, com os modelos 3D e as imagens guardados em buckets do Cloud Storage\n\n### Painel administrativo\n\n- Construí a **interface de administração** em **React com Vite**, com login de administradores para gerenciar todo o catálogo\n- **Visualização 3D em tempo real** com `model-viewer`: no upload, o modelo aparece assim que o arquivo é escolhido, para conferir antes de enviar; no gerenciamento, dá para girar e inspecionar os modelos já hospedados\n- Cadastro de assets **um a um ou em massa por planilha**, com uma etapa de validação que mostra o que será criado ou atualizado antes de gravar\n- Gestão de incorporadoras, empreendimentos, plantas e **tokens de convidado**"
+      "markdown": "### API e infraestrutura\n\n- Projetei e desenvolvi **toda a API**, em C# com ASP.NET Core e Entity Framework\n- **Modelagem do banco relacional** em SQL Server: incorporadoras, empreendimentos, plantas, assets, usuários e chaves de convidado, com os relacionamentos entre eles (cada incorporadora com seus empreendimentos, cada empreendimento com suas plantas)\n- Evolução do esquema com **migrations** do Entity Framework, mantendo o banco versionado junto com o código\n- Autenticação com **múltiplos papéis** (administradores e usuários) e **chaves de convidado** para controlar o acesso em testes presenciais\n- Cadastro e gerenciamento de **assets 3D**, com categorias por cômodo e tipo de fixação (chão ou parede)\n- Hospedagem no **Google Cloud**, com os modelos 3D e as imagens guardados em buckets do Cloud Storage\n\n### Painel administrativo\n\n- Construí a **interface de administração** em **React com Vite**, com login de administradores para gerenciar todo o catálogo\n- **Visualização 3D em tempo real** com `model-viewer`: no upload, o modelo aparece assim que o arquivo é escolhido, para conferir antes de enviar; no gerenciamento, dá para girar e inspecionar os modelos já hospedados\n- Cadastro de assets **um a um ou em massa por planilha**, com uma etapa de validação que mostra o que será criado ou atualizado antes de gravar\n- Gestão de incorporadoras, empreendimentos, plantas e **tokens de convidado**"
     },
     {
       "tipo": "video",
@@ -123,7 +123,7 @@
     }
   ],
   "ficha": {
-    "papel": "Desenvolvedor full-stack do MVP: aplicação 3D, API e painel",
+    "papel": "Desenvolvedor full-stack: aplicação 3D, API e painel",
     "tecnologia": "Unity, ASP.NET Core, SQL Server, Google Cloud",
     "linguagem": "C#, JavaScript",
     "plataformas": "Web (desktop e celular)"
