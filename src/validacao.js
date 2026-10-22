@@ -13,6 +13,8 @@ export const ESCALA_MAX = 100;
 export const ALINHAMENTOS = ['esquerda', 'centro', 'direita'];
 export const RECORTES = ['1:1', '4:3', '3:2', '16:9', '3:4'];
 export const MOLDURAS = ['fina', 'grossa', 'sombra', 'passe-partout'];
+// Encaixe da imagem e da prévia na janela da capa: cobrir (preenche e corta) ou conter (inteira, sem corte).
+export const ENCAIXES_CAPA = ['cobrir', 'conter'];
 export const ORIGENS_VIDEO = ['arquivo', 'link'];
 export const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
@@ -304,6 +306,7 @@ const ESQUEMA_PROJETO = objeto({
   capa: objeto({
     ...camposImagem,
     previa: opcional(objeto({ src: midia(EXTENSOES_VIDEO), largura: inteiro({ min: 1 }), altura: inteiro({ min: 1 }) })),
+    encaixe: opcional(umDe(ENCAIXES_CAPA)),
   }),
   galeriaTopo: opcional(lista(imagem)),
   blocos: lista(BLOCO),

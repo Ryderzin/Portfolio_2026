@@ -7,12 +7,13 @@ export function capa({ slug, dados }, { prioridade = false } = {}) {
   const previa = dados.capa.previa
     ? attrs({ 'data-previa': urlMidia(dados.capa.previa.src, slug) })
     : '';
+  const janela = dados.capa.encaixe === 'conter' ? 'capa__janela capa__janela--conter' : 'capa__janela';
   return `<li class="capas__item">
   <a class="capa" href="/projetos/${esc(slug)}/">
     ${dados.ocultarFaixa ? '' : `<span class="faixa faixa--capa rotulo">${esc(dados.categoria)}</span>`}
     <span class="capa__titulo titulo"><span class="marca">${esc(dados.titulo)}</span></span>
     <span class="capa__subtitulo titulo"><span class="marca">${esc(dados.subtitulo)}</span></span>
-    <span class="capa__janela"${previa}>${imagem(dados.capa, { slug, prioridade, destaque: prioridade, classe: 'capa__imagem' })}</span>
+    <span class="${janela}"${previa}>${imagem(dados.capa, { slug, prioridade, destaque: prioridade, classe: 'capa__imagem' })}</span>
   </a>
 </li>`;
 }

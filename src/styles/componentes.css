@@ -259,6 +259,16 @@ main.container {
   object-fit: cover;
 }
 
+/* Encaixe "conter": imagem e prévia inteiras, sem corte, sobre a grade da capa. */
+.capa__janela--conter {
+  background: transparent;
+}
+
+.capa__janela--conter .capa__imagem,
+.capa__janela--conter .capa__previa {
+  object-fit: contain;
+}
+
 /* Prévia em vídeo, criada pelo script quando a capa entra na tela.
    Fica invisível sobre a imagem até começar a tocar. */
 .capa__previa {

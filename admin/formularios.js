@@ -2,7 +2,7 @@
 // Cada campo aponta para um caminho dentro do documento JSON (ex.: ['capa', 'alt']).
 // Os valores são gravados no próprio objeto do documento a cada digitação.
 
-import { LAYOUTS_GALERIA } from './validacao.js';
+import { ENCAIXES_CAPA, LAYOUTS_GALERIA } from './validacao.js';
 import { editorEnquadramento } from './enquadramento.js';
 import { ACEITA } from './midia.js';
 
@@ -244,6 +244,7 @@ export const DESCRITORES = {
         midia([], 'Imagem da capa', 'imagem', { ajuda: 'JPG, PNG, WebP ou AVIF: convertida para WebP com até 2000 px. GIF é mantido.' }),
         texto('alt', 'Texto alternativo', { ajuda: AJUDA_ALT }),
         midia('previa', 'Prévia em movimento', 'previa', { removivel: true, ajuda: 'Opcional. MP4 ou WebM curto, sem som, até 7,5 MB.' }),
+        { t: 'escolha', k: 'encaixe', r: 'Encaixe na capa', padrao: 'cobrir', ajuda: 'Vale para a imagem e para a prévia. "Conter" é melhor para logos e imagens que não podem ser cortadas.', opcoes: ENCAIXES_CAPA.map((e) => [e, { cobrir: 'Cobrir (preenche e corta)', conter: 'Conter (inteira, sem corte)' }[e]]) },
       ] },
     ] },
     { t: 'secao', r: 'Galeria do topo', ajuda: 'Opcional. Imagens acima do título.', campos: [listaImagens('galeriaTopo', null, { opc: true })] },
@@ -376,23 +377,26 @@ function caixaMarcar(d, ctx, caminho) {
   return h('div', { class: 'campo campo--marcar' }, h('label', { for: id }, controle, ' ', d.r), mensagem);
 }
 
+// Com "padrao", o campo é opcional: ausente vale o padrão, e escolher o padrão remove o campo.
 function escolha(d, ctx, caminho) {
   const id = idPara(caminho);
-  const atual = ler(ctx.doc, caminho);
+  const atual = ler(ctx.doc, caminho) ?? d.padrao;
   const mensagem = mensagemCampo(formatarCaminho(caminho));
+  const ajuda = d.ajuda ? h('p', { class: 'campo__ajuda', id: `${id}-ajuda` }, d.ajuda) : null;
   const opcoes = d.opcoes.map(([valor, rotulo]) => h('option', { value: valor }, rotulo));
   if (!d.opcoes.some(([valor]) => valor === atual)) opcoes.unshift(h('option', { value: atual ?? '' }, `${atual ?? ''} (inválido)`));
-  const controle = h('select', { id, 'aria-describedby': mensagem.id }, opcoes);
+  const controle = h('select', { id, 'aria-describedby': [ajuda && `${id}-ajuda`, mensagem.id].filter(Boolean).join(' ') }, opcoes);
   controle.value = atual ?? '';
   controle.dataset.campo = formatarCaminho(caminho);
   // Com "estrutura", o formulário é remontado (ex.: o layout muda o editor de enquadramento).
   if (d.estrutura) controle.dataset.acao = formatarCaminho(caminho);
   controle.addEventListener('change', () => {
-    escrever(ctx.doc, caminho, controle.value);
+    const padrao = d.padrao !== undefined && controle.value === d.padrao;
+    escrever(ctx.doc, caminho, padrao ? undefined : controle.value, { opcional: d.padrao !== undefined });
     if (d.estrutura) ctx.aoEstrutura({ foco: controle.dataset.acao });
     else ctx.aoMudar();
   });
-  return h('div', { class: 'campo' }, h('label', { for: id, class: 'campo__rotulo' }, d.r), controle, mensagem);
+  return h('div', { class: 'campo' }, h('label', { for: id, class: 'campo__rotulo' }, d.r), ajuda, controle, mensagem);
 }
 
 // Imagem de galeria: caminho é ['galeriaTopo', i] ou ['blocos', b, 'imagens', i].
