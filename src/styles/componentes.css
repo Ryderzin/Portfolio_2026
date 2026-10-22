@@ -208,12 +208,18 @@ main.container {
   list-style: none;
 }
 
+/* Os cards de uma linha têm a mesma altura (a do maior título); a imagem é sempre quadrada,
+   com 85% da largura do card, centralizada e encostada na base: todas as capas mostram a imagem do mesmo tamanho. */
+.capas__item {
+  display: flex;
+}
+
 .capa {
   position: relative;
   overflow: hidden;
   display: flex;
+  flex: 1;
   flex-direction: column;
-  aspect-ratio: 5 / 7;
   padding: 48px 20px 20px;
   border: var(--border-strong) solid var(--ink);
   background-color: var(--surface);
@@ -238,7 +244,7 @@ main.container {
 
 .capa__subtitulo {
   display: block;
-  margin: 6px 0 0 -8px;
+  margin: 6px 0 16px -8px;
   font-size: var(--fs-capa-subtitulo);
   line-height: 1.4;
   --marca-x: 8px;
@@ -246,9 +252,11 @@ main.container {
 
 .capa__janela {
   position: relative;
-  flex: 1;
-  min-height: 0;
-  margin-top: 16px;
+  flex: none;
+  align-self: center;
+  width: 85%;
+  aspect-ratio: 1;
+  margin-top: auto;
   overflow: hidden;
   background: var(--media);
 }
@@ -543,13 +551,11 @@ main.container {
   }
 
   .capa {
-    aspect-ratio: auto;
-    height: 480px;
     padding: 44px 18px 18px;
   }
 
-  .capa__janela {
-    margin-top: 14px;
+  .capa__subtitulo {
+    margin-bottom: 14px;
   }
 
   .caixa {
