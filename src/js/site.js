@@ -1,6 +1,6 @@
 // Melhorias progressivas: sem JavaScript, o site funciona igual, no tema claro,
 // sem prévias em vídeo, sem autoplay e sem animações que escondam conteúdo.
-// - Tema: o botão do rodapé alterna claro/escuro e guarda a escolha (o <head> já a aplica).
+// - Tema: o botão do header alterna claro/escuro e guarda a escolha (o <head> já a aplica).
 // - Capas: o <video> da prévia só é criado quando a capa entra na tela. No desktop toca no
 //   hover/foco; no mobile toca enquanto a capa está visível.
 // - Blocos: vídeos com data-autoplay tocam só quando visíveis; todos pausam ao sair da tela.
