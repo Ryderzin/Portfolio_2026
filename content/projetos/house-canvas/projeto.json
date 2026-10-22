@@ -1,7 +1,7 @@
 {
   "publicado": true,
-  "ordem": 2,
-  "titulo": "House Canvas",
+  "ordem": 1,
+  "titulo": "House Canvas MVP",
   "subtitulo": "Customização de Plantas na Web",
   "categoria": "Aplicativo Web",
   "ano": "2026",
@@ -63,7 +63,7 @@
     },
     {
       "tipo": "texto",
-      "markdown": "### API e infraestrutura do MVP\n\n- Projetei e desenvolvi **toda a API**, em C# com ASP.NET Core e Entity Framework\n- **Modelagem do banco relacional** em SQL Server: incorporadoras, empreendimentos, plantas, assets, usuários e chaves de convidado, com os relacionamentos entre eles (cada incorporadora com seus empreendimentos, cada empreendimento com suas plantas)\n- Evolução do esquema com **migrations** do Entity Framework, mantendo o banco versionado junto com o código\n- Autenticação com **múltiplos papéis** (administradores e usuários) e **chaves de convidado** para controlar o acesso em testes presenciais\n- Cadastro e gerenciamento de **assets 3D**, com categorias por cômodo e tipo de fixação (chão ou parede)\n- Hospedagem no **Google Cloud**, com os modelos 3D e as imagens guardados em buckets do Cloud Storage"
+      "markdown": "### API e infraestrutura do MVP\n\n- Projetei e desenvolvi **toda a API**, em C# com ASP.NET Core e Entity Framework\n- **Modelagem do banco relacional** em SQL Server: incorporadoras, empreendimentos, plantas, assets, usuários e chaves de convidado, com os relacionamentos entre eles (cada incorporadora com seus empreendimentos, cada empreendimento com suas plantas)\n- Evolução do esquema com **migrations** do Entity Framework, mantendo o banco versionado junto com o código\n- Autenticação com **múltiplos papéis** (administradores e usuários) e **chaves de convidado** para controlar o acesso em testes presenciais\n- Cadastro e gerenciamento de **assets 3D**, com categorias por cômodo e tipo de fixação (chão ou parede)\n- Hospedagem no **Google Cloud**, com os modelos 3D e as imagens guardados em buckets do Cloud Storage\n\n### Painel administrativo\n\n- Construí a **interface de administração** em **React com Vite**, com login de administradores para gerenciar todo o catálogo\n- **Visualização 3D em tempo real** com `model-viewer`: no upload, o modelo aparece assim que o arquivo é escolhido, para conferir antes de enviar; no gerenciamento, dá para girar e inspecionar os modelos já hospedados\n- Cadastro de assets **um a um ou em massa por planilha**, com uma etapa de validação que mostra o que será criado ou atualizado antes de gravar\n- Gestão de incorporadoras, empreendimentos, plantas e **tokens de convidado**"
     },
     {
       "tipo": "video",
@@ -94,7 +94,7 @@
     },
     {
       "tipo": "texto",
-      "markdown": "### Testes com clientes nos totens\n\n- As sessões de teste aconteceram em **totens** instalados nos empreendimentos, com acesso controlado pelas chaves de convidado\n- Ao terminar a customização, o cliente escaneia um **QR Code** e vai para uma página de cadastro que **guarda o estado da planta** que ele montou, para a equipe acompanhar o interesse e as escolhas de cada um\n- Páginas de cadastro e login feitas em HTML, CSS e JavaScript"
+      "markdown": "### Testes com clientes nos totens\n\n- As sessões de teste aconteceram em **totens** instalados no showroom do empreendimento, com acesso controlado pelas chaves de convidado\n- Ao terminar a customização, o cliente escaneia um **QR Code** e vai para uma página de cadastro que **guarda o estado da planta** que ele montou, para a equipe acompanhar o interesse e as escolhas de cada um\n- Páginas de cadastro e login feitas em HTML, CSS e JavaScript"
     },
     {
       "tipo": "galeria",
@@ -115,11 +115,11 @@
           "moldura": "sombra"
         }
       ],
-      "legenda": "Interface de registro"
+      "legenda": "QR cocde com as informações da planta levando direto ao registro"
     },
     {
       "tipo": "texto",
-      "markdown": "### Stack\n\n- **Aplicação 3D:** Unity com C#, com builds para Web\n- **API e dados:** C# com ASP.NET Core e Entity Framework, banco relacional SQL Server\n- **Painel e páginas web:** HTML, CSS e JavaScript\n- **Nuvem:** Google Cloud, com Cloud Storage para os arquivos 3D e as imagens"
+      "markdown": "### Stack\n\n- **Aplicação 3D:** Unity com C#, com builds para Web\n- **API e dados:** C# com ASP.NET Core e Entity Framework, banco relacional SQL Server\n- **Painel administrativo:** React com Vite, com `model-viewer` para os modelos 3D\n- **Páginas de cadastro dos totens:** HTML, CSS e JavaScript\n- **Nuvem:** Google Cloud, com Cloud Storage para os arquivos 3D e as imagens"
     }
   ],
   "ficha": {
