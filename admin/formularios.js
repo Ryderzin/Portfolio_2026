@@ -2,8 +2,8 @@
 // Cada campo aponta para um caminho dentro do documento JSON (ex.: ['capa', 'alt']).
 // Os valores são gravados no próprio objeto do documento a cada digitação.
 
-import { ENCAIXES_CAPA, LAYOUTS_GALERIA } from './validacao.js';
-import { editorEnquadramento } from './enquadramento.js';
+import { ENCAIXES_CAPA, LAYOUTS_GALERIA, MOLDURAS } from './validacao.js';
+import { NOMES_MOLDURA, editorEnquadramento } from './enquadramento.js';
 import { ACEITA } from './midia.js';
 
 // ---------- DOM ----------
@@ -245,6 +245,7 @@ export const DESCRITORES = {
         texto('alt', 'Texto alternativo', { ajuda: AJUDA_ALT }),
         midia('previa', 'Prévia em movimento', 'previa', { removivel: true, ajuda: 'Opcional. MP4 ou WebM curto, sem som, até 7,5 MB.' }),
         { t: 'escolha', k: 'encaixe', r: 'Encaixe na capa', padrao: 'cobrir', ajuda: 'Vale para a imagem e para a prévia. "Conter" é melhor para logos e imagens que não podem ser cortadas.', opcoes: ENCAIXES_CAPA.map((e) => [e, { cobrir: 'Cobrir (preenche e corta)', conter: 'Conter (inteira, sem corte)' }[e]]) },
+        { t: 'escolha', k: 'moldura', r: 'Moldura da capa', padrao: 'nenhuma', ajuda: 'Na cor do site. Com "Cobrir", contorna a janela da imagem; com "Conter", a própria imagem.', opcoes: [['nenhuma', 'Nenhuma'], ...MOLDURAS.map((m) => [m, NOMES_MOLDURA[m]])] },
       ] },
     ] },
     { t: 'secao', r: 'Galeria do topo', ajuda: 'Opcional. Imagens acima do título.', campos: [listaImagens('galeriaTopo', null, { opc: true })] },

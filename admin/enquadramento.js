@@ -10,7 +10,7 @@ import { h } from './formularios.js';
 
 const PASSO = 5;
 const NOMES_ALINHAMENTO = { esquerda: 'Esquerda', centro: 'Centro', direita: 'Direita' };
-const NOMES_MOLDURA = { fina: 'Fina', grossa: 'Grossa', sombra: 'Sombra dura', 'passe-partout': 'Passe-partout' };
+export const NOMES_MOLDURA = { fina: 'Fina', grossa: 'Grossa', sombra: 'Sombra dura', 'passe-partout': 'Passe-partout' };
 
 // Explicação da largura em cada layout.
 const AJUDAS = {

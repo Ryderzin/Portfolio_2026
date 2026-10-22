@@ -2,7 +2,7 @@
 
 import { blocos } from './blocos.js';
 import { pagina } from './layout.js';
-import { attrs, attrsLink, carrossel, esc, formatarAno, imagem, itemDeGaleria, preencher, preenchido, seta, urlMidia } from './util.js';
+import { attrs, attrsLink, carrossel, esc, formatarAno, imagem, itemDeGaleria, preencher, preenchido, seta } from './util.js';
 
 // Galeria do topo: carrossel com rolagem por encaixe. Só a primeira imagem é da primeira dobra.
 function galeriaTopo(imagens, slug, rotulos) {
@@ -112,7 +112,6 @@ ${blocos(dados.blocos, { slug, rotulos })}
     caminho: `/projetos/${slug}/`,
     titulo: dados.titulo,
     descricao: dados.subtitulo,
-    imagem: { ...dados.capa, src: urlMidia(dados.capa.src, slug) },
     tipo: 'article',
     ativo: '/',
     conteudo,

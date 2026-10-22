@@ -259,14 +259,69 @@ main.container {
   object-fit: cover;
 }
 
-/* Encaixe "conter": imagem e prévia inteiras, sem corte, sobre a grade da capa. */
+/* Encaixe "conter": imagem e prévia inteiras, sem corte, centralizadas sobre a grade da capa.
+   A imagem ocupa só o próprio tamanho (o maior que cabe na janela), para a moldura abraçá-la. */
 .capa__janela--conter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  container-type: size;
   background: transparent;
 }
 
 .capa__janela--conter .capa__imagem,
 .capa__janela--conter .capa__previa {
+  inset: auto;
+  width: min(100cqw, 100cqh * var(--proporcao-capa, 1));
+  height: auto;
+  aspect-ratio: var(--proporcao-capa, 1);
   object-fit: contain;
+}
+
+/* A prévia fica por cima da imagem, no mesmo lugar. */
+.capa__janela--conter .capa__previa {
+  position: absolute;
+}
+
+/* Molduras da capa, na cor da tinta. Com "cobrir", vão em volta da janela; com "conter", da imagem. */
+.capa__janela--moldura-fina:not(.capa__janela--conter),
+.capa__janela--moldura-sombra:not(.capa__janela--conter),
+.capa__janela--moldura-passe-partout:not(.capa__janela--conter),
+.capa__janela--conter.capa__janela--moldura-fina :is(.capa__imagem, .capa__previa),
+.capa__janela--conter.capa__janela--moldura-sombra :is(.capa__imagem, .capa__previa),
+.capa__janela--conter.capa__janela--moldura-passe-partout :is(.capa__imagem, .capa__previa) {
+  border: var(--border) solid var(--ink);
+}
+
+.capa__janela--moldura-grossa:not(.capa__janela--conter),
+.capa__janela--conter.capa__janela--moldura-grossa :is(.capa__imagem, .capa__previa) {
+  border: var(--moldura-grossa) solid var(--ink);
+}
+
+.capa__janela--moldura-sombra:not(.capa__janela--conter),
+.capa__janela--conter.capa__janela--moldura-sombra .capa__imagem {
+  box-shadow: var(--moldura-sombra) var(--moldura-sombra) 0 var(--ink);
+}
+
+.capa__janela--moldura-passe-partout:not(.capa__janela--conter) {
+  padding: var(--moldura-respiro);
+  background: var(--surface);
+}
+
+.capa__janela--moldura-passe-partout:not(.capa__janela--conter) .capa__previa {
+  inset: var(--moldura-respiro);
+  width: auto;
+  height: auto;
+}
+
+.capa__janela--conter.capa__janela--moldura-passe-partout :is(.capa__imagem, .capa__previa) {
+  padding: var(--moldura-respiro);
+  background: var(--surface);
+}
+
+/* A janela corta o que passa dela: abre espaço para a sombra da imagem contida. */
+.capa__janela--conter.capa__janela--moldura-sombra {
+  padding: 0 var(--moldura-sombra) var(--moldura-sombra) 0;
 }
 
 /* Prévia em vídeo, criada pelo script quando a capa entra na tela.

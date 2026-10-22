@@ -307,6 +307,7 @@ const ESQUEMA_PROJETO = objeto({
     ...camposImagem,
     previa: opcional(objeto({ src: midia(EXTENSOES_VIDEO), largura: inteiro({ min: 1 }), altura: inteiro({ min: 1 }) })),
     encaixe: opcional(umDe(ENCAIXES_CAPA)),
+    moldura: opcional(umDe(MOLDURAS)),
   }),
   galeriaTopo: opcional(lista(imagem)),
   blocos: lista(BLOCO),
