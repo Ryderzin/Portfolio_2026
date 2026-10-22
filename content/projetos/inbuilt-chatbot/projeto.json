@@ -1,0 +1,26 @@
+{
+  "publicado": false,
+  "ordem": 6,
+  "titulo": "Inbuilt Chat",
+  "subtitulo": "IA para o manual do proprietário",
+  "categoria": "Aplicativo Web",
+  "ano": "2026",
+  "stack": "JavaScript · CSS · Agentes de IA",
+  "capa": {
+    "src": "favicon.webp",
+    "alt": "Inbuilt Logo",
+    "largura": 358,
+    "altura": 358,
+    "previa": {
+      "src": "chatbot-coverpreview-preview-1.mp4",
+      "largura": 720,
+      "altura": 720
+    },
+    "moldura": "fina",
+    "encaixe": "conter"
+  },
+  "blocos": [],
+  "ficha": {},
+  "links": [],
+  "ocultarFaixa": true
+}
