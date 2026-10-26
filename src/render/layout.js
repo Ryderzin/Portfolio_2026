@@ -106,6 +106,8 @@ function rodape(site, chamada) {
 export function pagina({ site, caminho, titulo, descricao, imagem, tipo = 'website', noindex = false, ativo, chamadaRodape, conteudo }) {
   const tituloCompleto = titulo ? `${titulo} — ${site.titulo}` : site.titulo;
   const url = urlAbsoluta(site, rota(site, caminho));
+  // Prévia de links: a imagem da página (a foto do Sobre) ou a do site.
+  const compartilhada = imagem ?? site.imagem;
   // Páginas fora do índice (404) não têm equivalente: o seletor leva à home do outro idioma.
   const caminhoIdioma = noindex ? '/' : caminho;
   const meta = [
@@ -119,12 +121,12 @@ export function pagina({ site, caminho, titulo, descricao, imagem, tipo = 'websi
     `<meta property="og:locale"${attrs({ content: site.idioma.replace('-', '_') })}>`,
     ...(noindex ? [] : alternativas(site, caminho)),
   ];
-  if (imagem) {
+  if (compartilhada) {
     meta.push(
-      `<meta property="og:image"${attrs({ content: urlAbsoluta(site, imagem.src) })}>`,
-      `<meta property="og:image:width"${attrs({ content: imagem.largura })}>`,
-      `<meta property="og:image:height"${attrs({ content: imagem.altura })}>`,
-      `<meta property="og:image:alt"${attrs({ content: imagem.alt })}>`,
+      `<meta property="og:image"${attrs({ content: urlAbsoluta(site, compartilhada.src) })}>`,
+      `<meta property="og:image:width"${attrs({ content: compartilhada.largura })}>`,
+      `<meta property="og:image:height"${attrs({ content: compartilhada.altura })}>`,
+      `<meta property="og:image:alt"${attrs({ content: compartilhada.alt })}>`,
       '<meta name="twitter:card" content="summary_large_image">',
     );
   }

@@ -2,6 +2,12 @@
   "titulo": "Ryan Leite",
   "descricao": "Portfólio de Ryan Leite — desenvolvedor full-stack.",
   "url": "https://portfolio-2026-rgrp.onrender.com/",
+  "imagem": {
+    "src": "/midia/compartilhar.png",
+    "alt": "Ryan Leite — desenvolvedor full-stack: C#, .NET, Unity, realidade aumentada e dados.",
+    "largura": 1200,
+    "altura": 630
+  },
   "idioma": "pt-BR",
   "idiomas": [
     {

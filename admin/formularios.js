@@ -181,6 +181,12 @@ export const DESCRITORES = {
       texto('url', 'Endereço do site', { tipoInput: 'url', ajuda: 'Começa com https://. Usado no canonical, no sitemap e no compartilhamento.' }),
       texto('idioma', 'Idioma', { ajuda: 'Ex.: pt-BR' }),
     ] },
+    { t: 'secao', r: 'Prévia de links', seExiste: 'imagem', ajuda: 'Imagem que aparece ao compartilhar o site (LinkedIn, WhatsApp…). Para trocar, substitua o arquivo em content/midia/ por outro PNG ou JPG de 1200 × 630: o painel converte envios para WebP, que nem todas as redes aceitam.', campos: [
+      { t: 'grupo', k: 'imagem', campos: [
+        leitura('src', 'Arquivo'),
+        texto('alt', 'Texto alternativo', { ajuda: AJUDA_ALT }),
+      ] },
+    ] },
     { t: 'secao', r: 'Repositório', ajuda: 'Onde o painel lê e grava o conteúdo. Mude só se mover o repositório.', campos: [
       { t: 'grupo', k: 'repositorio', campos: [texto('dono', 'Dono'), texto('nome', 'Nome'), texto('branch', 'Branch')] },
     ] },

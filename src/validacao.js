@@ -248,6 +248,8 @@ const ESQUEMA_SITE = objeto({
   titulo: texto(),
   descricao: texto(),
   url: texto({ url: true, formato: formatoUrlSite }),
+  // Imagem da prévia de links (LinkedIn, WhatsApp…), 1200 × 630 em PNG ou JPG.
+  imagem: opcional(objeto(camposImagem)),
   idioma: fixo(texto({ formato: formatoIdioma })),
   idiomas: opcional(lista(objeto({
     codigo: fixo(texto({ formato: formatoIdioma })),

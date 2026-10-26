@@ -1,6 +1,9 @@
 {
   "titulo": "Ryan Leite",
   "descricao": "Portfolio of Ryan Leite — full-stack developer.",
+  "imagem": {
+    "alt": "Ryan Leite — full-stack developer: C#, .NET, Unity, augmented reality and data."
+  },
   "navegacao": [
     {
       "rotulo": "Projects"
